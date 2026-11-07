@@ -13,6 +13,7 @@
   },
   "scripts": {
     "build": "npm run build --workspaces",
+    "test": "vitest run",
     "typecheck": "npm run typecheck --workspaces && tsc --project tsconfig.tools.json"
   },
   "devDependencies": {

@@ -37,6 +37,11 @@ run = "npm run build"
 depends = ["env:check"]
 run = "npm run typecheck"
 
+[tasks.test]
+description = "Build both applications and run the HTTP smoke once"
+depends = ["build"]
+run = "npm test"
+
 [tasks."start:backend"]
 depends = ["env:check"]
 run = "npm run start --workspace backend"
