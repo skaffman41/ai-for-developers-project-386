@@ -3,6 +3,7 @@ min_version = "2026.11.3"
 [tools]
 node = "24.22.2"
 hk = "2.11.1"
+gh = "2.103.3"
 
 [settings]
 lockfile = true
