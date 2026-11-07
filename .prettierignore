@@ -1,0 +1,10 @@
+# Dependencies and generated files
+**/node_modules/
+**/dist/
+**/coverage/
+**/*.tsbuildinfo
+package-lock.json
+mise.lock
+
+# Provided by Hexlet; preserve byte for byte
+.github/workflows/hexlet-check.yml

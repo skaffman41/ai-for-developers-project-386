@@ -21,21 +21,21 @@
 
 Команды читают метаданные registry без установки. Проверены все выбранные точные версии, включая вспомогательные пакеты. При недоступном HTTPS-прокси для отдельного публичного запроса использован прямой HTTPS без изменения глобальных настроек; диагностика приведена в Answer.
 
-| Команда | Что проверить |
-| --- | --- |
-| `npm view react-dom@19.3.1 version engines peerDependencies --json` | Совместимость с выбранным React. |
-| `npm view vite@8.3.6 version engines peerDependencies --json` | Node и обязательные peer-зависимости Vite. |
-| `npm view @vitejs/plugin-react@6.2.1 version engines peerDependencies --json` | Совместимость React-плагина с Vite. |
-| `npm view fastify@5.12.8 version engines peerDependencies --json` | Метаданные точной версии backend framework. |
-| `npm view vitest@5.1.0 version engines peerDependencies --json` | Совместимость тестового runner с Node и Vite. |
-| `npm view typescript@6.0.3 version engines --json` | Существование выбранного компилятора и требования Node. |
-| `npm view typescript-eslint@8.72.1 version engines peerDependencies --json` | Поддержка выбранных TypeScript и ESLint. |
-| `npm view eslint@10.14.0 version engines peerDependencies --json` | Требования линтера. |
-| `npm view prettier@3.9.10 version engines --json` | Требования форматтера. |
-| `npm view eslint-config-prettier@10.1.8 version engines peerDependencies --json` | Совместимость конфигурации с ESLint. |
-| `npm view npm@11.19.1 version engines --json` | Требования выбранного npm. |
-| `curl --fail --silent --show-error https://api.github.com/repos/jdx/mise/releases/tags/v2026.11.3` | Релиз mise и артефакты целевых платформ. |
-| `curl --fail --silent --show-error https://api.github.com/repos/jdx/hk/releases/tags/v2.11.1` | Релиз hk и артефакты целевых платформ. |
+| Команда                                                                                            | Что проверить                                           |
+| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `npm view react-dom@19.3.1 version engines peerDependencies --json`                                | Совместимость с выбранным React.                        |
+| `npm view vite@8.3.6 version engines peerDependencies --json`                                      | Node и обязательные peer-зависимости Vite.              |
+| `npm view @vitejs/plugin-react@6.2.1 version engines peerDependencies --json`                      | Совместимость React-плагина с Vite.                     |
+| `npm view fastify@5.12.8 version engines peerDependencies --json`                                  | Метаданные точной версии backend framework.             |
+| `npm view vitest@5.1.0 version engines peerDependencies --json`                                    | Совместимость тестового runner с Node и Vite.           |
+| `npm view typescript@6.0.3 version engines --json`                                                 | Существование выбранного компилятора и требования Node. |
+| `npm view typescript-eslint@8.72.1 version engines peerDependencies --json`                        | Поддержка выбранных TypeScript и ESLint.                |
+| `npm view eslint@10.14.0 version engines peerDependencies --json`                                  | Требования линтера.                                     |
+| `npm view prettier@3.9.10 version engines --json`                                                  | Требования форматтера.                                  |
+| `npm view eslint-config-prettier@10.1.8 version engines peerDependencies --json`                   | Совместимость конфигурации с ESLint.                    |
+| `npm view npm@11.19.1 version engines --json`                                                      | Требования выбранного npm.                              |
+| `curl --fail --silent --show-error https://api.github.com/repos/jdx/mise/releases/tags/v2026.11.3` | Релиз mise и артефакты целевых платформ.                |
+| `curl --fail --silent --show-error https://api.github.com/repos/jdx/hk/releases/tags/v2.11.1`      | Релиз hk и артефакты целевых платформ.                  |
 
 Если доступного npm нет, читать те же публикации через HTTPS API registry; устанавливать инструмент только ради исследования не требуется. Выход команды с кодом 0 подтверждает получение метаданных, но совместимость определяется сопоставлением всех ограничений. Не считать пустое поле engines подтверждением runtime-проверки; дополнительно свериться с официальной политикой поддержки.
 
@@ -51,35 +51,35 @@
 
 ### Итоговые версии инструментов
 
-| Инструмент | Точная версия | Фактическое подтверждение |
-| --- | --- | --- |
-| Node.js | 24.22.2 LTS Krypton | [Индекс дистрибутивов](https://nodejs.org/dist/index.json): запись `v24.22.2`, LTS `Krypton`, платформы `osx-arm64-tar` и `linux-x64`. Наличие архивов сверено с [SHASUMS256.txt](https://nodejs.org/dist/v24.22.2/SHASUMS256.txt). |
-| npm | 11.19.1 | Совпадает в индексе Node, [встроенном package.json Node v24.22.2](https://raw.githubusercontent.com/nodejs/node/v24.22.2/deps/npm/package.json) и [npm registry](https://registry.npmjs.org/npm/11.19.1). Node engines `^20.17.0 \|\| >=22.9.0`, peers отсутствуют. Отдельная установка npm не требуется. |
-| mise | 2026.11.3 | [Release API](https://api.github.com/repos/jdx/mise/releases/tags/v2026.11.3): `draft=false`, `prerelease=false`, опубликован `2026-11-06T11:18:41Z`; assets обеих платформ приведены ниже. Самостоятельный бинарник, Node не требуется. |
-| hk | 2.11.1 | [Release API](https://api.github.com/repos/jdx/hk/releases/tags/v2.11.1): `draft=false`, `prerelease=false`, опубликован `2026-11-03T17:58:31Z`; assets обеих платформ приведены ниже. Самостоятельный бинарник; [официальная инструкция](https://hk.jdx.dev/getting_started.html) подтверждает встроенный Pkl evaluator, отдельный Pkl CLI не нужен. |
+| Инструмент | Точная версия       | Фактическое подтверждение                                                                                                                                                                                                                                                                                                                             |
+| ---------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Node.js    | 24.22.2 LTS Krypton | [Индекс дистрибутивов](https://nodejs.org/dist/index.json): запись `v24.22.2`, LTS `Krypton`, платформы `osx-arm64-tar` и `linux-x64`. Наличие архивов сверено с [SHASUMS256.txt](https://nodejs.org/dist/v24.22.2/SHASUMS256.txt).                                                                                                                   |
+| npm        | 11.19.1             | Совпадает в индексе Node, [встроенном package.json Node v24.22.2](https://raw.githubusercontent.com/nodejs/node/v24.22.2/deps/npm/package.json) и [npm registry](https://registry.npmjs.org/npm/11.19.1). Node engines `^20.17.0 \|\| >=22.9.0`, peers отсутствуют. Отдельная установка npm не требуется.                                             |
+| mise       | 2026.11.3           | [Release API](https://api.github.com/repos/jdx/mise/releases/tags/v2026.11.3): `draft=false`, `prerelease=false`, опубликован `2026-11-06T11:18:41Z`; assets обеих платформ приведены ниже. Самостоятельный бинарник, Node не требуется.                                                                                                              |
+| hk         | 2.11.1              | [Release API](https://api.github.com/repos/jdx/hk/releases/tags/v2.11.1): `draft=false`, `prerelease=false`, опубликован `2026-11-03T17:58:31Z`; assets обеих платформ приведены ниже. Самостоятельный бинарник; [официальная инструкция](https://hk.jdx.dev/getting_started.html) подтверждает встроенный Pkl evaluator, отдельный Pkl CLI не нужен. |
 
 ### Итоговые прямые npm-зависимости проекта
 
 Ссылки ведут на метаданные **точной опубликованной версии**, а не `latest` или исходник release-тега. Проверены `version`, `dist.tarball`, `dist.integrity`, `engines`, `peerDependencies`, `peerDependenciesMeta` и `dependencies`; ни один выбранный пакет не помечен deprecated. «Отсутствует» означает отсутствие поля в публикации, а не подтверждённую runtime-проверку.
 
-| Пакет | Точная версия | Node engines | Обязательные и выбранные optional peers |
-| --- | --- | --- | --- |
-| [react](https://registry.npmjs.org/react/19.3.1) | 19.3.1 | `>=0.10.0` | Peers отсутствуют. |
-| [react-dom](https://registry.npmjs.org/react-dom/19.3.1) | 19.3.1 | Отсутствует | React `^19.3.1`; выбран 19.3.1. |
-| [typescript](https://registry.npmjs.org/typescript/6.0.3) | 6.0.3 | `>=14.17` | Peers отсутствуют. |
-| [vite](https://registry.npmjs.org/vite/8.3.6) | 8.3.6 | `^20.19.0 \|\| >=22.12.0` | Все peers optional; выбран `@types/node` 24.19.2, диапазон `^20.19.0 \|\| >=22.12.0`. |
-| [@vitejs/plugin-react](https://registry.npmjs.org/@vitejs/plugin-react/6.2.1) | 6.2.1 | `^20.19.0 \|\| >=22.12.0` | Vite `^8.0.0`; выбран 8.3.6. |
-| [fastify](https://registry.npmjs.org/fastify/5.12.8) | 5.12.8 | Отсутствует; политика Node 20+ | Peers отсутствуют. Политика поддержки рассмотрена ниже. |
-| [vitest](https://registry.npmjs.org/vitest/5.1.0) | 5.1.0 | `^22.12.0 \|\| ^24.0.0 \|\| >=26.0.0` | Vite `^6.4.0 \|\| ^7.0.0 \|\| ^8.0.0`: 8.3.6; optional `@types/node` `^22.0.0 \|\| >=24.0.0`: 24.19.2. |
-| [eslint](https://registry.npmjs.org/eslint/10.14.0) | 10.14.0 | `^20.19.0 \|\| ^22.13.0 \|\| >=24` | Только optional `jiti: *`, не выбран. |
-| [typescript-eslint](https://registry.npmjs.org/typescript-eslint/8.72.1) | 8.72.1 | `^18.18.0 \|\| ^20.9.0 \|\| >=21.1.0` | ESLint `^8.57.0 \|\| ^9.0.0 \|\| ^10.0.0`: 10.14.0; TypeScript `>=4.8.4 <6.1.0`: 6.0.3. |
-| [prettier](https://registry.npmjs.org/prettier/3.9.10) | 3.9.10 | `>=14` | Peers и runtime dependencies отсутствуют в опубликованном пакете. |
-| [eslint-config-prettier](https://registry.npmjs.org/eslint-config-prettier/10.1.8) | 10.1.8 | Отсутствует | ESLint `>=7.0.0`; выбран 10.14.0. Prettier не является его peer. |
-| [@types/node](https://registry.npmjs.org/@types/node/24.19.2) | 24.19.2 | Отсутствует; декларации типов | Peers пусты; `typeScriptVersion=5.6`, выбран TypeScript 6.0.3. Dependency `undici-types: >=7.24.0 <7.24.7`. |
-| [@types/react](https://registry.npmjs.org/@types/react/19.3.0) | 19.3.0 | Отсутствует; декларации типов | Peers пусты; `typeScriptVersion=5.6`, выбран TypeScript 6.0.3. Dependency `csstype: ^3.2.2`. |
-| [@types/react-dom](https://registry.npmjs.org/@types/react-dom/19.3.0) | 19.3.0 | Отсутствует; декларации типов | `@types/react: ^19.3.0`; выбран 19.3.0. `typeScriptVersion=5.6`, выбран TypeScript 6.0.3. |
-| [@eslint/js](https://registry.npmjs.org/@eslint/js/10.0.1) | 10.0.1 | `^20.19.0 \|\| ^22.13.0 \|\| >=24` | Optional ESLint `^10.0.0`; выбран 10.14.0. Версии пакетов не обязаны совпадать. |
-| [globals](https://registry.npmjs.org/globals/17.13.0) | 17.13.0 | `>=18` | Peers отсутствуют; один пакет предоставляет browser и Node globals. |
+| Пакет                                                                              | Точная версия | Node engines                          | Обязательные и выбранные optional peers                                                                     |
+| ---------------------------------------------------------------------------------- | ------------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| [react](https://registry.npmjs.org/react/19.3.1)                                   | 19.3.1        | `>=0.10.0`                            | Peers отсутствуют.                                                                                          |
+| [react-dom](https://registry.npmjs.org/react-dom/19.3.1)                           | 19.3.1        | Отсутствует                           | React `^19.3.1`; выбран 19.3.1.                                                                             |
+| [typescript](https://registry.npmjs.org/typescript/6.0.3)                          | 6.0.3         | `>=14.17`                             | Peers отсутствуют.                                                                                          |
+| [vite](https://registry.npmjs.org/vite/8.3.6)                                      | 8.3.6         | `^20.19.0 \|\| >=22.12.0`             | Все peers optional; выбран `@types/node` 24.19.2, диапазон `^20.19.0 \|\| >=22.12.0`.                       |
+| [@vitejs/plugin-react](https://registry.npmjs.org/@vitejs/plugin-react/6.2.1)      | 6.2.1         | `^20.19.0 \|\| >=22.12.0`             | Vite `^8.0.0`; выбран 8.3.6.                                                                                |
+| [fastify](https://registry.npmjs.org/fastify/5.12.8)                               | 5.12.8        | Отсутствует; политика Node 20+        | Peers отсутствуют. Политика поддержки рассмотрена ниже.                                                     |
+| [vitest](https://registry.npmjs.org/vitest/5.1.0)                                  | 5.1.0         | `^22.12.0 \|\| ^24.0.0 \|\| >=26.0.0` | Vite `^6.4.0 \|\| ^7.0.0 \|\| ^8.0.0`: 8.3.6; optional `@types/node` `^22.0.0 \|\| >=24.0.0`: 24.19.2.      |
+| [eslint](https://registry.npmjs.org/eslint/10.14.0)                                | 10.14.0       | `^20.19.0 \|\| ^22.13.0 \|\| >=24`    | Только optional `jiti: *`, не выбран.                                                                       |
+| [typescript-eslint](https://registry.npmjs.org/typescript-eslint/8.72.1)           | 8.72.1        | `^18.18.0 \|\| ^20.9.0 \|\| >=21.1.0` | ESLint `^8.57.0 \|\| ^9.0.0 \|\| ^10.0.0`: 10.14.0; TypeScript `>=4.8.4 <6.1.0`: 6.0.3.                     |
+| [prettier](https://registry.npmjs.org/prettier/3.9.10)                             | 3.9.10        | `>=14`                                | Peers и runtime dependencies отсутствуют в опубликованном пакете.                                           |
+| [eslint-config-prettier](https://registry.npmjs.org/eslint-config-prettier/10.1.8) | 10.1.8        | Отсутствует                           | ESLint `>=7.0.0`; выбран 10.14.0. Prettier не является его peer.                                            |
+| [@types/node](https://registry.npmjs.org/@types/node/24.19.2)                      | 24.19.2       | Отсутствует; декларации типов         | Peers пусты; `typeScriptVersion=5.6`, выбран TypeScript 6.0.3. Dependency `undici-types: >=7.24.0 <7.24.7`. |
+| [@types/react](https://registry.npmjs.org/@types/react/19.3.0)                     | 19.3.0        | Отсутствует; декларации типов         | Peers пусты; `typeScriptVersion=5.6`, выбран TypeScript 6.0.3. Dependency `csstype: ^3.2.2`.                |
+| [@types/react-dom](https://registry.npmjs.org/@types/react-dom/19.3.0)             | 19.3.0        | Отсутствует; декларации типов         | `@types/react: ^19.3.0`; выбран 19.3.0. `typeScriptVersion=5.6`, выбран TypeScript 6.0.3.                   |
+| [@eslint/js](https://registry.npmjs.org/@eslint/js/10.0.1)                         | 10.0.1        | `^20.19.0 \|\| ^22.13.0 \|\| >=24`    | Optional ESLint `^10.0.0`; выбран 10.14.0. Версии пакетов не обязаны совпадать.                             |
+| [globals](https://registry.npmjs.org/globals/17.13.0)                              | 17.13.0       | `>=18`                                | Peers отсутствуют; один пакет предоставляет browser и Node globals.                                         |
 
 Версии типов выбраны из опубликованных стабильных версий нужных major-веток registry, затем каждая точная публикация получена отдельным GET. Служебные версии DefinitelyTyped вида `*.9999` не используются. `undici-types` и `csstype` остаются транзитивными зависимостями типов; добавлять их напрямую не требуется.
 
@@ -108,12 +108,12 @@
 
 Оба release API подтвердили для каждого выбранного архива `state=uploaded`, ненулевой `size`, URL и SHA-256 в `digest`. Артефакты не скачивались и не устанавливались; проверяется наличие официальной публикации, а не работоспособность бинарника в этой сессии.
 
-| Инструмент | Платформа | Официальный asset | SHA-256 из API |
-| --- | --- | --- | --- |
+| Инструмент     | Платформа   | Официальный asset                                                                                                                 | SHA-256 из API                                                     |
+| -------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
 | mise 2026.11.3 | macOS arm64 | [mise-v2026.11.3-macos-arm64.tar.gz](https://github.com/jdx/mise/releases/download/v2026.11.3/mise-v2026.11.3-macos-arm64.tar.gz) | `de9a54330fee4edede51a3cf6196bbf522f01c5e3fd981e0bebea33f561a0431` |
-| mise 2026.11.3 | Linux x64 | [mise-v2026.11.3-linux-x64.tar.gz](https://github.com/jdx/mise/releases/download/v2026.11.3/mise-v2026.11.3-linux-x64.tar.gz) | `837acae6defb8c9ad74823f6e38856633bacb04c65c1ac67d952749847543bd9` |
-| hk 2.11.1 | macOS arm64 | [hk-aarch64-apple-darwin.tar.gz](https://github.com/jdx/hk/releases/download/v2.11.1/hk-aarch64-apple-darwin.tar.gz) | `95f89e6eef60e0c690b0d439b30e3b8558f47235a1a45cbff7b5351d294e4322` |
-| hk 2.11.1 | Linux x64 | [hk-x86_64-unknown-linux-gnu.tar.gz](https://github.com/jdx/hk/releases/download/v2.11.1/hk-x86_64-unknown-linux-gnu.tar.gz) | `b9330bd4b9326c3e1aefd757ff923fdf6d1b060074bcb4e54e16ec0a81fde7ec` |
+| mise 2026.11.3 | Linux x64   | [mise-v2026.11.3-linux-x64.tar.gz](https://github.com/jdx/mise/releases/download/v2026.11.3/mise-v2026.11.3-linux-x64.tar.gz)     | `837acae6defb8c9ad74823f6e38856633bacb04c65c1ac67d952749847543bd9` |
+| hk 2.11.1      | macOS arm64 | [hk-aarch64-apple-darwin.tar.gz](https://github.com/jdx/hk/releases/download/v2.11.1/hk-aarch64-apple-darwin.tar.gz)              | `95f89e6eef60e0c690b0d439b30e3b8558f47235a1a45cbff7b5351d294e4322` |
+| hk 2.11.1      | Linux x64   | [hk-x86_64-unknown-linux-gnu.tar.gz](https://github.com/jdx/hk/releases/download/v2.11.1/hk-x86_64-unknown-linux-gnu.tar.gz)      | `b9330bd4b9326c3e1aefd757ff923fdf6d1b060074bcb4e54e16ec0a81fde7ec` |
 
 ### Проверка результата и граница задачи
 

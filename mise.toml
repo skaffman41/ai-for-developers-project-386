@@ -37,10 +37,29 @@ run = "npm run build"
 depends = ["env:check"]
 run = "npm run typecheck"
 
+[tasks.lint]
+description = "Check JavaScript and TypeScript; reject warnings"
+depends = ["env:check"]
+run = "npm run lint"
+
+[tasks."format:check"]
+description = "Check formatting without changing files"
+depends = ["env:check"]
+run = "npm run format:check"
+
+[tasks.format]
+description = "Format files except generated output, lockfiles and the Hexlet workflow"
+depends = ["env:check"]
+run = "npm run format"
+
 [tasks.test]
 description = "Build both applications and run the HTTP smoke once"
 depends = ["build"]
 run = "npm test"
+
+[tasks.check]
+description = "Check versions, lint, formatting, types, build and HTTP smoke"
+depends = ["env:check", "lint", "format:check", "typecheck", "test"]
 
 [tasks."start:backend"]
 depends = ["env:check"]

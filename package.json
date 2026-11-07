@@ -13,6 +13,9 @@
   },
   "scripts": {
     "build": "npm run build --workspaces",
+    "lint": "eslint . --max-warnings 0",
+    "format:check": "prettier --check .",
+    "format": "prettier --write .",
     "test": "vitest run",
     "typecheck": "npm run typecheck --workspaces && tsc --project tsconfig.tools.json"
   },
