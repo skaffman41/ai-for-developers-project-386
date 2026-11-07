@@ -1,0 +1,14 @@
+{
+  "name": "@call-calendar/backend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch --watch-preserve-output --import ../scripts/watch-fail-fast.mjs src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "fastify": "5.12.8"
+  }
+}

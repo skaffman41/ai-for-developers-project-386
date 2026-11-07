@@ -41,20 +41,77 @@
 
 ## Стек
 
-- Разное
+- Frontend: React 19, TypeScript 6, Vite 8.
+- Backend: Fastify 5, TypeScript, ESM; Node запускает TypeScript в разработке, после сборки — JavaScript.
+- Приватные npm workspaces `frontend` и `backend`, один корневой `package-lock.json`.
+- mise 2026.11.3 управляет Node 24.22.2, встроенным npm 11.19.1 и hk 2.11.1. Точные версии JS-зависимостей указаны в manifests.
 
 ## Установка
 
-<!-- Опишите установку: клонирование, зависимости, переменные окружения -->
+Поддерживаемые окружения: macOS arm64 и Linux x64. Нужны Git и curl.
+Установите точную версию mise по [официальной инструкции](https://mise.jdx.dev/installing-mise.html):
+
+```bash
+curl --fail --silent --show-error --location https://mise.run | MISE_VERSION=v2026.11.3 sh
+export PATH="$HOME/.local/bin:$PATH"
+mise --version
+```
+
+Добавьте `~/.local/bin` в `PATH` своего shell для следующих сеансов. Подготовьте проект из корня:
 
 ```bash
 git clone https://github.com/skaffman41/ai-for-developers-project-386.git
 cd ai-for-developers-project-386
+mise trust
+mise install --locked
+mise run setup
 ```
+
+`mise.lock` фиксирует Node и hk с контрольными суммами для обеих платформ.
+`setup` проверяет точные версии mise, Node и npm и выполняет `npm ci`.
+Глобальные JS-пакеты, БД, ключи и внешние сервисы для запуска не нужны.
+Локальный hk-hook подключается в задаче 05; сейчас `setup` устанавливает только npm-зависимости.
 
 ## Использование
 
-<!-- Добавьте примеры запуска и запись asciinema — именно это смотрит работодатель -->
+Все команды выполняются из корня:
+
+```bash
+mise run dev
+```
+
+Откройте http://127.0.0.1:5173: страница показывает «Календарь звонков» и «Каркас приложения».
+Backend доступен на http://127.0.0.1:3000. Проверка состояния:
+
+```bash
+curl --fail --silent --show-error http://127.0.0.1:3000/health
+# {"status":"ok"}
+```
+
+Ctrl+C останавливает обе части и освобождает порты. Ошибка запуска одной части завершает общий запуск.
+Занятый выбранный порт вызывает ошибку; автоматического перехода на другой порт нет.
+
+| Команда | Результат |
+| --- | --- |
+| `mise run dev:frontend` | Только frontend, http://127.0.0.1:5173, обновление при изменении исходников. |
+| `mise run dev:backend` | Только backend, http://127.0.0.1:3000, Node watch перезапускает сервер при изменениях. |
+| `mise run typecheck` | Строгая проверка типов обеих частей и конфигурации, включая вспомогательные скрипты. |
+| `mise run build` | Сборки в `frontend/dist` и `backend/dist`. |
+| `mise run start:backend` | Запуск `backend/dist/server.js` после сборки. |
+| `mise run preview:frontend` | Просмотр сборки на http://127.0.0.1:4173 после сборки. |
+| `mise run env:check` | Проверка точных версий mise, Node и npm. |
+
+Для backend можно задать `HOST` (по умолчанию `127.0.0.1`) и `PORT` (по умолчанию `3000`):
+
+```bash
+HOST=127.0.0.1 PORT=3100 mise run dev:backend
+```
+
+`PORT=0` выбирает свободный порт; фактический адрес выводится в журнал.
+Для Vite порт можно задать через аргумент: `mise run dev:frontend -- --port 5174`.
+`preview:frontend` предназначен для локального просмотра сборки.
+Изменения зависимостей выполняются через `mise exec -- npm ...`; повторная установка — `mise run setup`.
+Автоматический HTTP smoke, линтер, форматирование, хуки и CI подключаются следующими отдельными задачами.
 
 ---
 

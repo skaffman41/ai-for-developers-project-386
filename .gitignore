@@ -4,3 +4,16 @@
 
 # macOS metadata
 .DS_Store
+
+# Dependencies and generated files
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Local environment and mise overrides
+.env
+.env.*
+!.env.example
+mise.local.toml
+mise.local.lock

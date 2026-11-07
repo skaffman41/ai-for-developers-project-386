@@ -1,0 +1,46 @@
+min_version = "2026.11.3"
+
+[tools]
+node = "24.22.2"
+hk = "2.11.1"
+
+[settings]
+lockfile = true
+lockfile_platforms = ["macos-arm64", "linux-x64"]
+
+[tasks."env:check"]
+description = "Check the exact mise, Node and npm versions"
+run = "node scripts/check-env.mjs"
+
+[tasks.setup]
+description = "Check the environment and install locked npm dependencies"
+depends = ["env:check"]
+run = "npm ci"
+
+[tasks.dev]
+description = "Run both applications; stop both on failure or Ctrl+C"
+depends = ["dev:frontend", "dev:backend"]
+
+[tasks."dev:frontend"]
+depends = ["env:check"]
+run = "npm run dev --workspace frontend --"
+
+[tasks."dev:backend"]
+depends = ["env:check"]
+run = "npm run dev --workspace backend"
+
+[tasks.build]
+depends = ["env:check"]
+run = "npm run build"
+
+[tasks.typecheck]
+depends = ["env:check"]
+run = "npm run typecheck"
+
+[tasks."start:backend"]
+depends = ["env:check"]
+run = "npm run start --workspace backend"
+
+[tasks."preview:frontend"]
+depends = ["env:check"]
+run = "npm run preview --workspace frontend --"
