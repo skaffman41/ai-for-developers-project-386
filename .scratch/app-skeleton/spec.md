@@ -2,7 +2,7 @@
 
 **Status:** ready-for-agent
 **Blocked by:** None
-**Согласование:** согласована пользователем с уточнениями от 2026-11-07. Исходный запрос разрешал только спецификацию и декомпозицию. Последующий `$implement 01-verify-toolchain` разрешает выполнить задачу 01 и закоммитить её результат в текущую ветку; задачи 02–06, установка зависимостей и push этим запросом не разрешены.
+**Согласование:** согласована пользователем с уточнениями от 2026-11-07. Задача 01 завершена; последующий запрос на настройку workflow разрешает зафиксировать план, результат 01 и правила агентной разработки отдельными коммитами. Задачи 02–06 и push этим запросом не разрешены.
 **Дата проверки официальных источников:** 2026-11-07.
 
 ## Problem Statement
@@ -63,28 +63,35 @@ Frontend показывает заголовок «Календарь звонк
 
 ## Toolchain and Compatibility
 
-Ниже приведён базовый набор для проверки, а не окончательно подтверждённый toolchain. Частичные результаты задачи 01 от 2026-11-07 записаны в [Answer](issues/01-verify-toolchain.md#answer). Подтверждены официальный релиз Node 24.22.2 и встроенный npm 11.19.1, прочитаны исходные package.json основных точных релизов. Метаданные большинства опубликованных npm-пакетов и списки платформенных assets mise/hk пока недоступны; проверка не завершена и задача 02 остаётся заблокирована. Отсутствие ответа источника не означает отсутствия публикации или несовместимости. Установка до завершения проверки не начинается.
+Задача 01 завершена **2026-11-07**: проверены фактические npm-публикации всех выбранных точных версий, их engines и peerDependencies, встроенный npm дистрибутива Node и официальные assets mise/hk для macOS arm64 и Linux x64. Подробные диапазоны, выбранные и невыбранные optional peers, платформенные архивы, источники и результаты сопоставления — в [Answer](issues/01-verify-toolchain.md#answer).
 
-| Инструмент | Базовая версия для проверки | Исходное основание (не заменяет проверку npm-публикации) |
+Ниже окончательный набор по опубликованным метаданным. Это подтверждает публикации и согласованность заявленных ограничений, а не runtime или разрешение полного дерева. Строгий dry-run остаётся обязательной частью задачи 02 до первой установки; переход к задаче 02 текущим запросом не разрешён.
+
+| Инструмент или пакет | Точная версия | Проверенное основание |
 | --- | --- | --- |
-| Node.js | 24.22.2 LTS | Поддерживаемая LTS-ветка; опубликован [официальный релиз](https://nodejs.org/en/blog/release/v24.22.2). |
-| npm | 11.19.1 | Именно эта версия входит в выбранный Node: [метаданные дистрибутива](https://raw.githubusercontent.com/nodejs/node/v24.22.2/deps/npm/package.json). |
-| React и React DOM | 19.3.1 | Согласованные версии одного [стабильного релиза React](https://github.com/react/react/releases/tag/v19.3.1). |
-| TypeScript | 6.0.3 | [Стабильный релиз](https://github.com/microsoft/TypeScript/releases/tag/v6.0.3), попадает в поддерживаемый диапазон typescript-eslint. |
-| Vite | 8.3.6 | [Релиз](https://github.com/vitejs/vite/releases/tag/v8.3.6); требует Node ^20.19.0 или >=22.12.0 согласно [метаданным пакета](https://raw.githubusercontent.com/vitejs/vite/v8.3.6/packages/vite/package.json). |
-| @vitejs/plugin-react | 6.2.1 | Требует Vite ^8.0.0 и Node ^20.19.0 или >=22.12.0: [метаданные релиза](https://raw.githubusercontent.com/vitejs/vite-plugin-react/plugin-react@6.2.1/packages/plugin-react/package.json). |
-| Fastify | 5.12.8 | [Стабильный релиз](https://github.com/fastify/fastify/releases/tag/v5.12.8); Fastify 5 требует Node 20+, см. [официальный migration guide](https://fastify.dev/docs/latest/Guides/Migration-Guide-V5/). |
-| Vitest | 5.1.0 | Поддерживает Node 24 и Vite ^8.0.0: [метаданные релиза](https://raw.githubusercontent.com/vitest-dev/vitest/v5.1.0/packages/vitest/package.json), [Getting Started](https://vitest.dev/guide/). |
-| ESLint | 10.14.0 | [Стабильный релиз](https://github.com/eslint/eslint/releases/tag/v10.14.0); Node >=24 удовлетворяет [getting started](https://eslint.org/docs/latest/use/getting-started). |
-| typescript-eslint | 8.72.1 | Поддерживает ESLint ^10.0.0 и TypeScript >=4.8.4 <6.1.0: [метаданные релиза](https://raw.githubusercontent.com/typescript-eslint/typescript-eslint/v8.72.1/packages/typescript-eslint/package.json). |
-| Prettier | 3.9.10 | Точная версия из актуальной [официальной инструкции установки](https://prettier.io/docs/install). |
-| eslint-config-prettier | 10.1.8 | [Официальный релиз](https://github.com/prettier/eslint-config-prettier/releases/tag/v10.1.8); используется с ESLint и отдельной командой Prettier. |
-| mise | 2026.11.3 | [Опубликованный релиз](https://github.com/jdx/mise/releases/tag/v2026.11.3), поддерживает задачи и locked-установку инструментов. |
-| hk | 2.11.1 | [Опубликованный релиз](https://github.com/jdx/hk/releases/tag/v2.11.1); актуальная инструкция использует встроенный Pkl evaluator. |
+| Node.js | 24.22.2 LTS | [Индекс дистрибутивов](https://nodejs.org/dist/index.json) и [SHASUMS256.txt](https://nodejs.org/dist/v24.22.2/SHASUMS256.txt): LTS Krypton, дистрибутивы обеих платформ. |
+| npm | 11.19.1 | Версия совпадает в индексе Node, [встроенном package.json](https://raw.githubusercontent.com/nodejs/node/v24.22.2/deps/npm/package.json) и [registry](https://registry.npmjs.org/npm/11.19.1); выбранный Node подходит. |
+| React и React DOM | 19.3.1 | Точные публикации [React](https://registry.npmjs.org/react/19.3.1) и [React DOM](https://registry.npmjs.org/react-dom/19.3.1); peer React `^19.3.1` выполнен. |
+| TypeScript | 6.0.3 | [Метаданные публикации](https://registry.npmjs.org/typescript/6.0.3); Node `>=14.17`, версия входит в диапазон typescript-eslint. |
+| Vite | 8.3.6 | [Метаданные публикации](https://registry.npmjs.org/vite/8.3.6); Node `^20.19.0` или `>=22.12.0`, выбранные типы Node допустимы. |
+| @vitejs/plugin-react | 6.2.1 | [Метаданные публикации](https://registry.npmjs.org/@vitejs/plugin-react/6.2.1); Vite `^8.0.0`, Node `^20.19.0` или `>=22.12.0`. |
+| Fastify | 5.12.8 | [Метаданные публикации](https://registry.npmjs.org/fastify/5.12.8): engines и peers отсутствуют; [политика Fastify 5](https://raw.githubusercontent.com/fastify/fastify/v5.12.8/docs/Guides/Migration-Guide-V5.md) требует Node 20+, LTS-ветка 24 поддерживается по LTS policy. |
+| Vitest | 5.1.0 | [Метаданные публикации](https://registry.npmjs.org/vitest/5.1.0); Node 24 и Vite 8.3.6 входят в заявленные диапазоны. |
+| ESLint | 10.14.0 | [Метаданные публикации](https://registry.npmjs.org/eslint/10.14.0); engines допускает Node `>=24`. Optional jiti для `eslint.config.mjs` не нужен. |
+| typescript-eslint | 8.72.1 | [Метаданные публикации](https://registry.npmjs.org/typescript-eslint/8.72.1); ESLint 10.14.0 и TypeScript 6.0.3 допустимы. Четыре внутренних пакета зафиксированы на 8.72.1, их ограничения также проверены. |
+| Prettier | 3.9.10 | [Метаданные публикации](https://registry.npmjs.org/prettier/3.9.10): фактический Node engines `>=14`, peers отсутствуют. Используются требования опубликованного пакета. |
+| eslint-config-prettier | 10.1.8 | [Метаданные публикации](https://registry.npmjs.org/eslint-config-prettier/10.1.8); peer ESLint `>=7.0.0`, выбранный ESLint подходит. |
+| @types/node | 24.19.2 | [Метаданные публикации](https://registry.npmjs.org/@types/node/24.19.2); ветка 24, TypeScript минимум 5.6; подходит Vite и Vitest. |
+| @types/react | 19.3.0 | [Метаданные публикации](https://registry.npmjs.org/@types/react/19.3.0); ветка 19, TypeScript минимум 5.6. |
+| @types/react-dom | 19.3.0 | [Метаданные публикации](https://registry.npmjs.org/@types/react-dom/19.3.0); peer `@types/react ^19.3.0` выполнен, TypeScript минимум 5.6. |
+| @eslint/js | 10.0.1 | [Метаданные публикации](https://registry.npmjs.org/@eslint/js/10.0.1); Node 24 подходит, optional peer ESLint `^10.0.0` выполнен. Номер пакета не обязан совпадать с ESLint 10.14.0. |
+| globals | 17.13.0 | [Метаданные публикации](https://registry.npmjs.org/globals/17.13.0); Node `>=18`, peers отсутствуют; browser и Node globals. |
+| mise | 2026.11.3 | [Официальный release API](https://api.github.com/repos/jdx/mise/releases/tags/v2026.11.3): стабильный релиз, assets macOS arm64 и Linux x64 опубликованы. |
+| hk | 2.11.1 | [Официальный release API](https://api.github.com/repos/jdx/hk/releases/tags/v2.11.1): стабильный релиз, assets macOS arm64 и Linux x64 опубликованы; отдельный Pkl CLI не требуется. |
 
-Выбор TypeScript 6.0.3 намеренный: на дату исследования npm latest указывал на [TypeScript 7.0.2](https://registry.npmjs.org/typescript/latest), а официальный [диапазон typescript-eslint](https://typescript-eslint.io/users/dependency-versions/) был ограничен версиями ниже 6.1.0. Базовый набор удовлетворяет рассмотренным документированным ограничениям; это ещё не подтверждение фактической совместимости полного дерева зависимостей.
+TypeScript 6.0.3 выбран намеренно: опубликованный peer typescript-eslint — `>=4.8.4 <6.1.0`. Автоматический переход на TypeScript 7 не допускается этим набором. Node 24.22.2 удовлетворяет всем объявленным Node engines; отсутствие engines у Fastify, React DOM, конфигурации Prettier и деклараций типов не выдаётся за runtime-проверку. Политики поддержки и пределы доказательства разобраны в Answer.
 
-К прямым вспомогательным зависимостям относятся `@types/node` ветки 24, `@types/react` и `@types/react-dom` ветки 19, `@eslint/js` и `globals`. Для последних двух проверены исходники кандидатов 10.0.1 и 17.13.0; номер `@eslint/js` не обязан совпадать с номером ESLint 10.14.0. Точные опубликованные версии всего вспомогательного набора нужно подтвердить в задаче 01 до подготовки установки. Дополнительные React-плагины линтера, React Compiler, DOM environment и coverage-пакеты для согласованного каркаса не требуются.
+Базовые версии сохранены; добавлены точные вспомогательные зависимости `@types/node`, `@types/react`, `@types/react-dom`, `@eslint/js` и `globals`. Уточнён engines опубликованного Prettier 3.9.10: `>=14`, а не `>=22` из исходного release package.json. Дополнительные React-плагины линтера, React Compiler, DOM environment и coverage-пакеты для согласованного каркаса не нужны. `undici-types` и `csstype` остаются транзитивными зависимостями типов; их разрешение, как и остального дерева, проверяется в задаче 02.
 
 Обязательный порядок перед установкой:
 
@@ -224,9 +231,9 @@ check использует общие задачи, а не копии их ко
 
 ## Further Notes
 
-- Спецификация согласована пользователем и сохраняет статус ready-for-agent. Позднейший запрос `$implement 01-verify-toolchain` разрешает только задачу 01 и commit её результата. Остальные задачи служат планом; установка зависимостей и push в этот запрос не входят.
+- Спецификация согласована пользователем и сохраняет статус ready-for-agent. Задача 01 завершена. Текущий запрос разрешает зафиксировать план, результат 01 и постоянный workflow; установка зависимостей, переход к задаче 02 и push не выполняются.
 - Согласованная граница автоматического тестирования — HTTP к обоим запущенным процессам.
-- Проверены официальные инструкции и исходные метаданные релизов. Проверка фактических npm-публикаций в задаче 01 остаётся незавершённой из-за недоступности источников; результат не подтверждает готовность к установке. Разрешение полного дерева относится к задаче 02. Установка, сборка, тесты и GitHub Actions пока не запускались.
+- Задача 01 завершена: фактические npm-публикации, engines, peers и платформенные assets подтверждены. Начальный сетевой сбой вызвал недоступный HTTPS-прокси; прямой HTTPS к источникам работает. Разрешение полного дерева относится к задаче 02. Установка, сборка, тесты и GitHub Actions пока не запускались.
 - Исходный SHA-256 защищённого workflow Hexlet: c8018c9fd5de3ef086be6307a7f265722936cd4c8ea05354285023d2b994187b. При реализации сравнить файл с базовым коммитом; хеш приведён как дополнительная контрольная точка.
 - Декомпозиция оформляется отдельными файлами задач по соглашениям локального Markdown-трекера. Перед началом задачи должны быть завершены её зависимости; отсутствие блокировок не отменяет запрет на реализацию в текущем запросе.
 
@@ -256,3 +263,9 @@ check использует общие задачи, а не копии их ко
 
 - Пользователь запросил `$implement 01-verify-toolchain`. Разрешены проверка toolchain, необходимые уточнения этой спецификации и commit результата; установка зависимостей, остальные задачи и push не запрошены.
 - Официальный релиз Node и встроенный npm подтверждены. Полные npm-метаданные и платформенные assets пока не получены; задача 01 не закрывается, задача 02 не разблокируется. Подробности и источники — в Answer задачи 01.
+
+### 2026-11-07 — завершение проверки toolchain
+
+- Пользователь разрешил продолжить задачу 01 штатными CLI без Chrome CLI; новые коммиты и push запрещены. Причина сетевого сбоя — недоступный HTTPS-прокси; прямой HTTPS к npm registry и GitHub API успешен.
+- Все критерии задачи 01 подтверждены, её статус — `resolved`. Итоговые точные версии вспомогательных пакетов и фактические ограничения опубликованного Prettier перенесены в таблицу выше.
+- Задача 02, установка зависимостей, разрешение полного дерева, сборки и CI не выполнялись; AC-12 и AC-18 всей спецификации остаются открытыми до следующих этапов.
