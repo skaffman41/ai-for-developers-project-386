@@ -5,6 +5,19 @@
 - Сохраняй `.github/workflows/hexlet-check.yml` без изменений.
 - Для workflow используй Matt Pocock Skills. OpenSpec не устанавливай.
 
+## Команды разработки
+
+Выполняй из корня после `mise install --locked` и `mise run setup`:
+
+| Команда          | Назначение                                                          |
+| ---------------- | ------------------------------------------------------------------- |
+| `mise run dev`   | Запуск frontend и backend; Ctrl+C останавливает оба процесса.       |
+| `mise run test`  | Сборка и полный HTTP smoke в Vitest.                                |
+| `mise run lint`  | ESLint без исправлений; предупреждения считаются ошибкой.           |
+| `mise run check` | Версии, линтер, форматирование, типы, сборка, smoke и валидация hk. |
+
+Остальные команды и установка локальных хуков описаны в [README](README.md#использование).
+
 ## Development workflow
 
 Перед подготовкой плана, реализацией или коммитом читай [development-workflow.md](docs/agents/development-workflow.md).

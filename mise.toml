@@ -13,9 +13,14 @@ description = "Check the exact mise, Node and npm versions"
 run = "node scripts/check-env.mjs"
 
 [tasks.setup]
-description = "Check the environment and install locked npm dependencies"
+description = "Check versions, install locked npm dependencies and local Git hooks"
 depends = ["env:check"]
-run = "npm ci"
+run = ["npm ci", "mise run hooks:install"]
+
+[tasks."hooks:install"]
+description = "Install hk hooks for this clone through mise"
+depends = ["env:check"]
+run = "hk install --mise"
 
 [tasks.dev]
 description = "Run both applications; stop both on failure or Ctrl+C"
@@ -58,8 +63,9 @@ depends = ["build"]
 run = "npm test"
 
 [tasks.check]
-description = "Check versions, lint, formatting, types, build and HTTP smoke"
+description = "Check versions, lint, formatting, types, build, HTTP smoke and hk config"
 depends = ["env:check", "lint", "format:check", "typecheck", "test"]
+run = "hk validate"
 
 [tasks."start:backend"]
 depends = ["env:check"]
