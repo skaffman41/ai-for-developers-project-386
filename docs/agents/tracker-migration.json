@@ -1,0 +1,312 @@
+{
+  "schemaVersion": 1,
+  "repository": "skaffman41/ai-for-developers-project-386",
+  "sourceCommit": "6e03736e19494b99ca40a4e64e076145b37b7941",
+  "verifiedAt": "2026-11-07T18:38:29.099721+00:00",
+  "records": [
+    {
+      "path": ".scratch/app-skeleton/spec.md",
+      "legacyId": "spec",
+      "title": "Этап 2. Каркас приложения",
+      "sourceSha256": "45c7f8faec87ef6bf751e82b911aada07f1f795f17f11e1993b0d9084605d089",
+      "characters": 40798,
+      "bytes": 61128,
+      "hasAnswer": false,
+      "hasComments": true,
+      "sourceUrl": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/spec.md",
+      "number": 5,
+      "databaseId": 6262761962,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/5",
+      "marker": "<!-- legacy-tracker-migration path=.scratch/app-skeleton/spec.md commit=6e03736e19494b99ca40a4e64e076145b37b7941 -->",
+      "publishedBodySha256": "6332d229b32148bc3a1c4892336daddd3e9ca4572519dcc89d5aed094ccc105f",
+      "parent": null,
+      "blockedBy": []
+    },
+    {
+      "path": ".scratch/app-skeleton/issues/01-verify-toolchain.md",
+      "legacyId": "01-verify-toolchain",
+      "title": "01: Проверить фактическую совместимость версий",
+      "sourceSha256": "4bb27b9b54492087dcb17b4471a4e26d76fe12da6817b96f6ff6617772478e6e",
+      "characters": 22441,
+      "bytes": 29937,
+      "hasAnswer": true,
+      "hasComments": true,
+      "sourceUrl": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/issues/01-verify-toolchain.md",
+      "number": 6,
+      "databaseId": 6262762644,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/6",
+      "marker": "<!-- legacy-tracker-migration path=.scratch/app-skeleton/issues/01-verify-toolchain.md commit=6e03736e19494b99ca40a4e64e076145b37b7941 -->",
+      "publishedBodySha256": "b314d5273ae6d103b5fe31fa2dff116923d674b352a02a3c8128b97384f5073c",
+      "parent": 5,
+      "blockedBy": []
+    },
+    {
+      "path": ".scratch/app-skeleton/issues/02-run-application.md",
+      "legacyId": "02-run-application",
+      "title": "02: Запустить воспроизводимый frontend и backend",
+      "sourceSha256": "202fe42ef54e58f754a6d2d4dff35904603299281eebaba1e018478699a38290",
+      "characters": 15635,
+      "bytes": 21935,
+      "hasAnswer": true,
+      "hasComments": true,
+      "sourceUrl": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/issues/02-run-application.md",
+      "number": 7,
+      "databaseId": 6262763678,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/7",
+      "marker": "<!-- legacy-tracker-migration path=.scratch/app-skeleton/issues/02-run-application.md commit=6e03736e19494b99ca40a4e64e076145b37b7941 -->",
+      "publishedBodySha256": "cba254e6bc49c7212f225acf61e5c3949bfd8a1c96de679db31b8659ed7df9c0",
+      "parent": 5,
+      "blockedBy": [6]
+    },
+    {
+      "path": ".scratch/app-skeleton/issues/03-smoke-over-http.md",
+      "legacyId": "03-smoke-over-http",
+      "title": "03: Проверить запуск приложения через настоящий HTTP",
+      "sourceSha256": "31485015738a620155b461156ce63df0a07101a26906b387a720fc902e7ec56c",
+      "characters": 11161,
+      "bytes": 15614,
+      "hasAnswer": true,
+      "hasComments": true,
+      "sourceUrl": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/issues/03-smoke-over-http.md",
+      "number": 8,
+      "databaseId": 6262764936,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/8",
+      "marker": "<!-- legacy-tracker-migration path=.scratch/app-skeleton/issues/03-smoke-over-http.md commit=6e03736e19494b99ca40a4e64e076145b37b7941 -->",
+      "publishedBodySha256": "322dcd67710c1ba67fe7c7510c1397311b39a5e7068d8dd63658aaab569e670d",
+      "parent": 5,
+      "blockedBy": [7]
+    },
+    {
+      "path": ".scratch/app-skeleton/issues/04-common-checks.md",
+      "legacyId": "04-common-checks",
+      "title": "04: Запускать проверки качества и smoke одной командой",
+      "sourceSha256": "132a5d9ea26f452e165950474a4a77e2f7c2ce5a5f80ecf89dbb25fee2aee00d",
+      "characters": 9272,
+      "bytes": 13547,
+      "hasAnswer": true,
+      "hasComments": true,
+      "sourceUrl": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/issues/04-common-checks.md",
+      "number": 9,
+      "databaseId": 6262781896,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/9",
+      "marker": "<!-- legacy-tracker-migration path=.scratch/app-skeleton/issues/04-common-checks.md commit=6e03736e19494b99ca40a4e64e076145b37b7941 -->",
+      "publishedBodySha256": "1e59e43335a02f463f63f6aedb7f2a6d0b6133d7d90323255b5b1a822fb54819",
+      "parent": 5,
+      "blockedBy": [8]
+    },
+    {
+      "path": ".scratch/app-skeleton/issues/05-hooks-and-onboarding.md",
+      "legacyId": "05-hooks-and-onboarding",
+      "title": "05: Подготовить новый клон, локальные хуки и инструкции",
+      "sourceSha256": "363704960c5eeaf6eb837f0913d4270ea7d57addfef720cf40602955d37ff995",
+      "characters": 11114,
+      "bytes": 16148,
+      "hasAnswer": true,
+      "hasComments": true,
+      "sourceUrl": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/issues/05-hooks-and-onboarding.md",
+      "number": 10,
+      "databaseId": 6262783033,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/10",
+      "marker": "<!-- legacy-tracker-migration path=.scratch/app-skeleton/issues/05-hooks-and-onboarding.md commit=6e03736e19494b99ca40a4e64e076145b37b7941 -->",
+      "publishedBodySha256": "b1ed170a0311ce8510662e559dbf49939230c2a7d37270df56b28e6a97857616",
+      "parent": 5,
+      "blockedBy": [9]
+    },
+    {
+      "path": ".scratch/app-skeleton/issues/06-github-actions.md",
+      "legacyId": "06-github-actions",
+      "title": "06: Запускать общий check в GitHub Actions на каждый push",
+      "sourceSha256": "e57486d49fbd12531de9f452b498ed4a466631fbe63bfc1481efb3aee0f501d4",
+      "characters": 14169,
+      "bytes": 20190,
+      "hasAnswer": true,
+      "hasComments": true,
+      "sourceUrl": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/issues/06-github-actions.md",
+      "number": 11,
+      "databaseId": 6262784179,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/11",
+      "marker": "<!-- legacy-tracker-migration path=.scratch/app-skeleton/issues/06-github-actions.md commit=6e03736e19494b99ca40a4e64e076145b37b7941 -->",
+      "publishedBodySha256": "d071c294fda3400e887924fe07a16e36166fe1833409b414a0b027cb805fc130",
+      "parent": 5,
+      "blockedBy": [10]
+    }
+  ],
+  "relativeLinks": [
+    {
+      "sourcePath": ".scratch/app-skeleton/spec.md",
+      "originalTarget": "../../docs/agents/development-workflow.md",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/docs/agents/development-workflow.md"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/spec.md",
+      "originalTarget": "issues/06-github-actions.md#answer",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/issues/06-github-actions.md#answer"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/spec.md",
+      "originalTarget": "issues/01-verify-toolchain.md#answer",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/issues/01-verify-toolchain.md#answer"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/spec.md",
+      "originalTarget": "issues/03-smoke-over-http.md#answer",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/issues/03-smoke-over-http.md#answer"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/spec.md",
+      "originalTarget": "issues/04-common-checks.md#answer",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/issues/04-common-checks.md#answer"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/spec.md",
+      "originalTarget": "issues/05-hooks-and-onboarding.md#answer",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/issues/05-hooks-and-onboarding.md#answer"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/spec.md",
+      "originalTarget": "../../.github/workflows/app-check.yml",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.github/workflows/app-check.yml"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/spec.md",
+      "originalTarget": "issues/06-github-actions.md#answer",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/issues/06-github-actions.md#answer"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/spec.md",
+      "originalTarget": "issues/01-verify-toolchain.md",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/issues/01-verify-toolchain.md"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/spec.md",
+      "originalTarget": "issues/02-run-application.md",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/issues/02-run-application.md"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/spec.md",
+      "originalTarget": "issues/03-smoke-over-http.md",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/issues/03-smoke-over-http.md"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/spec.md",
+      "originalTarget": "issues/04-common-checks.md",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/issues/04-common-checks.md"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/spec.md",
+      "originalTarget": "issues/05-hooks-and-onboarding.md",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/issues/05-hooks-and-onboarding.md"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/spec.md",
+      "originalTarget": "issues/06-github-actions.md",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/issues/06-github-actions.md"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/issues/01-verify-toolchain.md",
+      "originalTarget": "../spec.md#toolchain-and-compatibility",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/spec.md#toolchain-and-compatibility"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/issues/02-run-application.md",
+      "originalTarget": "../spec.md",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/spec.md"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/issues/02-run-application.md",
+      "originalTarget": "../../../docs/agents/development-workflow.md",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/docs/agents/development-workflow.md"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/issues/03-smoke-over-http.md",
+      "originalTarget": "../spec.md#testing-decisions",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/spec.md#testing-decisions"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/issues/03-smoke-over-http.md",
+      "originalTarget": "../../../docs/agents/development-workflow.md",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/docs/agents/development-workflow.md"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/issues/04-common-checks.md",
+      "originalTarget": "../spec.md#verification-commands",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/spec.md#verification-commands"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/issues/04-common-checks.md",
+      "originalTarget": "../../../docs/agents/development-workflow.md",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/docs/agents/development-workflow.md"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/issues/05-hooks-and-onboarding.md",
+      "originalTarget": "../spec.md#verification-commands",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/spec.md#verification-commands"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/issues/05-hooks-and-onboarding.md",
+      "originalTarget": "../../../docs/agents/development-workflow.md",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/docs/agents/development-workflow.md"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/issues/06-github-actions.md",
+      "originalTarget": "../spec.md#acceptance-criteria",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/spec.md#acceptance-criteria"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/issues/06-github-actions.md",
+      "originalTarget": "../../../docs/agents/development-workflow.md",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/docs/agents/development-workflow.md"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/issues/06-github-actions.md",
+      "originalTarget": "03-smoke-over-http.md#answer",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/issues/03-smoke-over-http.md#answer"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/issues/06-github-actions.md",
+      "originalTarget": "04-common-checks.md#answer",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/issues/04-common-checks.md#answer"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/issues/06-github-actions.md",
+      "originalTarget": "05-hooks-and-onboarding.md#answer",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/issues/05-hooks-and-onboarding.md#answer"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/issues/06-github-actions.md",
+      "originalTarget": "02-run-application.md#answer",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/issues/02-run-application.md#answer"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/issues/06-github-actions.md",
+      "originalTarget": "03-smoke-over-http.md#answer",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/issues/03-smoke-over-http.md#answer"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/issues/06-github-actions.md",
+      "originalTarget": "04-common-checks.md#answer",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/issues/04-common-checks.md#answer"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/issues/06-github-actions.md",
+      "originalTarget": "05-hooks-and-onboarding.md#answer",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/issues/05-hooks-and-onboarding.md#answer"
+    },
+    {
+      "sourcePath": ".scratch/app-skeleton/issues/06-github-actions.md",
+      "originalTarget": "01-verify-toolchain.md#answer",
+      "archiveTarget": "https://github.com/skaffman41/ai-for-developers-project-386/blob/6e03736e19494b99ca40a4e64e076145b37b7941/.scratch/app-skeleton/issues/01-verify-toolchain.md#answer"
+    }
+  ],
+  "verification": {
+    "sourceFiles": 7,
+    "exactBodies": 7,
+    "closedCompleted": 7,
+    "parentEdges": 6,
+    "blockingEdges": 5,
+    "uniqueMarkers": 7,
+    "createdThisPass": 0,
+    "verifyOnly": true,
+    "allIssuesReadWithPagination": true
+  }
+}

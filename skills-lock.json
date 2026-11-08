@@ -1,0 +1,283 @@
+{
+  "schemaVersion": 1,
+  "source": "https://github.com/mattpocock/skills",
+  "revision": "4ae2317ddb22b046e26455e4f9c9b3aaaf62212d",
+  "installer": "skills@1.7.6",
+  "verifiedOn": "2026-11-07",
+  "verification": {
+    "skillCount": 38,
+    "fileCount": 103,
+    "relativeFileSetsIdentical": true,
+    "fileBytesIdentical": true,
+    "gitTreeHashesIdentical": true
+  },
+  "folderHashAlgorithm": "Sort relative POSIX file paths lexicographically. Concatenate UTF-8(path) + one NUL byte + raw 32-byte SHA-256(file) for every file, with no separators beyond the NUL before each digest. SHA-256 the concatenation.",
+  "skills": [
+    {
+      "name": "ask-matt",
+      "path": "skills/engineering/ask-matt",
+      "gitTreeSha1": "d6a0d9bf3cdc78cbfcbd6466ac5fd3deffb52877",
+      "fileCount": 3,
+      "folderSha256": "3e106f7d925f59b112975fb4fb96bf790d68a358b1d5a0bf6cb5f4d35035f14a"
+    },
+    {
+      "name": "chief-of-staff",
+      "path": "skills/in-progress/chief-of-staff",
+      "gitTreeSha1": "58e0a4122260ba45c150d8201dad2d6de4153d18",
+      "fileCount": 2,
+      "folderSha256": "271621e6d1a6ef924197f5567578d6e7d82cafd2186801578f16c83c19ebca4d"
+    },
+    {
+      "name": "claude-handoff",
+      "path": "skills/in-progress/claude-handoff",
+      "gitTreeSha1": "57d198aca08eddccb113632d52c6c13f1f3066ac",
+      "fileCount": 2,
+      "folderSha256": "42cf7672f9355a3ac6570060eb6ae9ea39bfab721239329d00fad47586cb182f"
+    },
+    {
+      "name": "code-review",
+      "path": "skills/engineering/code-review",
+      "gitTreeSha1": "a8ef561571acbb611de8ff19ba6da75b197c63a8",
+      "fileCount": 2,
+      "folderSha256": "e14d83d727f514a484858272f5a45d83d42ba7f84c078758a0341ffe6e8832e5"
+    },
+    {
+      "name": "codebase-design",
+      "path": "skills/engineering/codebase-design",
+      "gitTreeSha1": "4cbe1c131e1ea54109cb1e4e5f3c505810db6606",
+      "fileCount": 4,
+      "folderSha256": "0eece2d6148eede9eebea3989944ea6215b809204352ca82a3a83203b79b78b4"
+    },
+    {
+      "name": "diagnosing-bugs",
+      "path": "skills/engineering/diagnosing-bugs",
+      "gitTreeSha1": "5fdd6cc53385395441910b026c72d71768e993d4",
+      "fileCount": 3,
+      "folderSha256": "eb364bd413d5b65ec3360466dfc8fe36a2f6c6de6a2c84a3b39bbf60fdbc120d"
+    },
+    {
+      "name": "domain-modeling",
+      "path": "skills/engineering/domain-modeling",
+      "gitTreeSha1": "ea30ee454ba264543dbe40737973b1a5afb9f0e6",
+      "fileCount": 4,
+      "folderSha256": "ab7acbca5aaf6e976caef1ccd1c14bac9459702f5b8e9d6d96e5a8ca8e3c7ee9"
+    },
+    {
+      "name": "git-guardrails-claude-code",
+      "path": "skills/misc/git-guardrails-claude-code",
+      "gitTreeSha1": "ceed97af09633b300826d0ca0b1464c527ec9a35",
+      "fileCount": 3,
+      "folderSha256": "3d64b385e6b4a21db29d74eda5f63a9a36fa05637e23e6b3fdf08f0b6fec19bf"
+    },
+    {
+      "name": "grill-me",
+      "path": "skills/productivity/grill-me",
+      "gitTreeSha1": "3df14e2d3a89459bf300614be9247e3ce74798f8",
+      "fileCount": 2,
+      "folderSha256": "eb2880386e9259f4ca51167f518c81cea969850d8f45bd8f79f579dcbbad902e"
+    },
+    {
+      "name": "grill-with-docs",
+      "path": "skills/engineering/grill-with-docs",
+      "gitTreeSha1": "eedaf2562c83155115e9c649fa3ecaac2e10e81d",
+      "fileCount": 2,
+      "folderSha256": "8973c3d9463fc9dd708adc36a0f97b01aab4ae7d6a0217c2aa0f0a7ef206b83c"
+    },
+    {
+      "name": "grilling",
+      "path": "skills/productivity/grilling",
+      "gitTreeSha1": "f551b6e0d219fdda0b6abf277f8f915b3127d1e9",
+      "fileCount": 2,
+      "folderSha256": "e0e4918ef2675bf3bc0e48fa83c40446cd961c107afdf435cbc2daa774cb0efe"
+    },
+    {
+      "name": "handoff",
+      "path": "skills/productivity/handoff",
+      "gitTreeSha1": "ce24892bd2d4b9e7fd5ac9b95c03175e18bef388",
+      "fileCount": 2,
+      "folderSha256": "9f7eab21188d0c5d95a1a123d8b4dc8337774cf880166ade009622d766102f16"
+    },
+    {
+      "name": "implement",
+      "path": "skills/engineering/implement",
+      "gitTreeSha1": "4804b466ab26c9b9d8d42917547db133d1f20a9f",
+      "fileCount": 2,
+      "folderSha256": "3465060b2e4776f9e791293720a66869f265c83f9a5323e3ab0115f0558cc65b"
+    },
+    {
+      "name": "implement-spec",
+      "path": "skills/engineering/implement-spec",
+      "gitTreeSha1": "407c196f5c88af53c71efc8f31ee37c02dbb12e7",
+      "fileCount": 2,
+      "folderSha256": "7c98ad26442cd37d6e79bc6f27d7c64355b09cf7d6d4eeae75803ea544278409"
+    },
+    {
+      "name": "improve-codebase-architecture",
+      "path": "skills/engineering/improve-codebase-architecture",
+      "gitTreeSha1": "587147dd230da299cc5e84971cb0a33f6676f8a6",
+      "fileCount": 3,
+      "folderSha256": "3c72a8a3852beda9b28b6a14ce665506ea57a59a76568cf826873ec17d798c5a"
+    },
+    {
+      "name": "loop-me",
+      "path": "skills/in-progress/loop-me",
+      "gitTreeSha1": "a0dfdc3562686d920900973b50289b36e2f7eafe",
+      "fileCount": 2,
+      "folderSha256": "496c9cfea8f61163b57f1ef0dd086dbe2b948e8b37f563f223b47e1cef7586ad"
+    },
+    {
+      "name": "migrate-to-shoehorn",
+      "path": "skills/misc/migrate-to-shoehorn",
+      "gitTreeSha1": "0aea91a3599a4bf7aeec17e3262d4cbcfcbeec23",
+      "fileCount": 2,
+      "folderSha256": "d63414eee9e6993c7200061c0c6be414c3dd1e9784b48c17268a0895b2d94f1e"
+    },
+    {
+      "name": "pr",
+      "path": "skills/engineering/pr",
+      "gitTreeSha1": "00b896d811adffad747c7ca30078d909d60c7f93",
+      "fileCount": 3,
+      "folderSha256": "0022b89898e391536aedbd29aaef805cf352675eec4b15a453889bd1d4f1b6da"
+    },
+    {
+      "name": "prototype",
+      "path": "skills/engineering/prototype",
+      "gitTreeSha1": "e41d92e171f074a2b6887d8f6faca4a15c83d1ca",
+      "fileCount": 4,
+      "folderSha256": "6890ef757ada4b0b571e74c28b69fda697ba2e18f564860f4c9373cbbe50535c"
+    },
+    {
+      "name": "research",
+      "path": "skills/engineering/research",
+      "gitTreeSha1": "2f8f36af48796faed5c687c75bb650071631a984",
+      "fileCount": 2,
+      "folderSha256": "4a52e8e17a984526a0f3f25bc138097b4ca8b5f15e35b7c318fa024c6b04e0fd"
+    },
+    {
+      "name": "retro",
+      "path": "skills/engineering/retro",
+      "gitTreeSha1": "335c1862a43da9d629abafdb79ca0c0de118be08",
+      "fileCount": 2,
+      "folderSha256": "4d42bb16dc68325fe941153ff3341f8be8f770121479bc41921d477d27a45ad5"
+    },
+    {
+      "name": "scaffold-exercises",
+      "path": "skills/misc/scaffold-exercises",
+      "gitTreeSha1": "44a0ee332b9d67ebbd59389c7eb4e5aff1ce845c",
+      "fileCount": 2,
+      "folderSha256": "dd0b7adbf3cab45d2c006fd0df6395815085be2d7bebcc21ff0e98db5f6b65d6"
+    },
+    {
+      "name": "setup-matt-pocock-skills",
+      "path": "skills/engineering/setup-matt-pocock-skills",
+      "gitTreeSha1": "b644b684781fd5baae57f6be000a180a4d4448d7",
+      "fileCount": 7,
+      "folderSha256": "fb96a61c2698a9f4299778861547b92f11719d033d1cd5dea7e95a98fe8e438a"
+    },
+    {
+      "name": "setup-pre-commit",
+      "path": "skills/misc/setup-pre-commit",
+      "gitTreeSha1": "5b63f9f665bacc9be04cae51982e9ef1469d6699",
+      "fileCount": 2,
+      "folderSha256": "7e42b0f88ae3bc481387c62a5c776f28d6dc1386213d221b09a7308d8eb6d4a7"
+    },
+    {
+      "name": "setup-ts-deep-modules",
+      "path": "skills/in-progress/setup-ts-deep-modules",
+      "gitTreeSha1": "b32508a8a7d62c07d32d7c5cff84d357719def7f",
+      "fileCount": 3,
+      "folderSha256": "5e27ee34500d9c24481995de199ff915172ec4e351ede51d2804725ff8caef80"
+    },
+    {
+      "name": "tdd",
+      "path": "skills/engineering/tdd",
+      "gitTreeSha1": "667dbdd00c09d0e2189e082986e6a4d61a67c2a6",
+      "fileCount": 4,
+      "folderSha256": "cb510a538834fd446bae7cff1e6e46c4b625524d162bfc56c6d64486115a48e3"
+    },
+    {
+      "name": "teach",
+      "path": "skills/productivity/teach",
+      "gitTreeSha1": "3fd617b610e59acbb99644de1ef37e394ff53cd1",
+      "fileCount": 6,
+      "folderSha256": "56a1e0d5e948c084dd35f95c77052cc211b369eaa8ed608b6053d2320d6cb267"
+    },
+    {
+      "name": "to-questionnaire",
+      "path": "skills/productivity/to-questionnaire",
+      "gitTreeSha1": "46dfbeeba12a9e52eef446676f42e7551023d9a9",
+      "fileCount": 2,
+      "folderSha256": "4d9f78683ed92ad0dfdbd1ac5275160fb6820325b2d073d4ede297895bd8992a"
+    },
+    {
+      "name": "to-spec",
+      "path": "skills/engineering/to-spec",
+      "gitTreeSha1": "136b9651747cfccbfbb7c50a6b0dfb757e7547d2",
+      "fileCount": 2,
+      "folderSha256": "7c0ac5892441627cbe76e8587d47cbe3adedc61f779df5c9f82d473588503330"
+    },
+    {
+      "name": "to-tickets",
+      "path": "skills/engineering/to-tickets",
+      "gitTreeSha1": "2dee20ad722a31c04ededf9f2d83842473573045",
+      "fileCount": 2,
+      "folderSha256": "7e0aa33c2d0ccd99d92a7b45405243f7a948425e161723d4535f178ee0af3d59"
+    },
+    {
+      "name": "triage",
+      "path": "skills/engineering/triage",
+      "gitTreeSha1": "4cb951d62ecccaed601cdc5f9a1b7b3d8a799635",
+      "fileCount": 4,
+      "folderSha256": "cc3930f2f501738b67c5d3397518d537ffaf252c679bded57b090f2d31de0a22"
+    },
+    {
+      "name": "wait-what",
+      "path": "skills/productivity/wait-what",
+      "gitTreeSha1": "c8b050e6b8c711be1a9008ceacb2126914f0763e",
+      "fileCount": 2,
+      "folderSha256": "4644efd6cbbd41d190d8a73a55c48d2367ae11a5cce1cf622db7b3437d7641a3"
+    },
+    {
+      "name": "wayfinder",
+      "path": "skills/engineering/wayfinder",
+      "gitTreeSha1": "25da74eadc3e388b2f2a2cc716f3d44b2fb9dfe0",
+      "fileCount": 2,
+      "folderSha256": "92acbe1ee44d0ecd91e8ff08d09d8d78dabf8f2d5fa56ef3d977db1cb2a5457a"
+    },
+    {
+      "name": "wizard",
+      "path": "skills/engineering/wizard",
+      "gitTreeSha1": "e396d3ba97c723a78ffd350fb14a3c409137b306",
+      "fileCount": 3,
+      "folderSha256": "ff7fcce1f6b40c003397dae39e184b77d70e12f90bc61091d0d73e5c2196ed30"
+    },
+    {
+      "name": "writing-beats",
+      "path": "skills/in-progress/writing-beats",
+      "gitTreeSha1": "3a28fb076fdaaec0927080718abb98fc0f340011",
+      "fileCount": 2,
+      "folderSha256": "cb14faf616976da2f26c8076a81d94f405e33da658a0c4147101b2180db41a23"
+    },
+    {
+      "name": "writing-for-agents",
+      "path": "skills/productivity/writing-for-agents",
+      "gitTreeSha1": "ad2925850efb8973a72d2e666f7a975f9a2d4a9b",
+      "fileCount": 3,
+      "folderSha256": "dfc57c19e0f7a7e9c371966d765700d74ecae7694377c095095ee94f6fd216b3"
+    },
+    {
+      "name": "writing-fragments",
+      "path": "skills/in-progress/writing-fragments",
+      "gitTreeSha1": "98e500e0097ec80f52f6a024c5a2ff6d15235bdb",
+      "fileCount": 2,
+      "folderSha256": "9ba909999a7abf74b080d4231f61a20fb62d4488f820ae41597b31d610335cf7"
+    },
+    {
+      "name": "writing-shape",
+      "path": "skills/in-progress/writing-shape",
+      "gitTreeSha1": "ac92229646fccf7315ae139c37b479b3790617f2",
+      "fileCount": 2,
+      "folderSha256": "8d29be8485435eb3968e893a4a15d8979fe2a2d6d2f4b7571044707ace6676db"
+    }
+  ]
+}

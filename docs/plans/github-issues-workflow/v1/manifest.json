@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "repository": "skaffman41/ai-for-developers-project-386",
+  "version": "v1",
+  "approval": "User approved eight workflow decisions and full execution in this conversation on 2026-11-07.",
+  "baseCommit": "6e03736e19494b99ca40a4e64e076145b37b7941",
+  "records": [
+    {
+      "file": "spec.md",
+      "number": 1,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/1",
+      "snapshotSha256": "ab4080f7850f92084bf1491b5887b5aeac9b585a834ff647ffb77275c6c72773",
+      "publishedBodySha256": "91a9feedb3aaefdfbfc0bb744eb072fca774998e0c5a5bbdfcc935c94974b2cd",
+      "blockedBy": []
+    },
+    {
+      "file": "01-agent-environment.md",
+      "number": 2,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/2",
+      "snapshotSha256": "2312e020a446a94f8b45490ba4d68a51c48056c4ec603a5f05acb607747aabfa",
+      "publishedBodySha256": "671a8cab34398507c0087ffb1e48775ffe31e8e8b602f5ca82787dc4f00a94fb",
+      "blockedBy": []
+    },
+    {
+      "file": "02-migrate-tracker.md",
+      "number": 3,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/3",
+      "snapshotSha256": "5e7681206a3af86f48c9aec3e83d9a4a7a86e3b713cfe31ddd185d5f7cbff574",
+      "publishedBodySha256": "37b7bd9838b0d741ac720bfd9e1a56f84b21aac0fa9d19e05afc71ada6277a0a",
+      "blockedBy": [2]
+    },
+    {
+      "file": "03-verify-workflow.md",
+      "number": 4,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/4",
+      "snapshotSha256": "1be4dd63355bf8f12244881ead781dee65b9537e1ba80f916b2e6c4aadff7542",
+      "publishedBodySha256": "30deeb585a23a28f8f4e4394010d94fe7b97b10cb61a6633d4068e0d5e86ab28",
+      "blockedBy": [3]
+    }
+  ]
+}
