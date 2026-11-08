@@ -32,6 +32,73 @@ mise exec -- gh repo view skaffman41/ai-for-developers-project-386 \
 пользовательском окружении GitHub CLI; секреты в репозиторий не добавляются.
 Эти проверки выполняются локально и не входят в `mise run check` или CI приложения.
 
+### Git HTTPS и credential helper
+
+Успешный запрос `gh` подтверждает доступ к API, но Git использует собственную цепочку
+credential helpers. Для HTTPS remote подключи существующую авторизацию gh к текущему
+клону. Сначала прочитай конфигурацию, чтобы сохранить назначение существующих helpers:
+
+```sh
+git remote get-url origin
+git config --show-origin --get-all credential.helper
+git config --show-origin --get-all credential.https://github.com.helper
+```
+
+Отсутствующий ключ `git config --get-all` возвращает код 1; это ожидаемый результат.
+Для выбранного gh-helper настрой только текущий клон:
+
+```sh
+git config --local --replace-all credential.https://github.com.helper ''
+git config --local --add credential.https://github.com.helper \
+  '!mise exec -- gh auth git-credential'
+```
+
+Пустое первое значение сбрасывает унаследованную цепочку для GitHub, второе обращается
+к авторизации gh в системном хранилище. Секрет в Git config не записывается. Если Git
+запускается из GUI без mise в `PATH`, используй в helper абсолютный путь из
+`command -v mise`. Настройка хранится в `.git/config`, используется worktree этого
+клона и выполняется заново для нового клона. Глобальный `gh auth setup-git` нужен
+только при намеренной настройке всех репозиториев пользователя.
+
+Справка: [Git credential helpers](https://git-scm.com/docs/gitcredentials),
+[gh auth setup-git](https://cli.github.com/manual/gh_auth_setup-git).
+
+### Перед разрешённой публикацией
+
+1. Проверь `origin`, активный аккаунт gh и права целевого репозитория командами выше.
+   Для push нужны права записи; авторизация для чтения Issues сама по себе их не доказывает.
+2. Получи актуальную базу и проверь, меняет ли публикуемый diff workflow:
+
+   ```sh
+   git fetch origin main
+   git diff --name-only origin/main...HEAD -- .github/workflows/
+   ```
+
+   Если OAuth-токен из `gh auth login` используется для изменения workflow, в
+   `gh auth status` должен быть scope `workflow`. При его отсутствии расширь права
+   через стандартное подтверждение в браузере:
+
+   ```sh
+   mise exec -- gh auth refresh --hostname github.com --scopes workflow
+   ```
+
+   Уже подтверждённые права повторно не запрашивай. Токен в чат, remote URL или файл
+   проекта передавать не нужно. Для другого типа авторизации проверь разрешения
+   на изменение workflow по его контракту, а не по списку OAuth scopes.
+
+3. Проверь Git-авторизацию без публикации:
+
+   ```sh
+   GIT_TERMINAL_PROMPT=0 git push --dry-run origin HEAD
+   ```
+
+   Dry-run проверяет соединение и доступ Git, но сервер может проверять отдельные
+   политики только при реальном обновлении ветки. После успеха выполняй уже разрешённый
+   push. Ошибки сети обрабатывай по [tool-recovery.md](tool-recovery.md); параметры
+   конкретного прокси и машины сохраняй в пользовательских настройках.
+
+`gh auth refresh` описан в [официальной справке](https://cli.github.com/manual/gh_auth_refresh).
+
 ## Глобальные Matt Pocock Skills
 
 [skills-lock.json](../../skills-lock.json) фиксирует 38 скиллов из
