@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "repository": "skaffman41/ai-for-developers-project-386",
+  "feature": "homepage-booking-entry",
+  "version": "v1",
+  "approved": true,
+  "approval": "2026-11-08: пользователь подтвердил итог grill-with-docs и Testing Decisions, включая новые тесты Playwright; после to-tickets 13 согласовал два среза и зависимость 14 -> 15 сообщением «Согласовываю».",
+  "baseCommit": "e31042d7a725890976c578dc76837dde53b0e882",
+  "records": [
+    {
+      "file": "spec.md",
+      "number": 13,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/13",
+      "title": "Этап 4. Главная страница и переход к записи",
+      "parent": null,
+      "snapshotSha256": "5928fefa66c8ae8c872b821373bc61dcaae73f3b1c6cb3cbe46577748db245a9",
+      "publishedBodySha256": "5928fefa66c8ae8c872b821373bc61dcaae73f3b1c6cb3cbe46577748db245a9",
+      "blockedBy": []
+    },
+    {
+      "file": "14-guest-booking-entry.md",
+      "number": 14,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/14",
+      "title": "Открыть главную и перейти к записи с браузерной проверкой",
+      "parent": 13,
+      "snapshotSha256": "f922b6f0da330b04550995aa09ac2fe90c2905ebe32bdac79154fd8cedd5ebd6",
+      "publishedBodySha256": "f922b6f0da330b04550995aa09ac2fe90c2905ebe32bdac79154fd8cedd5ebd6",
+      "blockedBy": []
+    },
+    {
+      "file": "15-mobile-keyboard-booking-entry.md",
+      "number": 15,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/15",
+      "title": "Пройти путь гостя на телефоне и с клавиатуры",
+      "parent": 13,
+      "snapshotSha256": "9506dd8422ce6a5ab58541884e2b5249a549e8bd6be29a3910309f8c94200c7c",
+      "publishedBodySha256": "9506dd8422ce6a5ab58541884e2b5249a549e8bd6be29a3910309f8c94200c7c",
+      "blockedBy": [14]
+    }
+  ]
+}

@@ -18,4 +18,6 @@ jobs:
 
       - run: mise exec -- npm ci
 
+      - run: mise run browser:install -- --with-deps
+
       - run: mise run check

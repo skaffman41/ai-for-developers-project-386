@@ -63,9 +63,19 @@ description = "Build both applications and run the HTTP smoke once"
 depends = ["build"]
 run = "npm test"
 
+[tasks."browser:install"]
+description = "Install the pinned Playwright Chromium; pass --with-deps on Linux"
+depends = ["env:check"]
+run = "npm run browser:install --"
+
+[tasks."test:browser"]
+description = "Build and check the guest journey in Chromium against frontend preview"
+depends = ["build"]
+run = "npm run test:browser --"
+
 [tasks.check]
-description = "Check versions, lint, formatting, types, build, HTTP smoke and hk config"
-depends = ["env:check", "lint", "format:check", "typecheck", "test"]
+description = "Check versions, lint, formatting, types, build, HTTP smoke, browser and hk config"
+depends = ["env:check", "lint", "format:check", "typecheck", "test", "test:browser"]
 run = "hk validate"
 
 [tasks."start:backend"]
