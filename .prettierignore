@@ -3,6 +3,8 @@
 **/dist/
 **/coverage/
 **/*.tsbuildinfo
+test-results/
+playwright-report/
 package-lock.json
 mise.lock
 

@@ -17,10 +17,13 @@
     "format:check": "prettier --check .",
     "format": "prettier --write .",
     "test": "vitest run",
+    "test:browser": "playwright test",
+    "browser:install": "playwright install chromium",
     "typecheck": "npm run typecheck --workspaces && tsc --project tsconfig.tools.json"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
+    "@playwright/test": "1.65.0",
     "@types/node": "24.19.2",
     "eslint": "10.14.0",
     "eslint-config-prettier": "10.1.8",
