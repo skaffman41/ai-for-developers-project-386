@@ -8,11 +8,13 @@ export default defineConfig({
   workers: 1,
   timeout: 15_000,
   globalTimeout: 120_000,
+  reporter: [["list"], ["html", { open: "never" }]],
   use: {
     baseURL,
     browserName: "chromium",
     viewport: { width: 1440, height: 1000 },
     trace: "retain-on-failure",
+    screenshot: "only-on-failure",
   },
   webServer: {
     command:
