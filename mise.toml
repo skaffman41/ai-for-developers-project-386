@@ -53,6 +53,16 @@ description = "Check formatting without changing files"
 depends = ["env:check"]
 run = "npm run format:check"
 
+[tasks."release:check"]
+description = "Validate release configuration with the pinned release-please schemas"
+depends = ["env:check"]
+run = "npm run release:check"
+
+[tasks."release:dry-run"]
+description = "Plan a release against controlled GitHub history without publication"
+depends = ["release:check"]
+run = "npm run release:dry-run"
+
 [tasks.format]
 description = "Format files except generated output, lockfiles and the Hexlet workflow"
 depends = ["env:check"]
@@ -75,7 +85,7 @@ run = "npm run test:browser --"
 
 [tasks.check]
 description = "Check versions, lint, formatting, types, build, HTTP smoke, browser and hk config"
-depends = ["env:check", "lint", "format:check", "typecheck", "test", "test:browser"]
+depends = ["env:check", "lint", "format:check", "typecheck", "test", "test:browser", "release:check"]
 run = "hk validate"
 
 [tasks."start:backend"]

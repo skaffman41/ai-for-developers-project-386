@@ -1,0 +1,58 @@
+name: release-please
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-please-main
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      actions: write
+    steps:
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0; release-please 17.6.0
+        id: release
+        with:
+          token: ${{ github.token }}
+          target-branch: main
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+      - name: Check the current Release PR
+        if: steps.release.outputs.prs_created == 'true'
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          RELEASE_PRS: ${{ steps.release.outputs.prs }}
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            for (const candidate of JSON.parse(process.env.RELEASE_PRS)) {
+              const { data: pr } = await github.rest.pulls.get({
+                ...context.repo,
+                pull_number: candidate.number,
+              });
+              if (pr.state !== 'open' || pr.base.ref !== 'main' ||
+                  pr.head.ref !== 'release-please--branches--main' ||
+                  pr.head.repo.full_name !== `${context.repo.owner}/${context.repo.repo}`) {
+                throw new Error(`Unexpected Release PR #${candidate.number}`);
+              }
+              await github.rest.actions.createWorkflowDispatch({
+                ...context.repo,
+                workflow_id: 'app-check.yml',
+                ref: pr.head.ref,
+                inputs: { expected_sha: pr.head.sha, release_pr: String(candidate.number) },
+              });
+              core.info(`Dispatched app-check for Release PR #${candidate.number} at ${pr.head.sha}`);
+            }

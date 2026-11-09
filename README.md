@@ -165,6 +165,12 @@ trace можно открыть через `mise exec -- npx playwright show-tra
 `setup` и `hooks:install` в CI не требуются. Этот порядок следует
 [рекомендациям Playwright для CI](https://playwright.dev/docs/ci).
 
+## Выпуск приложения
+
+Настройка выпуска одной версии приложения, проверка release-конфигурации и ручной
+merge Release PR описаны в [инструкции выпуска](docs/releasing.md). Первый выпуск —
+`0.1.0`; публикация настроек и фактический выпуск требуют отдельных команд.
+
 ## Локальные хуки
 
 После `setup` каждый pre-commit вызывает общие `mise run lint` и `mise run format:check`
