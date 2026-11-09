@@ -1,3 +1,5 @@
+import { MeetingTypes } from "./MeetingTypes.tsx";
+
 function CalendarMark() {
   return (
     <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
@@ -106,10 +108,7 @@ function BookingPage() {
     <main className="booking-main">
       <h1>Запись на встречу</h1>
       <div className="booking-card">
-        <div className="booking-mark">
-          <CalendarMark />
-        </div>
-        <p className="booking-message">Онлайн-запись скоро появится</p>
+        <MeetingTypes />
         <a className="home-link" href="/">
           <span aria-hidden="true">←</span> На главную
         </a>

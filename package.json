@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "workspaces": [
+    "contract",
     "frontend",
     "backend"
   ],
@@ -21,10 +22,13 @@
     "browser:install": "playwright install chromium",
     "release:check": "node scripts/check-release.mjs",
     "release:dry-run": "vitest run tests/release.test.ts tests/release-workflow.test.ts",
-    "typecheck": "npm run typecheck --workspaces && tsc --project tsconfig.tools.json"
+    "typecheck": "npm run build --workspace @call-calendar/contract && npm run typecheck --workspaces && tsc --project tsconfig.tools.json",
+    "api:generate": "node scripts/api.mjs",
+    "api:check": "node scripts/api.mjs --check"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
+    "@hey-api/openapi-ts": "0.99.0",
     "@playwright/test": "1.65.0",
     "@types/node": "24.19.2",
     "ajv": "8.20.0",

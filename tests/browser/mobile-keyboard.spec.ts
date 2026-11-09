@@ -1,4 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, test } from "../support/browser.ts";
 
 test("гость проходит путь записи на экране шириной 320 px", async ({
   page,
@@ -46,7 +47,9 @@ test("гость проходит путь записи на экране шир
     page.getByRole("heading", { name: "Запись на встречу", level: 1 }),
   ).toBeVisible();
   await expect(
-    page.getByText("Онлайн-запись скоро появится", { exact: true }),
+    page.getByText("Типов встреч пока нет. Обновите список позже.", {
+      exact: true,
+    }),
   ).toBeVisible();
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth),

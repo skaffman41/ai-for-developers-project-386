@@ -23,16 +23,35 @@ description = "Install hk hooks for this clone through mise"
 depends = ["env:check"]
 run = "hk install --mise"
 
+[tasks."api:generate"]
+description = "Regenerate API models, schemas, SDK, server types, registry and documentation"
+depends = ["env:check"]
+run = "npm run api:generate"
+
+[tasks."api:check"]
+description = "Validate OpenAPI and compare all generated API artifacts"
+depends = ["env:check"]
+run = "npm run api:check"
+
+[tasks."build:contract"]
+depends = ["env:check"]
+run = "npm run build --workspace @call-calendar/contract"
+
+[tasks."db:prepare"]
+description = "Explicitly prepare an empty SQLite file at DATABASE_PATH"
+depends = ["env:check"]
+run = "node backend/src/prepare.ts"
+
 [tasks.dev]
 description = "Run both applications; stop both on failure or Ctrl+C"
 depends = ["dev:frontend", "dev:backend"]
 
 [tasks."dev:frontend"]
-depends = ["env:check"]
+depends = ["build:contract"]
 run = "npm run dev --workspace frontend --"
 
 [tasks."dev:backend"]
-depends = ["env:check"]
+depends = ["build:contract"]
 run = "npm run dev --workspace backend"
 
 [tasks.build]
@@ -79,13 +98,13 @@ depends = ["env:check"]
 run = "npm run browser:install --"
 
 [tasks."test:browser"]
-description = "Build and check the guest journey in Chromium against frontend preview"
+description = "Build and check the guest journey in Chromium against frontend preview and isolated real backend"
 depends = ["build"]
 run = "npm run test:browser --"
 
 [tasks.check]
 description = "Check versions, lint, formatting, types, build, HTTP smoke, browser and hk config"
-depends = ["env:check", "lint", "format:check", "typecheck", "test", "test:browser", "release:check"]
+depends = ["env:check", "lint", "format:check", "typecheck", "test", "test:browser", "release:check", "api:check"]
 run = "hk validate"
 
 [tasks."start:backend"]

@@ -35,7 +35,8 @@ a {
   color: inherit;
 }
 
-a:focus-visible {
+a:focus-visible,
+button:focus-visible {
   outline: 3px solid #a0472e;
   outline-offset: 5px;
 }
@@ -375,4 +376,66 @@ h3 {
   .site-footer {
     gap: 8px;
   }
+}
+
+button {
+  font: inherit;
+}
+.meeting-types {
+  text-align: left;
+}
+.meeting-types h2 {
+  font-size: 30px;
+}
+.types-announcement {
+  color: #6b685f;
+  margin: 16px 0 24px;
+}
+.type-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px;
+  display: grid;
+  gap: 16px;
+}
+.type-card {
+  border: 1px solid #e3dfd5;
+  border-radius: 10px;
+  padding: 22px;
+  background: #f8f6f0;
+  overflow-wrap: anywhere;
+}
+.type-card h3 {
+  margin: 8px 0;
+  font-size: 20px;
+}
+.type-code {
+  color: #92513b;
+  font-size: 12px;
+}
+.type-duration {
+  color: #92513b;
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+.type-description {
+  white-space: pre-wrap;
+  margin: 0;
+  color: #6b685f;
+}
+.reload-button {
+  border: 1px solid #ac5238;
+  border-radius: 6px;
+  background: #ac5238;
+  color: #fffdf9;
+  padding: 10px 16px;
+  cursor: pointer;
+  margin: 0 0 28px;
+}
+.reload-button:hover:not(:disabled) {
+  background: #92432d;
+}
+.reload-button:disabled {
+  opacity: 0.65;
+  cursor: wait;
 }

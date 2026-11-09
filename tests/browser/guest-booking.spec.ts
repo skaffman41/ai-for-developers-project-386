@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../support/browser.ts";
 
 test("гость узнаёт, как записаться на встречу без регистрации", async ({
   page,
@@ -44,7 +44,9 @@ test("гость переходит к записи и возвращается 
     page.getByRole("heading", { name: "Запись на встречу", level: 1 }),
   ).toBeVisible();
   await expect(
-    page.getByText("Онлайн-запись скоро появится", { exact: true }),
+    page.getByText("Типов встреч пока нет. Обновите список позже.", {
+      exact: true,
+    }),
   ).toBeVisible();
   const homeLink = page.getByRole("link", { name: "На главную", exact: true });
   await expect(homeLink).toHaveAttribute("href", "/");
@@ -73,6 +75,8 @@ test("гость переходит к записи и возвращается 
     page.getByRole("heading", { name: "Запись на встречу", level: 1 }),
   ).toBeVisible();
   await expect(
-    page.getByText("Онлайн-запись скоро появится", { exact: true }),
+    page.getByText("Типов встреч пока нет. Обновите список позже.", {
+      exact: true,
+    }),
   ).toBeVisible();
 });
