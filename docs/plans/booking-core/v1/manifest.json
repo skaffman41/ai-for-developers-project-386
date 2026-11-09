@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "repository": "skaffman41/ai-for-developers-project-386",
+  "feature": "booking-core",
+  "version": "v1",
+  "approved": true,
+  "approval": "2026-11-09: пользователь принял спецификацию ответом «Принимаю»; после to-tickets согласовал полные черновики семи задач, зависимости, первый работающий срез через всю контрактную цепочку, проверки и предложенную схему release-please ответом «Согласовываем».",
+  "baseCommit": "7f7f0ef7ac747d7eee6c4e751711188e7aace4f9",
+  "records": [
+    {
+      "file": "spec.md",
+      "number": 37,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/37",
+      "title": "Основная запись на встречу: типы, бронирование и раздел владельца календаря",
+      "parent": null,
+      "snapshotSha256": "c3de51d0fbb2f371e6c1ab934340f291b6bf15faae0417af3654afdddc15ef21",
+      "publishedBodySha256": "c3de51d0fbb2f371e6c1ab934340f291b6bf15faae0417af3654afdddc15ef21",
+      "blockedBy": []
+    },
+    {
+      "file": "38-types-through-contract.md",
+      "number": 38,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/38",
+      "title": "Показать гостю типы встреч через общий контракт",
+      "parent": 37,
+      "snapshotSha256": "082c11e336f122237eb0a9ea63fcb6f2d1014cb728688bc8d9c818aa14a154f3",
+      "publishedBodySha256": "082c11e336f122237eb0a9ea63fcb6f2d1014cb728688bc8d9c818aa14a154f3",
+      "blockedBy": [],
+      "acceptanceCriteria": ["AC3", "AC8", "AC9", "AC10", "AC11"],
+      "testingDecisions": ["T1", "T2", "T6", "T7", "T8"]
+    },
+    {
+      "file": "39-create-event-type.md",
+      "number": 39,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/39",
+      "title": "Создать тип встречи и показать его гостю",
+      "parent": 37,
+      "snapshotSha256": "e972ae0c2558083d8599d449d4fc7bb61285b059fbb920a1fdb2ac2c96b25f7d",
+      "publishedBodySha256": "e972ae0c2558083d8599d449d4fc7bb61285b059fbb920a1fdb2ac2c96b25f7d",
+      "blockedBy": [38],
+      "acceptanceCriteria": [
+        "AC1",
+        "AC3",
+        "AC5",
+        "AC6",
+        "AC7",
+        "AC8",
+        "AC9",
+        "AC10",
+        "AC11"
+      ],
+      "testingDecisions": ["T2", "T4", "T5", "T6", "T7", "T8"]
+    },
+    {
+      "file": "40-choose-availability.md",
+      "number": 40,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/40",
+      "title": "Выбрать московскую дату и свободный слот",
+      "parent": 37,
+      "snapshotSha256": "8dec63db081a5edff0b45705b4117ea265bc4d12232248345c8071cfa9e18dfe",
+      "publishedBodySha256": "8dec63db081a5edff0b45705b4117ea265bc4d12232248345c8071cfa9e18dfe",
+      "blockedBy": [38],
+      "acceptanceCriteria": ["AC2", "AC8", "AC9", "AC10", "AC11"],
+      "testingDecisions": ["T2", "T3", "T5", "T6", "T7", "T8"]
+    },
+    {
+      "file": "41-confirm-booking.md",
+      "number": 41,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/41",
+      "title": "Подтвердить бронирование с безопасным повтором",
+      "parent": 37,
+      "snapshotSha256": "74599294bbad132dbb08fb38fbbaf5394fa301bd0904fc0884f59a7a0ec1b290",
+      "publishedBodySha256": "74599294bbad132dbb08fb38fbbaf5394fa301bd0904fc0884f59a7a0ec1b290",
+      "blockedBy": [39, 40],
+      "acceptanceCriteria": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7",
+        "AC8",
+        "AC9",
+        "AC10",
+        "AC11"
+      ],
+      "testingDecisions": ["T2", "T3", "T4", "T5", "T6", "T7", "T8"]
+    },
+    {
+      "file": "42-owner-bookings.md",
+      "number": 42,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/42",
+      "title": "Показать владельцу бронирования и обновление списков",
+      "parent": 37,
+      "snapshotSha256": "30e3f5f8a8d7497e5066bbe577ae5a7d81d592983be008172eef60a0610c1908",
+      "publishedBodySha256": "30e3f5f8a8d7497e5066bbe577ae5a7d81d592983be008172eef60a0610c1908",
+      "blockedBy": [39, 40],
+      "acceptanceCriteria": ["AC1", "AC3", "AC8", "AC10", "AC11"],
+      "testingDecisions": ["T2", "T3", "T5", "T7", "T8"]
+    },
+    {
+      "file": "43-release-please.md",
+      "number": 43,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/43",
+      "title": "Настроить release-please и проверки Release PR",
+      "parent": 37,
+      "snapshotSha256": "fc7e9ca7edc0354ffb794d66240b32cc9077ba83b9a498d2baaf52cf1d1a91f3",
+      "publishedBodySha256": "fc7e9ca7edc0354ffb794d66240b32cc9077ba83b9a498d2baaf52cf1d1a91f3",
+      "blockedBy": [],
+      "acceptanceCriteria": [],
+      "testingDecisions": []
+    },
+    {
+      "file": "44-end-to-end-acceptance.md",
+      "number": 44,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/44",
+      "title": "Завершить сквозную приёмку и документацию",
+      "parent": 37,
+      "snapshotSha256": "a9570717ceba2d0d0df643736cbbd80c62f75cd9caf59c3a4b11a9a3b2616712",
+      "publishedBodySha256": "a9570717ceba2d0d0df643736cbbd80c62f75cd9caf59c3a4b11a9a3b2616712",
+      "blockedBy": [41, 42, 43],
+      "acceptanceCriteria": ["AC1", "AC11", "AC12"],
+      "testingDecisions": ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8"]
+    }
+  ],
+  "addenda": [
+    {
+      "file": "scope-addendum.md",
+      "kind": "approved-scope-supplement",
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/43#issuecomment-6741116134",
+      "issueNumber": 43,
+      "snapshotSha256": "deba3a4ea92d22c86b7b016aa4ef8ad7d8c80e9ab932f220aaa8c4ab3e94955c",
+      "publishedBodySha256": "deba3a4ea92d22c86b7b016aa4ef8ad7d8c80e9ab932f220aaa8c4ab3e94955c",
+      "precedence": "Явный текущий запрос пользователя добавляет release-please к охвату исходной спецификации; дополнение согласовано вместе с графом. Тело родительского Issue сохранено без изменений."
+    }
+  ],
+  "ticketOrder": [38, 39, 40, 41, 42, 43, 44],
+  "frontierAtPlanning": [38, 43],
+  "parentBodyPreserved": true
+}
