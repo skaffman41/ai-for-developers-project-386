@@ -489,8 +489,9 @@
   </head>
   <body>
     <!-- Three throwaway UI variants of the owner section, switchable with ?variant=A/B/C.
-         Proposed product route /owner is a question, not an implemented route.
-         In-memory stub only. No product code, real mutations or persistence. -->
+         Selected: variant A and product route /owner. The real route is not implemented.
+         In-memory stub; sessionStorage retains only an unresolved creation.
+         No product code or real mutations. -->
     <div class="shell">
       <header>
         <a class="brand" href="?page=home" data-page="home"
@@ -506,9 +507,10 @@
       <details class="lab" id="lab">
         <summary>Черновой прототип · сценарии и состояние</summary>
         <p>
-          Обсуждаем состав и поведение раздела. Предлагаемый адрес: /owner.
-          Демо-часы: 9 ноября 2026, 10:15, Europe/Moscow. Данные вымышлены,
-          изменения живут до обновления страницы.
+          Выбран вариант A, адрес /owner. Демо-часы: 9 ноября 2026, 10:15,
+          Europe/Moscow. Данные вымышлены. Незавершённое создание
+          восстанавливается в той же вкладке; остальные изменения живут в
+          памяти.
         </p>
         <div class="row" id="scenarios" aria-label="Демонстрационные сценарии">
           <button data-scenario="normal">Пример с записями</button>
@@ -519,6 +521,12 @@
           <button data-scenario="bookings-error">Ошибка бронирований</button>
           <button data-scenario="refresh-error">Ошибка обновления</button>
           <button data-scenario="save-error">Отказ создания</button>
+          <button data-scenario="lost-saved">
+            Ответ потерян после создания
+          </button>
+          <button data-scenario="lost-unsaved">
+            Ответ потерян до создания
+          </button>
           <button data-scenario="long">
             Длинные поля и одинаковые названия
           </button>
@@ -601,6 +609,9 @@
       ];
       let state;
       let timer;
+      let saveTimer;
+      const refreshTimers = {};
+      const pendingStorage = "owner-calendar.prototype.pending";
       let opener;
       const date = (value) => new Date(value);
       const formatDate = (value) =>
@@ -628,8 +639,11 @@
               "'": "&#39;",
             })[char],
         );
-      function reset() {
+      function reset(clearPending = true) {
         clearTimeout(timer);
+        clearTimeout(saveTimer);
+        Object.values(refreshTimers).forEach(clearTimeout);
+        if (clearPending) sessionStorage.removeItem(pendingStorage);
         if (dialog.open) dialog.close();
         state = {
           types: structuredClone(baseTypes),
@@ -639,10 +653,13 @@
           day: "2026-11-09",
           typesStatus: "ready",
           bookingsStatus: "ready",
-          refreshing: false,
-          updated: "10:15",
-          refreshError: false,
+          refreshing: { types: false, bookings: false },
+          updated: { types: "10:15", bookings: "10:15" },
+          refreshError: { types: false, bookings: false },
           saving: false,
+          unknownSave: false,
+          loseResponse: null,
+          creation: null,
           failSave: false,
           draft: { name: "", duration: "30", description: "" },
           errors: {},
@@ -708,13 +725,16 @@
           return `<div class="empty"><h3>Не удалось загрузить ${resource === "types" ? "типы встреч" : "бронирования"}</h3><p>Попробуйте ещё раз.</p><button data-retry="${resource}">Повторить загрузку</button></div>`;
         return "";
       }
+      function refreshMeta(resource) {
+        return `<div class="meta" role="status">${state.refreshing[resource] ? "Обновляем… Предыдущие данные остаются на экране." : `Обновлено в ${state.updated[resource]}`} · Europe/Moscow</div>${state.refreshError[resource] ? '<p class="notice error" role="alert">Не удалось обновить. Показаны прежние данные. Нажмите «Обновить» ещё раз.</p>' : ""}`;
+      }
       function bookings(grouped = false, byDay = false) {
         if (state.bookingsStatus !== "ready") return loadState("bookings");
         let items = visibleBookings();
         const beforeDay = items.length;
         if (byDay)
           items = items.filter((item) => item.start.startsWith(state.day));
-        const refresh = `<div class="meta">${state.refreshing ? "Обновляем… Предыдущие данные остаются на экране." : `Обновлено в ${state.updated}`} · Europe/Moscow</div>${state.refreshError ? '<p class="notice error" role="alert">Не удалось обновить. Показаны прежние данные. Нажмите «Обновить» ещё раз.</p>' : ""}`;
+        const refresh = refreshMeta("bookings");
         if (!items.length)
           return (
             refresh +
@@ -735,8 +755,11 @@
       function types() {
         if (state.typesStatus !== "ready") return loadState("types");
         if (!state.types.length)
-          return '<div class="empty"><h3>Создайте первый тип встречи</h3><p>Название и длительность помогут гостям выбрать подходящий формат.</p></div>';
-        return `<ul class="types">${[...state.types]
+          return (
+            refreshMeta("types") +
+            '<div class="empty"><h3>Создайте первый тип встречи</h3><p>Название и длительность помогут гостям выбрать подходящий формат.</p></div>'
+          );
+        return `${refreshMeta("types")}<ul class="types">${[...state.types]
           .reverse()
           .map(
             (type) =>
@@ -748,14 +771,14 @@
         const field = (key, title, control, hint) =>
           `<div class="field"><label for="field-${key}">${title}</label>${control}<small id="hint-${key}">${hint}</small>${state.errors[key] ? `<p class="error" id="error-${key}">${state.errors[key]}</p>` : ""}</div>`;
         const attrs = (key) =>
-          `id="field-${key}" name="${key}" aria-describedby="hint-${key}${state.errors[key] ? ` error-${key}` : ""}" ${state.errors[key] ? 'aria-invalid="true"' : ""} ${state.saving ? "disabled" : ""}`;
-        return `<form id="create-form" novalidate><h2 ${inDialog ? 'id="dialog-title"' : ""}>Новый тип встречи</h2><div class="form-grid">${field("name", "Название *", `<input ${attrs("name")} value="${escape(state.draft.name)}" required autocomplete="off" />`, "От 1 до 100 символов, одна строка.")}${field("duration", "Длительность, мин *", `<input ${attrs("duration")} value="${escape(state.draft.duration)}" type="number" min="1" max="540" step="1" required />`, "Целое число от 1 до 540.")}</div>${field("description", "Описание", `<textarea ${attrs("description")}>${escape(state.draft.description)}</textarea>`, "Необязательно, до 2000 символов.")}<p class="muted"><small>После создания изменить или удалить тип встречи пока нельзя.</small></p>${state.errors.save ? `<p class="notice error" role="alert">${state.errors.save}</p>` : ""}<div class="row"><button class="primary" type="submit" ${state.saving ? "disabled" : ""}>${state.saving ? "Создаём…" : "Создать тип встречи"}</button>${inDialog ? `<button type="button" data-close ${state.saving ? "disabled" : ""}>Вернуться к списку</button>` : ""}</div></form>`;
+          `id="field-${key}" name="${key}" aria-describedby="hint-${key}${state.errors[key] ? ` error-${key}` : ""}" ${state.errors[key] ? 'aria-invalid="true"' : ""} ${state.saving || state.unknownSave ? "disabled" : ""}`;
+        return `<form id="create-form" novalidate><h2 ${inDialog ? 'id="dialog-title"' : ""}>Новый тип встречи</h2><div class="form-grid">${field("name", "Название *", `<input ${attrs("name")} value="${escape(state.draft.name)}" required autocomplete="off" />`, "От 1 до 100 символов, одна строка.")}${field("duration", "Длительность, мин *", `<input ${attrs("duration")} value="${escape(state.draft.duration)}" type="number" min="1" max="540" step="1" required />`, "Целое число от 1 до 540.")}</div>${field("description", "Описание", `<textarea ${attrs("description")}>${escape(state.draft.description)}</textarea>`, "Необязательно, до 2000 символов.")}<p class="muted"><small>После создания изменить или удалить тип встречи пока нельзя.</small></p>${state.errors.save ? `<p class="notice error" role="alert">${state.errors.save}</p>` : ""}${state.unknownSave ? '<div class="notice error" role="alert" id="creation-result" tabindex="-1"><strong>Не удалось узнать результат создания типа</strong><p>Повторите ту же отправку, чтобы узнать результат. Второй тип не появится. До ответа отправленные поля нельзя изменить.</p></div>' : ""}<div class="row"><button class="primary" type="submit" ${state.saving ? "disabled" : ""}>${state.saving ? "Создаём…" : state.unknownSave ? "Повторить создание" : "Создать тип встречи"}</button>${inDialog ? `<button type="button" data-close ${state.saving ? "disabled" : ""}>Вернуться к списку</button>` : ""}</div></form>`;
       }
-      function refreshButton() {
-        return `<button data-refresh ${state.refreshing || state.bookingsStatus === "loading" ? "disabled" : ""}>${state.refreshing ? "Обновляем…" : "Обновить"}</button>`;
+      function refreshButton(resource = "bookings") {
+        return `<button data-refresh="${resource}" ${state.refreshing[resource] || state[`${resource}Status`] === "loading" ? "disabled" : ""}>${state.refreshing[resource] ? "Обновляем…" : "Обновить"}</button>`;
       }
       function variantA() {
-        return `<div class="tabs" aria-label="Разделы владельца"><button data-tab="bookings" aria-pressed="${state.tab === "bookings"}">Бронирования</button><button data-tab="types" aria-pressed="${state.tab === "types"}">Типы встреч (${state.typesStatus === "ready" ? state.types.length : "…"})</button></div>${state.tab === "bookings" ? `<section class="paper"><div class="section-top"><h2>Бронирования</h2>${refreshButton()}</div>${filters()}${bookings()}</section>` : `<div class="split"><section class="paper"><h2>Типы встреч</h2>${types()}</section><section class="paper">${form()}</section></div>`}`;
+        return `<div class="tabs" aria-label="Разделы владельца"><button data-tab="bookings" aria-pressed="${state.tab === "bookings"}">Бронирования</button><button data-tab="types" aria-pressed="${state.tab === "types"}">Типы встреч (${state.typesStatus === "ready" ? state.types.length : "…"})</button></div>${state.tab === "bookings" ? `<section class="paper"><div class="section-top"><h2>Бронирования</h2>${refreshButton()}</div>${filters()}${bookings()}</section>` : `<div class="split"><section class="paper"><div class="section-top"><h2>Типы встреч</h2>${refreshButton("types")}</div>${types()}</section><section class="paper">${form()}</section></div>`}`;
       }
       function variantB() {
         const days = [
@@ -765,10 +788,10 @@
           ["2026-11-12", "Чт", "12"],
           ["2026-11-13", "Пт", "13"],
         ];
-        return `<div class="split"><section class="paper compact"><div class="section-top"><h2>Расписание</h2>${refreshButton()}</div>${filters()}<div class="rail" aria-label="День расписания">${days.map(([key, title, number]) => `<button data-day="${key}" aria-pressed="${state.day === key}"><span>${title}</span>${number}</button>`).join("")}</div><label for="schedule-date">Дата</label><input id="schedule-date" type="date" value="${state.day}" /><p class="meta">Список владельца не ограничен горизонтом записи гостя.</p>${bookings(false, true)}</section><aside class="stack compact"><section class="paper"><h2>Типы встреч</h2>${types()}</section><section class="paper">${form()}</section></aside></div>`;
+        return `<div class="split"><section class="paper compact"><div class="section-top"><h2>Расписание</h2>${refreshButton()}</div>${filters()}<div class="rail" aria-label="День расписания">${days.map(([key, title, number]) => `<button data-day="${key}" aria-pressed="${state.day === key}"><span>${title}</span>${number}</button>`).join("")}</div><label for="schedule-date">Дата</label><input id="schedule-date" type="date" value="${state.day}" /><p class="meta">Список владельца не ограничен горизонтом записи гостя.</p>${bookings(false, true)}</section><aside class="stack compact"><section class="paper"><div class="section-top"><h2>Типы встреч</h2>${refreshButton("types")}</div>${types()}</section><section class="paper">${form()}</section></aside></div>`;
       }
       function variantC() {
-        return `<div class="overview"><aside><button data-tab="bookings" aria-pressed="${state.tab === "bookings"}">Журнал встреч</button><button data-tab="types" aria-pressed="${state.tab === "types"}">Типы встреч</button><button class="primary" data-create>+ Новый тип</button></aside><section class="paper">${state.tab === "bookings" ? `<div class="section-top"><h2>Журнал встреч</h2>${refreshButton()}</div>${filters()}${bookings(true)}` : `<h2>Типы встреч</h2>${types()}`}</section></div>`;
+        return `<div class="overview"><aside><button data-tab="bookings" aria-pressed="${state.tab === "bookings"}">Журнал встреч</button><button data-tab="types" aria-pressed="${state.tab === "types"}">Типы встреч</button><button class="primary" data-create>+ Новый тип</button></aside><section class="paper">${state.tab === "bookings" ? `<div class="section-top"><h2>Журнал встреч</h2>${refreshButton()}</div>${filters()}${bookings(true)}` : `<div class="section-top"><h2>Типы встреч</h2>${refreshButton("types")}</div>${types()}`}</section></div>`;
       }
       function render(focusId) {
         const content =
@@ -813,8 +836,8 @@
       function retry(resource) {
         state[`${resource}Status`] = "loading";
         render();
-        clearTimeout(timer);
-        timer = setTimeout(() => {
+        clearTimeout(refreshTimers[resource]);
+        refreshTimers[resource] = setTimeout(() => {
           state[`${resource}Status`] = "ready";
           render();
         }, 550);
@@ -845,14 +868,15 @@
         if (target.hasAttribute("data-close")) dialog.close();
         if (target.dataset.retry) retry(target.dataset.retry);
         if (target.hasAttribute("data-refresh")) {
-          state.refreshing = true;
-          state.refreshError = false;
+          const resource = target.dataset.refresh;
+          state.refreshing[resource] = true;
+          state.refreshError[resource] = false;
           render();
-          clearTimeout(timer);
-          timer = setTimeout(() => {
-            state.refreshing = false;
-            state.bookingsStatus = "ready";
-            state.updated = "10:16";
+          clearTimeout(refreshTimers[resource]);
+          refreshTimers[resource] = setTimeout(() => {
+            state.refreshing[resource] = false;
+            state[`${resource}Status`] = "ready";
+            state.updated[resource] = "10:16";
             render();
           }, 650);
         }
@@ -873,6 +897,10 @@
         if (event.target.id !== "create-form") return;
         event.preventDefault();
         if (state.saving) return;
+        if (state.unknownSave) {
+          sendCreation();
+          return;
+        }
         const values = Object.fromEntries(new FormData(event.target));
         state.draft = values;
         const name = values.name.trim();
@@ -896,29 +924,58 @@
           render(`field-${Object.keys(state.errors)[0]}`);
           return;
         }
+        state.creation = {
+          payload: { name, duration, description },
+          record: null,
+        };
+        sendCreation();
+      });
+      function persistCreation() {
+        // Only the unresolved demo attempt is retained, not a product database.
+        sessionStorage.setItem(pendingStorage, JSON.stringify(state));
+      }
+      function sendCreation() {
         state.saving = true;
+        state.unknownSave = false;
+        persistCreation();
         render();
-        clearTimeout(timer);
-        timer = setTimeout(() => {
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(() => {
           state.saving = false;
           if (state.failSave) {
             state.failSave = false;
+            state.creation = null;
+            sessionStorage.removeItem(pendingStorage);
             state.errors.save =
               "Тип встречи не создан. Введённые данные сохранены — попробуйте ещё раз.";
             render("field-name");
             return;
           }
-          const id = String(state.types.length + 1).padStart(2, "0");
-          state.types.push({ id, name, duration, description });
+          if (state.loseResponse !== "unsaved" && !state.creation.record) {
+            const id = String(state.types.length + 1).padStart(2, "0");
+            state.creation.record = { id, ...state.creation.payload };
+            state.types.push(state.creation.record);
+          }
+          if (state.loseResponse) {
+            state.loseResponse = null;
+            state.unknownSave = true;
+            state.tab = "types";
+            persistCreation();
+            render("creation-result");
+            return;
+          }
+          const { name, duration } = state.creation.record;
           state.typesStatus = "ready";
           state.draft = { name: "", duration: "30", description: "" };
           state.message = `Тип встречи «${name}» создан · ${duration} мин. Он появился на странице записи.`;
+          state.creation = null;
+          sessionStorage.removeItem(pendingStorage);
           state.errors = {};
           state.tab = "types";
           if (dialog.open) dialog.close();
           render("page-title");
         }, 650);
-      });
+      }
       dialog.addEventListener("cancel", (event) => {
         if (state.saving) event.preventDefault();
       });
@@ -962,7 +1019,11 @@
             "refresh-error":
               "Демо: не удалось обновить — прежние записи помечены как старые.",
             "save-error":
-              "Демо: следующая отправка гарантированно не создаст тип; повтор успешен. Потеря ответа не моделируется.",
+              "Демо: следующая отправка гарантированно не создаст тип; повтор успешен.",
+            "lost-saved":
+              "Демо: тип сохранён, ответ потерян. Повтор вернёт тот же тип. Можно обновить эту вкладку и повторить после восстановления.",
+            "lost-unsaved":
+              "Демо: первая отправка не сохранила тип, ответ потерян. Повтор той же отправки создаст один тип.",
             long: "Демо: полные длинные поля и два разных типа с одинаковым названием.",
           };
           if (scenario === "first") {
@@ -982,11 +1043,16 @@
           if (scenario === "types-error") state.typesStatus = "error";
           if (scenario === "bookings-error") state.bookingsStatus = "error";
           if (scenario === "refresh-error") {
-            state.refreshError = true;
-            state.updated = "10:05";
+            state.refreshError.bookings = true;
+            state.updated.bookings = "10:05";
           }
           if (scenario === "save-error") {
             state.failSave = true;
+            state.tab = "types";
+          }
+          if (scenario === "lost-saved" || scenario === "lost-unsaved") {
+            state.loseResponse =
+              scenario === "lost-saved" ? "saved" : "unsaved";
             state.tab = "types";
           }
           if (scenario === "long") {
@@ -1011,7 +1077,24 @@
       // Hide the variant bar in any accidental Vite production transform.
       if (import.meta.env?.PROD)
         document.querySelector("#switcher").hidden = true;
-      reset();
+      reset(false);
+      try {
+        const pending = JSON.parse(sessionStorage.getItem(pendingStorage));
+        if (pending?.creation) {
+          state = {
+            ...pending,
+            saving: false,
+            unknownSave: true,
+            tab: "types",
+            typesStatus: "ready",
+            bookingsStatus: "ready",
+            refreshing: { types: false, bookings: false },
+          };
+          page = "owner";
+        }
+      } catch {
+        // A damaged demo snapshot simply starts a fresh simulation.
+      }
       syncUrl();
       render();
     </script>
