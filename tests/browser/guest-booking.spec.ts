@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../support/browser.ts";
 
 test("гость узнаёт, как записаться на встречу без регистрации", async ({
   page,
@@ -17,7 +17,7 @@ test("гость узнаёт, как записаться на встречу �
   await expect(
     page.getByText("Без регистрации", { exact: true }),
   ).toBeVisible();
-  const steps = page.getByRole("list", { name: "Как будет устроена запись" });
+  const steps = page.getByRole("list", { name: "Как записаться на встречу" });
   await expect(steps.getByRole("listitem")).toHaveCount(3);
   await expect(steps.getByRole("listitem").nth(0)).toContainText(
     "Выберите тип встречи",
@@ -44,7 +44,9 @@ test("гость переходит к записи и возвращается 
     page.getByRole("heading", { name: "Запись на встречу", level: 1 }),
   ).toBeVisible();
   await expect(
-    page.getByText("Онлайн-запись скоро появится", { exact: true }),
+    page.getByText("Типов встреч пока нет. Обновите список позже.", {
+      exact: true,
+    }),
   ).toBeVisible();
   const homeLink = page.getByRole("link", { name: "На главную", exact: true });
   await expect(homeLink).toHaveAttribute("href", "/");
@@ -73,6 +75,8 @@ test("гость переходит к записи и возвращается 
     page.getByRole("heading", { name: "Запись на встречу", level: 1 }),
   ).toBeVisible();
   await expect(
-    page.getByText("Онлайн-запись скоро появится", { exact: true }),
+    page.getByText("Типов встреч пока нет. Обновите список позже.", {
+      exact: true,
+    }),
   ).toBeVisible();
 });

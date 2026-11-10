@@ -1,0 +1,133 @@
+.guest-booking {
+  text-align: left;
+}
+.booking-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 32px;
+  align-items: center;
+}
+.booking-steps button {
+  border: 0;
+  background: transparent;
+  color: #6b685f;
+  padding: 4px 0;
+  cursor: pointer;
+}
+.booking-steps button[aria-current] {
+  color: #a0472e;
+  border-bottom: 2px solid #a0472e;
+}
+.booking-steps span {
+  color: #777267;
+}
+.choice-button {
+  border: 1px solid #b2a99b;
+  border-radius: 7px;
+  background: #fdfcf8;
+  color: #302f2b;
+  padding: 10px 12px;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.choice-button[aria-pressed="true"] {
+  border-color: #ac5238;
+  background: #f4e2d8;
+  color: #783523;
+  box-shadow: inset 0 0 0 1px #ac5238;
+}
+.choice-button:hover:not(:disabled) {
+  border-color: #ac5238;
+}
+.choice-button:disabled,
+.booking-steps button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.type-card .choice-button {
+  margin-top: 18px;
+  text-align: left;
+}
+.date-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+.date-choice {
+  padding: 9px 2px;
+  font-size: 12px;
+}
+.date-choice span,
+.date-choice strong {
+  display: block;
+}
+.time-zone {
+  color: #92513b;
+}
+.slot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));
+  gap: 10px;
+}
+.slot-grid .choice-button {
+  padding-inline: 6px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.availability-message {
+  color: #6b685f;
+  margin: 20px 0;
+}
+.availability h2:focus {
+  outline: none;
+}
+.booking-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 28px 0;
+  align-items: center;
+}
+.booking-actions .reload-button {
+  margin: 0;
+}
+.selected-time {
+  padding: 16px;
+  background: #efebe1;
+  border-radius: 8px;
+}
+@media (max-width: 400px) {
+  .date-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.booking-summary {
+  padding: 18px;
+  margin-bottom: 24px;
+  background: #efebe1;
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+.booking-summary h3 {
+  margin-top: 0;
+}
+.booking-contacts h2:focus,
+.booking-confirmation h2:focus {
+  outline: none;
+}
+.booking-confirmation {
+  overflow-wrap: anywhere;
+}
+.booking-contacts dialog {
+  max-width: min(420px, calc(100vw - 48px));
+  box-sizing: border-box;
+  border: 1px solid #b2a99b;
+  border-radius: 12px;
+  padding: 24px;
+  background: #fdfcf8;
+  color: #302f2b;
+}
+.booking-contacts dialog::backdrop {
+  background: #302f2b80;
+}

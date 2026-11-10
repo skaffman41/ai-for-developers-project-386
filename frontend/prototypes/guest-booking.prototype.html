@@ -1,0 +1,1131 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Путь гостя — черновой прототип</title>
+    <style>
+      :root {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: #302f2b;
+        background: #f8f6f0;
+        line-height: 1.6;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-width: 320px;
+      }
+      .shell {
+        max-width: 1184px;
+        margin: auto;
+        padding: 0 24px 40px;
+      }
+      header {
+        padding: 24px 0;
+        border-bottom: 1px solid #e3dfd5;
+        display: flex;
+        gap: 16px;
+        justify-content: space-between;
+        flex-wrap: wrap;
+      }
+      .brand {
+        font-weight: 600;
+        font-size: 18px;
+      }
+      h1,
+      h2 {
+        font-family: Georgia, serif;
+        font-weight: 400;
+        line-height: 1.2;
+      }
+      h1 {
+        font-size: clamp(32px, 4vw, 48px);
+        margin: 12px 0 20px;
+      }
+      h2 {
+        font-size: 28px;
+        margin: 0 0 18px;
+      }
+      h3 {
+        font-size: 17px;
+        margin: 20px 0 10px;
+      }
+      p {
+        margin: 8px 0 16px;
+      }
+      .intro {
+        max-width: 880px;
+        padding: 24px 0 8px;
+      }
+      .muted,
+      small {
+        color: #6b685f;
+      }
+      small {
+        display: block;
+      }
+      .eyebrow {
+        color: #92513b;
+        font-size: 12px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+        gap: 24px;
+        align-items: start;
+      }
+      .paper {
+        padding: 28px;
+        background: #fdfcf8;
+        border: 1px solid #e3dfd5;
+        border-radius: 12px;
+        min-width: 0;
+      }
+      .lab {
+        padding: 22px;
+        background: #efebe1;
+        border-radius: 12px;
+        min-width: 0;
+      }
+      .lab h2 {
+        font-family: inherit;
+        font-size: 20px;
+        font-weight: 600;
+      }
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+        min-height: 44px;
+        border: 1px solid #bdb5a6;
+        border-radius: 7px;
+        padding: 9px 14px;
+        background: #fdfcf8;
+        color: #302f2b;
+        text-align: left;
+      }
+      button:hover:not(:disabled) {
+        border-color: #a0472e;
+      }
+      button:disabled {
+        cursor: default;
+        opacity: 0.55;
+      }
+      :focus-visible {
+        outline: 3px solid #a0472e;
+        outline-offset: 4px;
+      }
+      [tabindex="-1"]:focus {
+        outline: none;
+      }
+      .primary,
+      button[aria-pressed="true"] {
+        background: #ac5238;
+        border-color: #ac5238;
+        color: #fffdf9;
+      }
+      button.selected {
+        border: 2px solid #a0472e;
+        padding: 8px 13px;
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 22px;
+      }
+      .choices {
+        display: grid;
+        gap: 12px;
+      }
+      .type-choice {
+        width: 100%;
+      }
+      .type-choice strong,
+      .type-choice span {
+        display: block;
+      }
+      .type-choice span {
+        font-size: 14px;
+      }
+      .steps {
+        list-style: none;
+        display: flex;
+        gap: 8px;
+        margin: 0 0 28px;
+        padding: 0;
+        flex-wrap: wrap;
+      }
+      .steps button {
+        font-size: 13px;
+        padding: 8px 11px;
+      }
+      .steps [aria-current="step"] {
+        border-color: #a0472e;
+        background: #f3e6dd;
+      }
+      .dates {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 6px;
+      }
+      .dates button {
+        padding: 7px 2px;
+        text-align: center;
+      }
+      .dates button.selected {
+        padding: 6px 1px;
+      }
+      .dates small {
+        color: inherit;
+        font-size: 11px;
+      }
+      .slots {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(108px, 1fr));
+        gap: 8px;
+      }
+      .slots button {
+        text-align: center;
+        font-size: 14px;
+        padding: 8px;
+      }
+      .slots button.selected {
+        padding: 7px;
+      }
+      .summary {
+        border-left: 3px solid #ac5238;
+        padding-left: 14px;
+        margin: 18px 0 24px;
+        overflow-wrap: anywhere;
+      }
+      label {
+        display: block;
+        margin: 18px 0 5px;
+        font-weight: 500;
+      }
+      input,
+      select {
+        width: 100%;
+        min-height: 46px;
+        border: 1px solid #a8a092;
+        border-radius: 6px;
+        background: #fffefa;
+        color: #302f2b;
+        padding: 10px;
+        font-size: 16px;
+      }
+      input[aria-invalid="true"] {
+        border: 2px solid #a03123;
+      }
+      .error {
+        color: #a03123;
+        font-size: 14px;
+        margin: 6px 0;
+      }
+      .notice {
+        border-left: 3px solid #a0472e;
+        padding: 10px 14px;
+        background: #f3e6dd;
+        margin: 18px 0;
+      }
+      .success {
+        color: #356044;
+      }
+      dl {
+        margin: 0;
+        overflow-wrap: anywhere;
+      }
+      dt {
+        font-size: 12px;
+        color: #6b685f;
+        margin-top: 12px;
+      }
+      dd {
+        margin: 0;
+        font-size: 14px;
+      }
+      hr {
+        border: 0;
+        border-top: 1px solid #d8d0c2;
+        margin: 24px 0;
+      }
+      .tabs {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+      }
+      .tabs button {
+        font-size: 12px;
+        padding: 7px 9px;
+      }
+      .tabs [aria-selected="true"] {
+        background: #302f2b;
+        color: #fffdf9;
+      }
+      .lab .actions button {
+        font-size: 13px;
+      }
+      .lab p {
+        font-size: 14px;
+      }
+      .lab select {
+        font-size: 14px;
+      }
+      dialog {
+        max-width: min(440px, calc(100% - 32px));
+        border: 1px solid #bdb5a6;
+        border-radius: 12px;
+        padding: 28px;
+        background: #fdfcf8;
+        color: #302f2b;
+      }
+      dialog::backdrop {
+        background: #302f2b88;
+      }
+      footer {
+        margin-top: 28px;
+        border-top: 1px solid #e3dfd5;
+        padding-top: 18px;
+        font-size: 12px;
+        color: #6b685f;
+      }
+      @media (max-width: 850px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+        .shell {
+          padding: 0 16px 28px;
+        }
+      }
+      @media (max-width: 420px) {
+        .paper {
+          padding: 18px 14px;
+        }
+        .dates {
+          gap: 3px;
+        }
+        .steps {
+          gap: 5px;
+        }
+        .steps button {
+          padding: 7px;
+          font-size: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header>
+        <span class="brand">Календарь звонков</span
+        ><span class="muted">Запись без регистрации</span>
+      </header>
+      <div class="intro">
+        <span class="eyebrow">Черновой прототип · для обсуждения</span>
+        <h1>Путь гостя к встрече</h1>
+        <p>
+          Проверяем три шага записи, возврат с сохранением контактов и
+          понятность результата при сбоях. Всё здесь — демонстрация: настоящие
+          встречи не создаются. Визуальное направление взято с главной страницы.
+        </p>
+      </div>
+      <main class="layout">
+        <section class="paper" aria-label="Экран гостя">
+          <div id="guest"></div>
+        </section>
+        <aside class="lab" aria-label="Управление прототипом">
+          <h2>Проверка сценариев</h2>
+          <p>
+            Демо-время: <span id="demo-clock">9 ноября 2026, 10:10</span>,
+            Europe/Moscow. Рабочие дни 09:00–18:00; начала каждые 30 минут. Есть
+            общая занятость 12:00–13:00 и 15:00–15:45.
+          </p>
+          <h3>Текущее состояние</h3>
+          <dl id="state" aria-live="polite"></dl>
+          <hr />
+          <label for="outcome">Ответ при следующем подтверждении</label>
+          <select id="outcome">
+            <option value="success">Успех</option>
+            <option value="lost-saved">Ответ потерян, запись сохранена</option>
+            <option value="lost-unsaved">Ответ потерян, записи ещё нет</option>
+            <option value="conflict">Слот занял другой гость</option>
+            <option value="conflict-refresh-error">
+              Конфликт + не загрузились слоты
+            </option>
+            <option value="elapsed">Выбранное время уже прошло</option>
+            <option value="rejected">Отказ: запись точно не создана</option>
+          </select>
+          <div class="actions">
+            <button data-action="reload">Обновить эту вкладку</button>
+            <button data-action="reset">Начать демо заново</button>
+          </div>
+          <p class="muted">
+            Обновление восстанавливает отправленную попытку только в этой
+            вкладке. Контекст хранится локально для демонстрации; сохранность на
+            сервере здесь не проверяется.
+          </p>
+          <hr />
+          <h3>Пустые состояния и загрузка</h3>
+          <div class="actions">
+            <button data-action="empty-types">Нет типов встреч</button>
+            <button data-action="types-error">Ошибка списка типов</button>
+            <button data-action="types-loading">Загрузка типов</button>
+            <button data-action="empty-slots">Нет свободного времени</button>
+            <button data-action="slots-error">Ошибка загрузки слотов</button>
+          </div>
+          <hr />
+          <h3>Пошаговые примеры</h3>
+          <div
+            class="tabs"
+            role="tablist"
+            aria-label="Примеры"
+            id="scenario-tabs"
+          ></div>
+          <div
+            role="tabpanel"
+            id="scenario-panel"
+            aria-labelledby="scenario-happy"
+          >
+            <p id="scenario-description"></p>
+            <button id="scenario-next" class="primary"></button>
+          </div>
+        </aside>
+      </main>
+      <footer>
+        Предлагаемые детали интерфейса ещё не приняты. Правила доступности и
+        гарантии повторной попытки взяты из согласованных решений карты.
+      </footer>
+    </div>
+    <dialog
+      id="conflict"
+      aria-labelledby="conflict-title"
+      aria-describedby="conflict-description"
+    >
+      <h2 id="conflict-title">Слот уже занят</h2>
+      <p id="conflict-description">
+        Этот интервал успел забронировать другой гость. После закрытия обновим
+        свободное время. Имя и email сохранятся.
+      </p>
+      <button class="primary" id="dismiss-conflict">
+        Выбрать другое время
+      </button>
+    </dialog>
+    <script>
+      // Pure demo model. No server calls; no decisions about the production API.
+      const Model = (() => {
+        const types = [
+          {
+            id: "intro",
+            title: "Знакомство",
+            duration: 30,
+            description: "Короткая встреча, чтобы обсудить ваш вопрос.",
+          },
+          {
+            id: "talk",
+            title: "Подробный разговор",
+            duration: 45,
+            description: "Больше времени на детали и следующие шаги.",
+          },
+          {
+            id: "day",
+            title: "Рабочая сессия",
+            duration: 540,
+            description: "Весь рабочий день — 9 часов.",
+          },
+        ];
+        const initial = () => ({
+          step: 1,
+          type: "",
+          date: "2026-11-09",
+          slot: null,
+          name: "",
+          email: "",
+          errors: {},
+          typesStatus: "ready",
+          slotsStatus: "ready",
+          phase: "draft",
+          attempt: null,
+          saved: false,
+          busy: [],
+          blockedDay: "",
+          nowDate: "2026-11-09",
+          now: 610,
+          message: "",
+          loadFailure: false,
+        });
+        const selectedType = (s) => types.find((t) => t.id === s.type);
+        const time = (m) =>
+          `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+        const dates = (s) =>
+          Array.from({ length: 14 }, (_, i) => {
+            const date = new Date(`${s.nowDate}T12:00:00Z`);
+            date.setUTCDate(date.getUTCDate() + i);
+            return date.toISOString().slice(0, 10);
+          });
+        const weekday = (date) =>
+          new Date(`${date}T12:00:00+03:00`).getUTCDay();
+        const dateLabel = (date) =>
+          new Intl.DateTimeFormat("ru", {
+            day: "numeric",
+            month: "long",
+            weekday: "short",
+            timeZone: "Europe/Moscow",
+          }).format(new Date(`${date}T12:00:00+03:00`));
+        const slots = (s) => {
+          const type = selectedType(s);
+          if (
+            !type ||
+            [0, 6].includes(weekday(s.date)) ||
+            s.blockedDay === s.date
+          )
+            return [];
+          const occupied = [
+            [720, 780],
+            [900, 945],
+            ...s.busy
+              .filter((b) => b.date === s.date)
+              .map((b) => [b.start, b.end]),
+          ];
+          // A free future day lets the full-day type demonstrate a valid interval.
+          if (s.date === "2026-11-11") occupied.splice(0, 2);
+          return Array.from({ length: 18 }, (_, i) => 540 + i * 30).filter(
+            (start) =>
+              start + type.duration <= 1080 &&
+              (s.date > s.nowDate || (s.date === s.nowDate && start > s.now)) &&
+              !occupied.some(
+                ([a, b]) => start < b && start + type.duration > a,
+              ),
+          );
+        };
+        const locked = (s) =>
+          ["sending", "unknown", "confirmed", "conflict"].includes(s.phase);
+        const validate = (s) => {
+          const errors = {};
+          const name = s.name.trim(),
+            email = s.email.trim();
+          if (!name || [...name].length > 100 || /[\r\n]/.test(name))
+            errors.name =
+              "Введите имя от 1 до 100 символов, без переноса строки.";
+          if (
+            !email ||
+            [...email].length > 254 ||
+            !/^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$/.test(
+              email,
+            ) ||
+            /(^\.|\.\.|\.@)/.test(email)
+          )
+            errors.email =
+              "Введите email в формате name@example.com, до 254 символов.";
+          return errors;
+        };
+        const move = (s, a) => {
+          s = structuredClone(s);
+          if (a.kind === "reset") return initial();
+          if (a.kind === "recover") {
+            s = a.state;
+            if (s.phase === "sending") s.phase = "unknown";
+            return s;
+          }
+          if (a.kind === "resolve" && s.phase === "sending") {
+            if (a.outcome === "lost-saved" || a.outcome === "lost-unsaved") {
+              s.saved = a.outcome === "lost-saved";
+              s.phase = "unknown";
+            } else if (a.outcome === "success" || s.saved) {
+              s.saved = true;
+              s.phase = "confirmed";
+            } else if (a.outcome.startsWith("conflict")) {
+              s.busy.push({
+                date: s.attempt.date,
+                start: s.attempt.slot,
+                end: s.attempt.slot + s.attempt.duration,
+              });
+              s.phase = "conflict";
+              s.loadFailure = a.outcome === "conflict-refresh-error";
+            } else {
+              s.phase = "draft";
+              s.attempt = null;
+              s.message =
+                a.outcome === "elapsed"
+                  ? "Выбранное время уже прошло. Выберите другое время; контакты сохранены."
+                  : "Бронирование не создано. Можно исправить данные и подтвердить заново.";
+              if (a.outcome === "elapsed") {
+                s.nowDate = s.date;
+                s.now = s.slot;
+                s.step = 2;
+                s.slot = null;
+                s.slotsStatus = "loading";
+              }
+            }
+            return s;
+          }
+          if (a.kind === "retry" && s.phase === "unknown") {
+            s.phase = "sending";
+            return s;
+          }
+          if (a.kind === "dismiss" && s.phase === "conflict") {
+            s.phase = "draft";
+            s.attempt = null;
+            s.slot = null;
+            s.step = 2;
+            s.slotsStatus = "loading";
+            s.message = "Прежний слот больше не выбран. Контакты сохранены.";
+            return s;
+          }
+          if (locked(s)) return s;
+          switch (a.kind) {
+            case "type":
+              if (s.type !== a.value) {
+                s.type = a.value;
+                s.slot = null;
+              }
+              break;
+            case "date":
+              s.date = a.value;
+              s.slot = null;
+              s.slotsStatus = "loading";
+              s.message = "";
+              break;
+            case "slot":
+              s.slot = a.value;
+              break;
+            case "field":
+              s[a.field] = a.value;
+              delete s.errors[a.field];
+              break;
+            case "step":
+              if (
+                a.value === 1 ||
+                (a.value === 2 && s.type) ||
+                (a.value === 3 && s.slot !== null && s.slotsStatus === "ready")
+              ) {
+                s.step = a.value;
+                s.errors = {};
+                if (a.value === 2) s.slotsStatus = "loading";
+              }
+              break;
+            case "types":
+              s.step = 1;
+              s.typesStatus = a.value;
+              s.type = "";
+              s.slot = null;
+              break;
+            case "slots":
+              s.step = 2;
+              s.type ||= "intro";
+              s.slot = null;
+              s.slotsStatus = a.value;
+              s.blockedDay = a.empty ? s.date : "";
+              break;
+            case "loaded":
+              s.slotsStatus = a.failed ? "error" : "ready";
+              s.loadFailure = false;
+              break;
+            case "types-ready":
+              s.typesStatus = "ready";
+              break;
+            case "submit": {
+              s.errors = validate(s);
+              if (Object.keys(s.errors).length) break;
+              if (s.slot === null || s.slotsStatus !== "ready") {
+                s.step = 2;
+                break;
+              }
+              s.name = s.name.trim();
+              s.email = s.email
+                .trim()
+                .replace(/@(.+)$/, (_, domain) => "@" + domain.toLowerCase());
+              s.phase = "sending";
+              s.attempt = {
+                type: s.type,
+                title: selectedType(s).title,
+                duration: selectedType(s).duration,
+                date: s.date,
+                slot: s.slot,
+                name: s.name,
+                email: s.email,
+              };
+              s.message = "";
+              break;
+            }
+          }
+          return s;
+        };
+        return {
+          initial,
+          move,
+          selectedType,
+          types,
+          time,
+          dates,
+          dateLabel,
+          weekday,
+          slots,
+          locked,
+        };
+      })();
+    </script>
+    <script>
+      const guest = document.querySelector("#guest"),
+        statePanel = document.querySelector("#state"),
+        dialog = document.querySelector("#conflict"),
+        outcome = document.querySelector("#outcome");
+      const storageKey = "throwaway-guest-booking-29-v1";
+      let state = Model.initial(),
+        generation = 0,
+        activeScenario = "happy",
+        scenarioStep = 0;
+      const escape = (v) =>
+        String(v ?? "").replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+      const button = (text, action, attrs = "") =>
+        `<button data-action="${action}" ${attrs}>${text}</button>`;
+      const summary = () => {
+        const t = state.attempt || Model.selectedType(state);
+        if (!t) return "";
+        return `<div class="summary"><strong>${escape(t.title)} · ${t.duration} мин</strong>${state.slot !== null ? `<br>${Model.dateLabel(state.date)}, ${Model.time(state.slot)}–${Model.time(state.slot + t.duration)}` : ""}<br><span class="muted">Москва · Europe/Moscow</span></div>`;
+      };
+      function remember() {
+        try {
+          if (state.attempt)
+            sessionStorage.setItem(storageKey, JSON.stringify(state));
+          else sessionStorage.removeItem(storageKey);
+        } catch {
+          /* file:// can restrict storage; demo remains usable. */
+        }
+      }
+      try {
+        const saved = JSON.parse(sessionStorage.getItem(storageKey));
+        if (saved?.attempt)
+          state = Model.move(state, { kind: "recover", state: saved });
+      } catch {
+        /* Start afresh if unavailable. */
+      }
+      function render(focus = false) {
+        const activeAction = document.activeElement?.dataset.action;
+        const locked = Model.locked(state);
+        const names = ["Тип встречи", "Дата и время", "Контакты"];
+        let html = `<ol class="steps" aria-label="Шаги записи">${names.map((name, i) => `<li>${button(`${i + 1}. ${name}`, `step-${i + 1}`, `${i + 1 === state.step ? 'aria-current="step"' : ""} ${locked || (i === 1 && !state.type) || (i === 2 && (state.slot === null || state.slotsStatus !== "ready")) ? "disabled" : ""}`)}</li>`).join("")}</ol>`;
+        if (state.phase === "confirmed") {
+          html += `<h2 id="screen-title" tabindex="-1" class="success">Встреча забронирована</h2><p>Запись подтверждена и сохранена.</p>${summary()}<p>${escape(state.name)}<br>${escape(state.email)}</p><p class="muted">Письмо не отправляется. Сохраните детали встречи с этого экрана.</p>`;
+        } else if (["sending", "unknown", "conflict"].includes(state.phase)) {
+          html += `<h2 id="screen-title" tabindex="-1">${state.phase === "sending" ? "Подтверждаем встречу…" : state.phase === "unknown" ? "Не удалось узнать результат бронирования" : "Слот уже занят"}</h2>${summary()}<p>${escape(state.name)}<br>${escape(state.email)}</p>`;
+          if (state.phase === "sending")
+            html += `<p role="status">Дождитесь результата. Повторное нажатие не создаёт новую запись.</p><button class="primary" disabled>Подтверждаем…</button>`;
+          if (state.phase === "unknown")
+            html += `<p class="notice" role="status">Запись могла сохраниться. Повторим подтверждение с теми же данными. До выяснения результата изменить их или выбрать другое время нельзя.</p>${button("Повторить подтверждение", "retry", 'class="primary"')}`;
+        } else if (state.step === 1) {
+          html +=
+            '<h2 id="screen-title" tabindex="-1">Выберите тип встречи</h2>';
+          if (state.typesStatus === "loading")
+            html += '<p role="status">Загружаем типы встреч…</p>';
+          else if (state.typesStatus === "empty")
+            html += `<p>Пока нет типов встреч для записи. Попробуйте зайти позже.</p>${button("Обновить список", "reload-types")}`;
+          else if (state.typesStatus === "error")
+            html += `<p role="alert">Не удалось загрузить типы встреч.</p>${button("Повторить загрузку", "reload-types")}`;
+          else
+            html += `<div class="choices" role="group" aria-label="Тип встречи">${Model.types.map((t) => button(`<strong>${escape(t.title)} · ${t.duration} мин</strong><span>${escape(t.description)}</span>`, `type-${t.id}`, `class="type-choice ${state.type === t.id ? "selected" : ""}" aria-pressed="${state.type === t.id}"`)).join("")}</div><div class="actions">${button("Выбрать дату и время →", "step-2", `class="primary" ${!state.type ? "disabled" : ""}`)}</div>`;
+        } else if (state.step === 2) {
+          html += `<h2 id="screen-title" tabindex="-1">Выберите дату и время</h2>${summary()}<p class="muted">${Model.dateLabel(Model.dates(state)[0])} — ${Model.dateLabel(Model.dates(state)[13])} · только будни. Всё время — московское.</p><div class="dates" role="group" aria-label="Дата встречи">${Model.dates(
+            state,
+          )
+            .map((date) =>
+              button(
+                `<small>${["вс", "пн", "вт", "ср", "чт", "пт", "сб"][Model.weekday(date)]}</small>${Number(date.slice(-2))}`,
+                `date-${date}`,
+                `aria-label="${Model.dateLabel(date)}${[0, 6].includes(Model.weekday(date)) ? ", выходной" : ""}" aria-pressed="${state.date === date}" ${[0, 6].includes(Model.weekday(date)) ? "disabled" : ""} class="${state.date === date ? "selected" : ""}"`,
+              ),
+            )
+            .join("")}</div><h3>${Model.dateLabel(state.date)}</h3>`;
+          if (state.message)
+            html += `<p class="notice" role="status">${escape(state.message)}</p>`;
+          if (state.slotsStatus === "loading")
+            html += '<p role="status">Обновляем свободное время…</p>';
+          else if (state.slotsStatus === "error")
+            html += `<p role="alert">Не удалось загрузить свободное время. Имя и email сохранены; прежние слоты не предлагаем.</p>${button("Повторить загрузку", "reload-slots")}`;
+          else if (!Model.slots(state).length)
+            html +=
+              '<p role="status">На эту дату нет свободного времени для выбранной длительности. Выберите другую дату или тип встречи.</p>';
+          else
+            html += `<div class="slots" role="group" aria-label="Свободные интервалы">${Model.slots(
+              state,
+            )
+              .map((slot) =>
+                button(
+                  `${Model.time(slot)}–${Model.time(slot + Model.selectedType(state).duration)}`,
+                  `slot-${slot}`,
+                  `aria-pressed="${state.slot === slot}" class="${state.slot === slot ? "selected" : ""}"`,
+                ),
+              )
+              .join("")}</div>`;
+          html += `<div class="actions">${button("← Тип встречи", "step-1")}${button("Указать контакты →", "step-3", `class="primary" ${state.slot === null || state.slotsStatus !== "ready" ? "disabled" : ""}`)}</div>`;
+        } else {
+          html += `<h2 id="screen-title" tabindex="-1">Ваши контакты</h2>${summary()}${state.message ? `<p class="notice" role="alert">${escape(state.message)}</p>` : ""}<form id="contacts" novalidate><label for="name">Имя <span class="muted">(обязательно)</span></label><input id="name" name="name" autocomplete="name" required value="${escape(state.name)}" aria-invalid="${!!state.errors.name}" aria-describedby="name-error" /><p id="name-error" class="error" ${state.errors.name ? 'role="alert"' : ""}>${escape(state.errors.name || "")}</p><label for="email">Email <span class="muted">(обязательно)</span></label><input id="email" name="email" type="email" autocomplete="email" required value="${escape(state.email)}" aria-invalid="${!!state.errors.email}" aria-describedby="email-error email-hint" /><p id="email-error" class="error" ${state.errors.email ? 'role="alert"' : ""}>${escape(state.errors.email || "")}</p><small id="email-hint">Подтверждение появится на экране. Письмо не отправляется.</small><div class="actions">${button("← Дата и время", "step-2", 'type="button"')}<button type="submit" class="primary">Подтвердить бронирование</button></div></form>`;
+        }
+        guest.innerHTML = html;
+        const phases = {
+          draft: "Можно выбирать и менять данные",
+          sending: "Подтверждение выполняется",
+          unknown: "Исход неизвестен — только повтор этой попытки",
+          confirmed: "Бронирование подтверждено",
+          conflict: "Окончательный отказ — слот занят",
+        };
+        statePanel.innerHTML = `<dt>Результат</dt><dd>${phases[state.phase]}</dd><dt>Выбор</dt><dd>${escape(Model.selectedType(state)?.title || "Тип не выбран")} · ${Model.dateLabel(state.date)} · ${state.slot === null ? "Время не выбрано" : Model.time(state.slot)}</dd><dt>Контакты</dt><dd>${escape(state.name || "Имя не введено")}<br>${escape(state.email || "Email не введён")}</dd><dt>Свободное время</dt><dd>${{ ready: "Список загружен", loading: "Загрузка", error: "Ошибка — старые слоты недоступны" }[state.slotsStatus]}</dd><dt>Попытка</dt><dd>${state.attempt ? "Отправленные данные зафиксированы" : "Отправленной попытки нет"}</dd><dt>Что произошло в демо</dt><dd>${state.saved ? "Симуляция: запись сохранена" : "Симуляция: запись не сохранена"}. Гостю доступен только показанный слева результат.</dd>`;
+        remember();
+        if (focus) document.querySelector("#screen-title")?.focus();
+        else if (activeAction)
+          document.querySelector(`[data-action="${activeAction}"]`)?.focus();
+        document.querySelector("#demo-clock").textContent =
+          `${Model.dateLabel(state.nowDate)}, ${Model.time(state.now)}`;
+        if (state.phase === "conflict" && !dialog.open) dialog.showModal();
+        for (const control of document.querySelectorAll(".lab [data-action]"))
+          control.disabled =
+            locked && !["reload", "reset"].includes(control.dataset.action);
+        renderScenarios();
+      }
+      function dispatch(action, focus = true) {
+        state = Model.move(state, action);
+        render(focus);
+        const current = generation;
+        if (state.slotsStatus === "loading" && state.phase === "draft")
+          setTimeout(() => {
+            if (current === generation && state.slotsStatus === "loading")
+              dispatch({ kind: "loaded", failed: state.loadFailure }, false);
+          }, 650);
+        if (state.typesStatus === "loading")
+          setTimeout(() => {
+            if (current === generation && state.typesStatus === "loading")
+              dispatch({ kind: "types-ready" });
+          }, 900);
+      }
+      function submit(retry = false) {
+        if (state.phase === "sending") return;
+        const response = state.saved && retry ? "success" : outcome.value;
+        dispatch({ kind: retry ? "retry" : "submit" });
+        const firstError = Object.keys(state.errors)[0];
+        if (firstError) {
+          document.getElementById(firstError)?.focus();
+          return;
+        }
+        if (state.phase !== "sending") return;
+        const current = generation;
+        setTimeout(() => {
+          if (current === generation && state.phase === "sending")
+            dispatch({ kind: "resolve", outcome: response });
+        }, 1100);
+      }
+      function reset() {
+        generation++;
+        if (dialog.open) dialog.close();
+        state = Model.initial();
+        scenarioStep = 0;
+        outcome.value = "success";
+        render();
+      }
+      function act(action) {
+        if (action === "reset") {
+          reset();
+          return;
+        }
+        if (action === "reload") {
+          location.reload();
+          return;
+        }
+        if (action === "retry") {
+          submit(true);
+          return;
+        }
+        if (action === "reload-types") {
+          dispatch({ kind: "types", value: "loading" });
+          return;
+        }
+        if (action === "reload-slots") {
+          dispatch({ kind: "slots", value: "loading" });
+          return;
+        }
+        if (action.startsWith("step-")) {
+          dispatch({ kind: "step", value: Number(action.slice(5)) });
+          return;
+        }
+        if (action.startsWith("type-")) {
+          dispatch({ kind: "type", value: action.slice(5) }, false);
+          return;
+        }
+        if (action.startsWith("date-")) {
+          dispatch({ kind: "date", value: action.slice(5) }, false);
+          return;
+        }
+        if (action.startsWith("slot-")) {
+          dispatch({ kind: "slot", value: Number(action.slice(5)) }, false);
+          return;
+        }
+        if (action === "empty-types")
+          dispatch({ kind: "types", value: "empty" });
+        if (action === "types-error")
+          dispatch({ kind: "types", value: "error" });
+        if (action === "types-loading")
+          dispatch({ kind: "types", value: "loading" });
+        if (action === "empty-slots")
+          dispatch({ kind: "slots", value: "ready", empty: true });
+        if (action === "slots-error")
+          dispatch({ kind: "slots", value: "error" });
+      }
+      document.addEventListener("click", (event) => {
+        const target = event.target.closest("[data-action]");
+        if (target && !target.disabled) {
+          const id = target.dataset.action;
+          act(id);
+          if (/^(type|date|slot)-/.test(id))
+            document.querySelector(`[data-action="${id}"]`)?.focus();
+        }
+      });
+      guest.addEventListener("input", (event) => {
+        if (["name", "email"].includes(event.target.id)) {
+          state = Model.move(state, {
+            kind: "field",
+            field: event.target.id,
+            value: event.target.value,
+          });
+          const error = document.getElementById(`${event.target.id}-error`);
+          error.textContent = "";
+          event.target.setAttribute("aria-invalid", "false");
+          statePanel.querySelectorAll("dd")[2].innerHTML =
+            `${escape(state.name || "Имя не введено")}<br>${escape(state.email || "Email не введён")}`;
+        }
+      });
+      guest.addEventListener("submit", (event) => {
+        event.preventDefault();
+        submit();
+      });
+      function dismissConflict() {
+        dialog.close();
+        dispatch({ kind: "dismiss" });
+      }
+      document
+        .querySelector("#dismiss-conflict")
+        .addEventListener("click", dismissConflict);
+      dialog.addEventListener("cancel", (event) => {
+        event.preventDefault();
+        dismissConflict();
+      });
+      const prepare = () => {
+        if (Model.locked(state)) return;
+        state.type = "intro";
+        state.step = 3;
+        state.slot = 630;
+        state.name = "Анна Петрова";
+        state.email = "Anna+work@Example.COM";
+        render(true);
+      };
+      const scenarios = {
+        happy: {
+          title: "Успех",
+          description:
+            "Пройдите три шага; проверьте детали перед отправкой и подтверждение.",
+          steps: [
+            [
+              "1. Выбрать тип встречи",
+              () => {
+                state.type = "intro";
+                state.step = 2;
+                render(true);
+              },
+            ],
+            [
+              "2. Выбрать 10:30–11:00",
+              () => {
+                state.slot = 630;
+                state.step = 3;
+                render(true);
+              },
+            ],
+            ["3. Заполнить контакты", prepare],
+            ["4. Подтвердить", () => submit()],
+          ],
+        },
+        validation: {
+          title: "Поля и возврат",
+          description:
+            "Пустая форма показывает ошибки. Возврат и другой день сохраняют контакты, но очищают время.",
+          steps: [
+            [
+              "1. Открыть пустую форму",
+              () => {
+                prepare();
+                state.name = "";
+                state.email = "wrong";
+                render(true);
+              },
+            ],
+            ["2. Попробовать подтвердить", () => submit()],
+            ["3. Исправить контакты", prepare],
+            ["4. Вернуться к дате", () => act("step-2")],
+            ["5. Выбрать другой день", () => act("date-2026-11-10")],
+          ],
+        },
+        conflict: {
+          title: "Конфликт",
+          description:
+            "Другой гость занимает интервал. Закройте алерт: слот очистится, контакты останутся, список обновится.",
+          steps: [
+            ["1. Подготовить запись", prepare],
+            [
+              "2. Воспроизвести конфликт",
+              () => {
+                outcome.value = "conflict";
+                submit();
+              },
+            ],
+            [
+              "3. Закрыть алерт",
+              () => {
+                if (dialog.open) dismissConflict();
+              },
+            ],
+          ],
+        },
+        unknown: {
+          title: "Потеря ответа",
+          description:
+            "Запись сохранена, но ответ потерян. Обновите вкладку; затем повторите ту же попытку и получите исходное подтверждение.",
+          steps: [
+            ["1. Подготовить запись", prepare],
+            [
+              "2. Потерять ответ",
+              () => {
+                outcome.value = "lost-saved";
+                submit();
+              },
+            ],
+            [
+              "3. Восстановить после обновления",
+              () => {
+                generation++;
+                state = Model.move(state, {
+                  kind: "recover",
+                  state: structuredClone(state),
+                });
+                render(true);
+              },
+            ],
+            ["4. Повторить подтверждение", () => submit(true)],
+          ],
+        },
+        refresh: {
+          title: "Сбой слотов",
+          description:
+            "Конфликт окончателен, но обновление доступности не удалось. Старое время недоступно, контакты сохранены; можно повторить загрузку.",
+          steps: [
+            ["1. Подготовить запись", prepare],
+            [
+              "2. Конфликт и сбой загрузки",
+              () => {
+                outcome.value = "conflict-refresh-error";
+                submit();
+              },
+            ],
+            [
+              "3. Закрыть алерт",
+              () => {
+                if (dialog.open) dismissConflict();
+              },
+            ],
+            ["4. Повторить загрузку слотов", () => act("reload-slots")],
+          ],
+        },
+      };
+      function guidedStepAllowed() {
+        if (!scenarios[activeScenario].steps[scenarioStep]) return false;
+        if (!Model.locked(state)) return true;
+        if (state.phase === "unknown")
+          return activeScenario === "unknown" && scenarioStep >= 2;
+        return (
+          state.phase === "conflict" &&
+          ["conflict", "refresh"].includes(activeScenario) &&
+          scenarioStep === 2
+        );
+      }
+      function renderScenarios() {
+        document.querySelector("#scenario-tabs").innerHTML = Object.entries(
+          scenarios,
+        )
+          .map(
+            ([id, s]) =>
+              `<button role="tab" id="scenario-${id}" aria-selected="${id === activeScenario}" aria-controls="scenario-panel" data-scenario="${id}">${s.title}</button>`,
+          )
+          .join("");
+        const s = scenarios[activeScenario];
+        document
+          .querySelector("#scenario-panel")
+          .setAttribute("aria-labelledby", `scenario-${activeScenario}`);
+        document.querySelector("#scenario-description").textContent =
+          s.description;
+        const next = document.querySelector("#scenario-next");
+        next.textContent = s.steps[scenarioStep]?.[0] || "Пример пройден";
+        next.disabled = !guidedStepAllowed();
+      }
+      function chooseScenario(id) {
+        activeScenario = id;
+        scenarioStep = 0;
+        reset();
+        renderScenarios();
+        document.querySelector(`#scenario-${id}`).focus();
+      }
+      document
+        .querySelector("#scenario-tabs")
+        .addEventListener("click", (event) => {
+          if (event.target.dataset.scenario)
+            chooseScenario(event.target.dataset.scenario);
+        });
+      document
+        .querySelector("#scenario-tabs")
+        .addEventListener("keydown", (event) => {
+          if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key))
+            return;
+          event.preventDefault();
+          const ids = Object.keys(scenarios),
+            index = ids.indexOf(activeScenario);
+          chooseScenario(
+            ids[
+              event.key === "Home"
+                ? 0
+                : event.key === "End"
+                  ? ids.length - 1
+                  : (index +
+                      (event.key === "ArrowRight" ? 1 : -1) +
+                      ids.length) %
+                    ids.length
+            ],
+          );
+        });
+      document.querySelector("#scenario-next").addEventListener("click", () => {
+        if (!guidedStepAllowed()) return;
+        const step = scenarios[activeScenario].steps[scenarioStep];
+        if (step) {
+          step[1]();
+          scenarioStep++;
+          renderScenarios();
+        }
+      });
+      render();
+      renderScenarios();
+    </script>
+  </body>
+</html>

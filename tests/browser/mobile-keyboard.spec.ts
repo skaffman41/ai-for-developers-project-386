@@ -1,4 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, test } from "../support/browser.ts";
 
 test("гость проходит путь записи на экране шириной 320 px", async ({
   page,
@@ -15,7 +16,7 @@ test("гость проходит путь записи на экране шир
   await expect(
     page.getByText("Без регистрации", { exact: true }),
   ).toBeVisible();
-  const steps = page.getByRole("list", { name: "Как будет устроена запись" });
+  const steps = page.getByRole("list", { name: "Как записаться на встречу" });
   for (const name of [
     "Выберите тип встречи",
     "Выберите день и время",
@@ -46,7 +47,9 @@ test("гость проходит путь записи на экране шир
     page.getByRole("heading", { name: "Запись на встречу", level: 1 }),
   ).toBeVisible();
   await expect(
-    page.getByText("Онлайн-запись скоро появится", { exact: true }),
+    page.getByText("Типов встреч пока нет. Обновите список позже.", {
+      exact: true,
+    }),
   ).toBeVisible();
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth),
@@ -62,8 +65,11 @@ test("гость проходит путь записи на экране шир
 
 async function followLinkWithKeyboard(page: Page, name: string, path: string) {
   const link = page.getByRole("link", { name, exact: true });
-  const linkCount = await page.getByRole("link").count();
-  for (let attempt = 0; attempt <= linkCount; attempt += 1) {
+  const controlCount = await page
+    .getByRole("link")
+    .or(page.getByRole("button"))
+    .count();
+  for (let attempt = 0; attempt <= controlCount; attempt += 1) {
     await page.keyboard.press("Tab");
     if (await link.evaluate((element) => element === document.activeElement)) {
       break;

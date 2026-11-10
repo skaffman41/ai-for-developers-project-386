@@ -1,0 +1,25 @@
+{
+  "name": "@call-calendar/contract",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./validation": "./dist/validation.js",
+    "./sdk": "./dist/generated/sdk.gen.js",
+    "./types": "./dist/generated/types.gen.js",
+    "./fastify": "./dist/generated/fastify.gen.js",
+    "./operations": "./dist/generated/operations.gen.js",
+    "./event-types": "./dist/event-types.js",
+    "./bookings": "./dist/bookings.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1"
+  },
+  "peerDependencies": {
+    "fastify": "5.12.8"
+  }
+}

@@ -4,6 +4,7 @@ import { createServer } from "node:net";
 import { setTimeout as delay } from "node:timers/promises";
 import { fileURLToPath } from "node:url";
 import { expect, test } from "vitest";
+import { temporaryDatabase, prepareDatabase } from "./support/backend.ts";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 
@@ -130,16 +131,22 @@ test("built backend and frontend serve their public HTTP contracts", async () =>
   while (frontendPort === backendPort) frontendPort = await freePort();
   const backendUrl = `http://127.0.0.1:${backendPort}/health`;
   const frontendUrl = `http://127.0.0.1:${frontendPort}/`;
+  const database = await temporaryDatabase();
   const failure = new AbortController();
   const servers: ReturnType<typeof startServer>[] = [];
   let address = `${backendUrl}, ${frontendUrl}`;
   try {
+    await prepareDatabase(database.path);
     const deadline = Date.now() + 30_000;
     servers.push(
       startServer(
         "backend",
         ["backend/dist/server.js"],
-        { HOST: "127.0.0.1", PORT: String(backendPort) },
+        {
+          HOST: "127.0.0.1",
+          PORT: String(backendPort),
+          DATABASE_PATH: database.path,
+        },
         failure,
       ),
     );
@@ -191,6 +198,10 @@ test("built backend and frontend serve their public HTTP contracts", async () =>
       { cause: error },
     );
   } finally {
-    await Promise.all(servers.map((server) => server.stop()));
+    try {
+      await Promise.all(servers.map((server) => server.stop()));
+    } finally {
+      await database.dispose();
+    }
   }
 });

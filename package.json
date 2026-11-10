@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "workspaces": [
+    "contract",
     "frontend",
     "backend"
   ],
@@ -19,18 +20,27 @@
     "test": "vitest run",
     "test:browser": "playwright test",
     "browser:install": "playwright install chromium",
-    "typecheck": "npm run typecheck --workspaces && tsc --project tsconfig.tools.json"
+    "release:check": "node scripts/check-release.mjs",
+    "release:dry-run": "vitest run tests/release.test.ts tests/release-workflow.test.ts",
+    "typecheck": "npm run build --workspace @call-calendar/contract && npm run typecheck --workspaces && tsc --project tsconfig.tools.json",
+    "api:generate": "node scripts/api.mjs",
+    "api:check": "node scripts/api.mjs --check"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
+    "@hey-api/openapi-ts": "0.99.0",
     "@playwright/test": "1.65.0",
     "@types/node": "24.19.2",
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1",
     "eslint": "10.14.0",
     "eslint-config-prettier": "10.1.8",
     "globals": "17.13.0",
     "prettier": "3.9.10",
+    "release-please": "17.6.0",
     "typescript": "6.0.3",
     "typescript-eslint": "8.72.1",
-    "vitest": "5.1.0"
+    "vitest": "5.1.0",
+    "yaml": "2.9.1"
   }
 }

@@ -1,0 +1,1102 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Раздел владельца календаря — черновой прототип</title>
+    <style>
+      :root {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: #302f2b;
+        background: #f8f6f0;
+        line-height: 1.55;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      body {
+        margin: 0;
+        min-width: 320px;
+      }
+      .shell {
+        max-width: 1184px;
+        margin: auto;
+        padding: 0 28px 140px;
+      }
+      a {
+        color: #93432e;
+        text-underline-offset: 4px;
+      }
+      button,
+      input,
+      textarea,
+      select {
+        font: inherit;
+        color: inherit;
+      }
+      button,
+      .button {
+        min-height: 44px;
+        padding: 10px 15px;
+        border: 1px solid #bdb5a6;
+        border-radius: 7px;
+        background: #fdfcf8;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+      button:hover:not(:disabled),
+      .button:hover {
+        border-color: #93432e;
+      }
+      button:disabled {
+        opacity: 0.6;
+        cursor: default;
+      }
+      .primary,
+      button[aria-pressed="true"] {
+        background: #ac5238;
+        border-color: #ac5238;
+        color: #fffdf9;
+      }
+      :focus-visible {
+        outline: 3px solid #a0472e;
+        outline-offset: 4px;
+      }
+      [tabindex="-1"]:focus {
+        outline: none;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 18px;
+        padding: 24px 0;
+        border-bottom: 1px solid #e3dfd5;
+      }
+      .brand {
+        font-size: 18px;
+        font-weight: 600;
+        color: #302f2b;
+        text-decoration: none;
+      }
+      nav,
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      nav {
+        font-size: 14px;
+      }
+      h1,
+      h2 {
+        font-family: Georgia, serif;
+        font-weight: 400;
+        line-height: 1.2;
+      }
+      h1 {
+        font-size: clamp(32px, 4vw, 48px);
+        letter-spacing: -1px;
+        margin: 8px 0 16px;
+      }
+      h2 {
+        font-size: 29px;
+        margin: 0 0 16px;
+      }
+      h3 {
+        font-size: 17px;
+        margin: 0 0 8px;
+      }
+      p {
+        margin: 8px 0 16px;
+      }
+      .muted,
+      small {
+        color: #6b685f;
+      }
+      small {
+        font-size: 13px;
+      }
+      .eyebrow {
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #92513b;
+        font-size: 12px;
+        margin-top: 28px;
+      }
+      .heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin: 30px 0 24px;
+      }
+      .heading h1 {
+        margin-bottom: 8px;
+      }
+      .heading p {
+        margin: 0;
+      }
+      .paper {
+        background: #fdfcf8;
+        border: 1px solid #e3dfd5;
+        border-radius: 12px;
+        padding: 24px;
+        min-width: 0;
+      }
+      .split {
+        display: grid;
+        grid-template-columns: minmax(0, 1.65fr) minmax(280px, 1fr);
+        gap: 24px;
+        align-items: start;
+      }
+      .stack {
+        display: grid;
+        gap: 18px;
+      }
+      .section-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+      }
+      .section-top h2 {
+        margin: 0;
+      }
+      .tabs {
+        display: flex;
+        gap: 8px;
+        margin: 0 0 20px;
+      }
+      .tabs button[aria-pressed="true"] {
+        background: #302f2b;
+        border-color: #302f2b;
+      }
+      .filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 20px;
+      }
+      .filters button {
+        font-size: 14px;
+      }
+      .booking-list,
+      .types {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .booking {
+        display: grid;
+        grid-template-columns: 150px minmax(0, 1fr) minmax(0, 1fr);
+        gap: 18px;
+        padding: 20px 0;
+        border-top: 1px solid #e3dfd5;
+      }
+      .booking:first-child {
+        border-top: 0;
+      }
+      .booking time,
+      .booking strong,
+      .booking small {
+        display: block;
+      }
+      .booking a {
+        overflow-wrap: anywhere;
+      }
+      .status {
+        font-size: 12px;
+        display: inline-block;
+        color: #5e6450;
+        padding: 3px 8px;
+        background: #eaf0e2;
+        border-radius: 4px;
+        margin-top: 6px;
+      }
+      .status.past {
+        background: #eeece6;
+        color: #6b685f;
+      }
+      .status.ongoing {
+        background: #f7e5cc;
+        color: #77501e;
+      }
+      .types li {
+        padding: 16px 0;
+        border-bottom: 1px solid #e3dfd5;
+        overflow-wrap: anywhere;
+      }
+      .types li:last-child {
+        border-bottom: 0;
+      }
+      .types small {
+        display: block;
+        white-space: pre-wrap;
+      }
+      .duration {
+        color: #92513b;
+        font-size: 14px;
+      }
+      .type-id {
+        color: #6b685f;
+        font-size: 12px;
+      }
+      .form-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(120px, 1fr);
+        gap: 16px;
+      }
+      label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 6px;
+      }
+      input,
+      textarea,
+      select {
+        width: 100%;
+        border: 1px solid #bdb5a6;
+        border-radius: 6px;
+        background: #fff;
+        padding: 11px;
+      }
+      textarea {
+        resize: vertical;
+        min-height: 94px;
+      }
+      .field {
+        margin-bottom: 18px;
+      }
+      .field small {
+        display: block;
+        margin-top: 5px;
+      }
+      [aria-invalid="true"] {
+        border-color: #a12e24;
+      }
+      .error {
+        color: #a12e24;
+        font-size: 14px;
+      }
+      .notice {
+        padding: 14px 18px;
+        border: 1px solid #b6c8a7;
+        background: #edf3e7;
+        border-radius: 7px;
+        margin-bottom: 20px;
+      }
+      .notice.error {
+        border-color: #d5aa9c;
+        background: #fbede6;
+      }
+      .empty {
+        padding: 28px 0;
+        max-width: 580px;
+      }
+      .empty h3 {
+        font-family: Georgia, serif;
+        font-size: 24px;
+        font-weight: 400;
+      }
+      .meta {
+        margin: 18px 0;
+        font-size: 12px;
+        color: #6b685f;
+      }
+      .day {
+        padding: 22px 0 4px;
+        border-top: 1px solid #d8d1c4;
+      }
+      .day h3 {
+        font-size: 16px;
+        text-transform: capitalize;
+      }
+      .day .booking {
+        grid-template-columns: 125px minmax(0, 1fr) minmax(0, 1fr);
+      }
+      .overview {
+        display: grid;
+        grid-template-columns: 170px minmax(0, 1fr);
+        gap: 28px;
+        align-items: start;
+      }
+      .overview aside {
+        position: sticky;
+        top: 20px;
+      }
+      .overview aside button {
+        width: 100%;
+        justify-content: flex-start;
+        margin-bottom: 8px;
+      }
+      .rail {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding-bottom: 18px;
+      }
+      .rail button {
+        flex: 1 1 65px;
+        flex-direction: column;
+        gap: 0;
+      }
+      .rail span {
+        font-size: 12px;
+      }
+      .compact .booking {
+        grid-template-columns: 115px minmax(0, 1fr);
+      }
+      .compact .contact {
+        grid-column: 2;
+        margin-top: -12px;
+      }
+      .compact .form-grid {
+        display: block;
+      }
+      .lab {
+        background: #efebe1;
+        border: 1px dashed #b7ad9c;
+        border-radius: 10px;
+        padding: 18px;
+        margin: 28px 0;
+      }
+      .lab summary {
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .lab .row {
+        margin-top: 14px;
+      }
+      .lab button {
+        font-size: 12px;
+        padding: 8px 12px;
+      }
+      .lab pre {
+        overflow-wrap: anywhere;
+        white-space: pre-wrap;
+        font-size: 12px;
+        max-height: 220px;
+        overflow-y: auto;
+      }
+      .lab p {
+        font-size: 12px;
+        margin-bottom: 0;
+      }
+      .switcher {
+        position: fixed;
+        width: max-content;
+        flex-wrap: nowrap;
+        bottom: 18px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 4;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #302f2b;
+        color: #fffdf9;
+        border-radius: 40px;
+        padding: 8px;
+        box-shadow: 0 8px 30px #302f2b33;
+        max-width: calc(100% - 20px);
+      }
+      .switcher button {
+        background: #45443e;
+        color: #fff;
+        border: 0;
+        border-radius: 50%;
+        width: 44px;
+        flex-shrink: 0;
+        padding: 8px;
+      }
+      .switcher span {
+        font-size: 13px;
+        min-width: 164px;
+        text-align: center;
+      }
+      dialog {
+        border: 1px solid #bdb5a6;
+        border-radius: 12px;
+        padding: 26px;
+        width: min(560px, calc(100% - 32px));
+        max-height: calc(100svh - 32px);
+      }
+      dialog::backdrop {
+        background: #302f2b70;
+      }
+      .home-demo {
+        padding: 50px 0;
+        max-width: 650px;
+      }
+      @media (max-width: 760px) {
+        .shell {
+          padding: 0 16px 120px;
+        }
+        header {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+        .split,
+        .overview {
+          grid-template-columns: 1fr;
+        }
+        .overview aside {
+          position: static;
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+        }
+        .overview aside button {
+          width: auto;
+        }
+        .paper {
+          padding: 18px;
+        }
+        .booking,
+        .day .booking {
+          grid-template-columns: 1fr;
+          gap: 8px;
+        }
+        .compact .booking {
+          grid-template-columns: 1fr;
+        }
+        .compact .contact {
+          grid-column: auto;
+          margin-top: 0;
+        }
+        .form-grid {
+          grid-template-columns: 1fr;
+          gap: 0;
+        }
+        .heading {
+          margin-top: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Three throwaway UI variants of the owner section, switchable with ?variant=A/B/C.
+         Selected: variant A and product route /owner. The real route is not implemented.
+         In-memory stub; sessionStorage retains only an unresolved creation.
+         No product code or real mutations. -->
+    <div class="shell">
+      <header>
+        <a class="brand" href="?page=home" data-page="home"
+          >◷ Календарь звонков</a
+        >
+        <nav aria-label="Основная навигация">
+          <a href="?page=home" data-page="home">Главная</a>
+          <a href="guest-booking.prototype.html" data-guest>Запись</a>
+          <a href="?page=owner" data-page="owner">Владельцу календаря</a>
+        </nav>
+      </header>
+      <main id="app"></main>
+      <details class="lab" id="lab">
+        <summary>Черновой прототип · сценарии и состояние</summary>
+        <p>
+          Выбран вариант A, адрес /owner. Демо-часы: 9 ноября 2026, 10:15,
+          Europe/Moscow. Данные вымышлены. Незавершённое создание
+          восстанавливается в той же вкладке; остальные изменения живут в
+          памяти.
+        </p>
+        <div class="row" id="scenarios" aria-label="Демонстрационные сценарии">
+          <button data-scenario="normal">Пример с записями</button>
+          <button data-scenario="first">Первый запуск</button>
+          <button data-scenario="empty">Нет бронирований</button>
+          <button data-scenario="load">Загрузка списков</button>
+          <button data-scenario="types-error">Ошибка типов</button>
+          <button data-scenario="bookings-error">Ошибка бронирований</button>
+          <button data-scenario="refresh-error">Ошибка обновления</button>
+          <button data-scenario="save-error">Отказ создания</button>
+          <button data-scenario="lost-saved">
+            Ответ потерян после создания
+          </button>
+          <button data-scenario="lost-unsaved">
+            Ответ потерян до создания
+          </button>
+          <button data-scenario="long">
+            Длинные поля и одинаковые названия
+          </button>
+        </div>
+        <p id="scenario-note" role="status"></p>
+        <details>
+          <summary>Текущее состояние симуляции</summary>
+          <pre id="state"></pre>
+        </details>
+      </details>
+    </div>
+    <nav class="switcher" aria-label="Варианты прототипа" id="switcher">
+      <button id="previous" aria-label="Предыдущий вариант">←</button>
+      <span id="variant-label"></span>
+      <button id="next" aria-label="Следующий вариант">→</button>
+    </nav>
+    <dialog id="create-dialog" aria-labelledby="dialog-title"></dialog>
+    <script type="module">
+      const app = document.querySelector("#app");
+      const dialog = document.querySelector("#create-dialog");
+      const variants = ["A", "B", "C"];
+      const titles = {
+        A: "Вкладки",
+        B: "Расписание + типы",
+        C: "Журнал по дням",
+      };
+      const params = new URLSearchParams(location.search);
+      let variant = variants.includes(params.get("variant"))
+        ? params.get("variant")
+        : "A";
+      let page = params.get("page") === "home" ? "home" : "owner";
+      const now = "2026-11-09T10:15:00+03:00";
+      const baseTypes = [
+        {
+          id: "01",
+          name: "Знакомство",
+          duration: 30,
+          description: "Обсудим задачу и познакомимся.",
+        },
+        {
+          id: "02",
+          name: "Консультация",
+          duration: 45,
+          description: "Разберём вопрос и следующие шаги.",
+        },
+      ];
+      const baseBookings = [
+        {
+          id: "b04",
+          type: "02",
+          start: "2026-11-10T11:00:00+03:00",
+          end: "2026-11-10T11:45:00+03:00",
+          name: "Ольга Волкова",
+          email: "olga@example.com",
+        },
+        {
+          id: "b01",
+          type: "01",
+          start: "2026-11-06T15:00:00+03:00",
+          end: "2026-11-06T15:30:00+03:00",
+          name: "Денис Орлов",
+          email: "denis@example.com",
+        },
+        {
+          id: "b03",
+          type: "01",
+          start: "2026-11-09T14:00:00+03:00",
+          end: "2026-11-09T14:30:00+03:00",
+          name: "Мария Ли",
+          email: "maria@example.com",
+        },
+        {
+          id: "b02",
+          type: "02",
+          start: "2026-11-09T10:00:00+03:00",
+          end: "2026-11-09T10:45:00+03:00",
+          name: "Алексей Петров",
+          email: "alex@example.com",
+        },
+      ];
+      let state;
+      let timer;
+      let saveTimer;
+      const refreshTimers = {};
+      const pendingStorage = "owner-calendar.prototype.pending";
+      let opener;
+      const date = (value) => new Date(value);
+      const formatDate = (value) =>
+        new Intl.DateTimeFormat("ru-RU", {
+          timeZone: "Europe/Moscow",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }).format(date(value));
+      const time = (value) =>
+        new Intl.DateTimeFormat("ru-RU", {
+          timeZone: "Europe/Moscow",
+          hour: "2-digit",
+          minute: "2-digit",
+        }).format(date(value));
+      const escape = (value) =>
+        String(value).replace(
+          /[&<>"']/g,
+          (char) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[char],
+        );
+      function reset(clearPending = true) {
+        clearTimeout(timer);
+        clearTimeout(saveTimer);
+        Object.values(refreshTimers).forEach(clearTimeout);
+        if (clearPending) sessionStorage.removeItem(pendingStorage);
+        if (dialog.open) dialog.close();
+        state = {
+          types: structuredClone(baseTypes),
+          bookings: structuredClone(baseBookings),
+          tab: "bookings",
+          filter: "upcoming",
+          day: "2026-11-09",
+          typesStatus: "ready",
+          bookingsStatus: "ready",
+          refreshing: { types: false, bookings: false },
+          updated: { types: "10:15", bookings: "10:15" },
+          refreshError: { types: false, bookings: false },
+          saving: false,
+          unknownSave: false,
+          loseResponse: null,
+          creation: null,
+          failSave: false,
+          draft: { name: "", duration: "30", description: "" },
+          errors: {},
+          message: "",
+          scenario: "normal",
+        };
+      }
+      function syncUrl() {
+        const url = new URL(location.href);
+        url.searchParams.set("variant", variant);
+        url.searchParams.set("page", page);
+        history.replaceState(null, "", url);
+      }
+      function snapshot() {
+        document.querySelector("#state").textContent = JSON.stringify(
+          { variant, page, proposedRoute: "/owner", ...state },
+          null,
+          2,
+        );
+      }
+      function filters() {
+        return `<div class="filters" aria-label="Период бронирований">${[
+          ["upcoming", "Предстоящие и текущие"],
+          ["past", "Прошедшие"],
+          ["all", "Все"],
+        ]
+          .map(
+            ([key, label]) =>
+              `<button data-filter="${key}" aria-pressed="${state.filter === key}">${label}</button>`,
+          )
+          .join("")}</div>`;
+      }
+      function bookingRows(items) {
+        return `<ul class="booking-list">${items
+          .map((item) => {
+            const type = state.types.find((type) => type.id === item.type);
+            const past = date(item.end) <= date(now);
+            const ongoing = !past && date(item.start) <= date(now);
+            return `<li class="booking"><div><time datetime="${item.start}">${formatDate(item.start)}</time><strong>${time(item.start)}–${time(item.end)}</strong><span class="status ${past ? "past" : ongoing ? "ongoing" : ""}">${past ? "Завершилась" : ongoing ? "Идёт сейчас" : "Предстоит"}</span></div><div><strong>${escape(type?.name ?? "Тип встречи")}</strong><small>${type?.duration ?? ""} мин · тип ${escape(item.type)}</small></div><div class="contact"><strong>${escape(item.name)}</strong><a href="mailto:${escape(item.email)}">${escape(item.email)}</a></div></li>`;
+          })
+          .join("")}</ul>`;
+      }
+      function visibleBookings() {
+        return state.bookings
+          .filter(
+            (item) =>
+              state.filter === "all" ||
+              (state.filter === "past"
+                ? date(item.end) <= date(now)
+                : date(item.end) > date(now)),
+          )
+          .sort((a, b) =>
+            state.filter === "past"
+              ? date(b.start) - date(a.start)
+              : date(a.start) - date(b.start),
+          );
+      }
+      function loadState(resource) {
+        const status = state[`${resource}Status`];
+        if (status === "loading")
+          return `<p role="status">Загружаем ${resource === "types" ? "типы встреч" : "бронирования"}…</p>`;
+        if (status === "error")
+          return `<div class="empty"><h3>Не удалось загрузить ${resource === "types" ? "типы встреч" : "бронирования"}</h3><p>Попробуйте ещё раз.</p><button data-retry="${resource}">Повторить загрузку</button></div>`;
+        return "";
+      }
+      function refreshMeta(resource) {
+        return `<div class="meta" role="status">${state.refreshing[resource] ? "Обновляем… Предыдущие данные остаются на экране." : `Обновлено в ${state.updated[resource]}`} · Europe/Moscow</div>${state.refreshError[resource] ? '<p class="notice error" role="alert">Не удалось обновить. Показаны прежние данные. Нажмите «Обновить» ещё раз.</p>' : ""}`;
+      }
+      function bookings(grouped = false, byDay = false) {
+        if (state.bookingsStatus !== "ready") return loadState("bookings");
+        let items = visibleBookings();
+        const beforeDay = items.length;
+        if (byDay)
+          items = items.filter((item) => item.start.startsWith(state.day));
+        const refresh = refreshMeta("bookings");
+        if (!items.length)
+          return (
+            refresh +
+            `<div class="empty"><h3>${state.bookings.length === 0 ? "Бронирований пока нет" : byDay && beforeDay ? "На этот день записей нет" : "В этом списке записей нет"}</h3><p>${!state.types.length ? "Сначала создайте тип встречи, чтобы гости могли записаться." : "Гости смогут выбрать время на странице записи."}</p>${!state.types.length ? '<button class="primary" data-create>Создать тип встречи</button>' : '<a href="guest-booking.prototype.html" class="button" data-guest>Открыть страницу записи</a>'}</div>`
+          );
+        if (!grouped) return refresh + bookingRows(items);
+        const days = [...new Set(items.map((item) => item.start.slice(0, 10)))];
+        return (
+          refresh +
+          days
+            .map(
+              (day) =>
+                `<section class="day"><h3>${formatDate(day + "T12:00:00+03:00")}</h3>${bookingRows(items.filter((item) => item.start.startsWith(day)))}</section>`,
+            )
+            .join("")
+        );
+      }
+      function types() {
+        if (state.typesStatus !== "ready") return loadState("types");
+        if (!state.types.length)
+          return (
+            refreshMeta("types") +
+            '<div class="empty"><h3>Создайте первый тип встречи</h3><p>Название и длительность помогут гостям выбрать подходящий формат.</p></div>'
+          );
+        return `${refreshMeta("types")}<ul class="types">${[...state.types]
+          .reverse()
+          .map(
+            (type) =>
+              `<li><h3>${escape(type.name)}</h3><span class="duration">${type.duration} мин</span> <span class="type-id">· тип ${escape(type.id)}</span>${type.description ? `<small>${escape(type.description)}</small>` : "<small>Без описания</small>"}</li>`,
+          )
+          .join("")}</ul>`;
+      }
+      function form(inDialog = false) {
+        const field = (key, title, control, hint) =>
+          `<div class="field"><label for="field-${key}">${title}</label>${control}<small id="hint-${key}">${hint}</small>${state.errors[key] ? `<p class="error" id="error-${key}">${state.errors[key]}</p>` : ""}</div>`;
+        const attrs = (key) =>
+          `id="field-${key}" name="${key}" aria-describedby="hint-${key}${state.errors[key] ? ` error-${key}` : ""}" ${state.errors[key] ? 'aria-invalid="true"' : ""} ${state.saving || state.unknownSave ? "disabled" : ""}`;
+        return `<form id="create-form" novalidate><h2 ${inDialog ? 'id="dialog-title"' : ""}>Новый тип встречи</h2><div class="form-grid">${field("name", "Название *", `<input ${attrs("name")} value="${escape(state.draft.name)}" required autocomplete="off" />`, "От 1 до 100 символов, одна строка.")}${field("duration", "Длительность, мин *", `<input ${attrs("duration")} value="${escape(state.draft.duration)}" type="number" min="1" max="540" step="1" required />`, "Целое число от 1 до 540.")}</div>${field("description", "Описание", `<textarea ${attrs("description")}>${escape(state.draft.description)}</textarea>`, "Необязательно, до 2000 символов.")}<p class="muted"><small>После создания изменить или удалить тип встречи пока нельзя.</small></p>${state.errors.save ? `<p class="notice error" role="alert">${state.errors.save}</p>` : ""}${state.unknownSave ? '<div class="notice error" role="alert" id="creation-result" tabindex="-1"><strong>Не удалось узнать результат создания типа</strong><p>Повторите ту же отправку, чтобы узнать результат. Второй тип не появится. До ответа отправленные поля нельзя изменить.</p></div>' : ""}<div class="row"><button class="primary" type="submit" ${state.saving ? "disabled" : ""}>${state.saving ? "Создаём…" : state.unknownSave ? "Повторить создание" : "Создать тип встречи"}</button>${inDialog ? `<button type="button" data-close ${state.saving ? "disabled" : ""}>Вернуться к списку</button>` : ""}</div></form>`;
+      }
+      function refreshButton(resource = "bookings") {
+        return `<button data-refresh="${resource}" ${state.refreshing[resource] || state[`${resource}Status`] === "loading" ? "disabled" : ""}>${state.refreshing[resource] ? "Обновляем…" : "Обновить"}</button>`;
+      }
+      function variantA() {
+        return `<div class="tabs" aria-label="Разделы владельца"><button data-tab="bookings" aria-pressed="${state.tab === "bookings"}">Бронирования</button><button data-tab="types" aria-pressed="${state.tab === "types"}">Типы встреч (${state.typesStatus === "ready" ? state.types.length : "…"})</button></div>${state.tab === "bookings" ? `<section class="paper"><div class="section-top"><h2>Бронирования</h2>${refreshButton()}</div>${filters()}${bookings()}</section>` : `<div class="split"><section class="paper"><div class="section-top"><h2>Типы встреч</h2>${refreshButton("types")}</div>${types()}</section><section class="paper">${form()}</section></div>`}`;
+      }
+      function variantB() {
+        const days = [
+          ["2026-11-09", "Пн", "9"],
+          ["2026-11-10", "Вт", "10"],
+          ["2026-11-11", "Ср", "11"],
+          ["2026-11-12", "Чт", "12"],
+          ["2026-11-13", "Пт", "13"],
+        ];
+        return `<div class="split"><section class="paper compact"><div class="section-top"><h2>Расписание</h2>${refreshButton()}</div>${filters()}<div class="rail" aria-label="День расписания">${days.map(([key, title, number]) => `<button data-day="${key}" aria-pressed="${state.day === key}"><span>${title}</span>${number}</button>`).join("")}</div><label for="schedule-date">Дата</label><input id="schedule-date" type="date" value="${state.day}" /><p class="meta">Список владельца не ограничен горизонтом записи гостя.</p>${bookings(false, true)}</section><aside class="stack compact"><section class="paper"><div class="section-top"><h2>Типы встреч</h2>${refreshButton("types")}</div>${types()}</section><section class="paper">${form()}</section></aside></div>`;
+      }
+      function variantC() {
+        return `<div class="overview"><aside><button data-tab="bookings" aria-pressed="${state.tab === "bookings"}">Журнал встреч</button><button data-tab="types" aria-pressed="${state.tab === "types"}">Типы встреч</button><button class="primary" data-create>+ Новый тип</button></aside><section class="paper">${state.tab === "bookings" ? `<div class="section-top"><h2>Журнал встреч</h2>${refreshButton()}</div>${filters()}${bookings(true)}` : `<div class="section-top"><h2>Типы встреч</h2>${refreshButton("types")}</div>${types()}`}</section></div>`;
+      }
+      function render(focusId) {
+        const content =
+          page === "home"
+            ? `<section class="home-demo"><p class="eyebrow">Главная · фрагмент для проверки входа</p><h1>Выберите удобное время для встречи</h1><p>Встреча с владельцем календаря — в удобное для вас время.</p><a href="guest-booking.prototype.html" class="button primary" data-guest>Записаться на встречу ↗</a><p class="muted">Без регистрации</p></section>`
+            : `<div class="heading"><div><p class="eyebrow">Владельцу календаря</p><h1 tabindex="-1" id="page-title">Ваши встречи</h1><p class="muted">Бронирования и типы встреч · Europe/Moscow</p></div><a class="button" href="guest-booking.prototype.html" data-guest>Открыть страницу записи ↗</a></div>${state.message ? `<p class="notice" role="status">${escape(state.message)}</p>` : ""}${!state.types.length && state.typesStatus === "ready" && state.tab === "bookings" ? '<p class="notice">Начните с первого типа встречи. Без него гости пока не смогут записаться.</p>' : ""}${variant === "A" ? variantA() : variant === "B" ? variantB() : variantC()}`;
+        app.innerHTML = content;
+        document.querySelector("#variant-label").textContent =
+          `${variant} · ${titles[variant]}`;
+        document.querySelectorAll("[data-page]").forEach((link) => {
+          link.href = `?variant=${variant}&page=${link.dataset.page}`;
+          if (link.dataset.page === page)
+            link.setAttribute("aria-current", "page");
+          else link.removeAttribute("aria-current");
+        });
+        if (dialog.open) dialog.innerHTML = form(true);
+        snapshot();
+        if (focusId) document.getElementById(focusId)?.focus();
+      }
+      function switchVariant(direction) {
+        if (state.saving) return;
+        if (dialog.open) dialog.close();
+        variant =
+          variants[
+            (variants.indexOf(variant) + direction + variants.length) %
+              variants.length
+          ];
+        syncUrl();
+        render();
+      }
+      function openForm(button) {
+        if (variant === "C") {
+          opener = button;
+          dialog.innerHTML = form(true);
+          dialog.showModal();
+          document.querySelector("#field-name").focus();
+        } else {
+          state.tab = "types";
+          render("field-name");
+        }
+      }
+      function retry(resource) {
+        state[`${resource}Status`] = "loading";
+        render();
+        clearTimeout(refreshTimers[resource]);
+        refreshTimers[resource] = setTimeout(() => {
+          state[`${resource}Status`] = "ready";
+          render();
+        }, 550);
+      }
+      document.addEventListener("click", (event) => {
+        const target = event.target.closest("button, a");
+        if (!target) return;
+        if (target.dataset.page) {
+          event.preventDefault();
+          page = target.dataset.page;
+          syncUrl();
+          render("page-title");
+        }
+        if (target.dataset.tab) {
+          state.tab = target.dataset.tab;
+          state.message = "";
+          render();
+        }
+        if (target.dataset.filter) {
+          state.filter = target.dataset.filter;
+          render();
+        }
+        if (target.dataset.day) {
+          state.day = target.dataset.day;
+          render();
+        }
+        if (target.hasAttribute("data-create")) openForm(target);
+        if (target.hasAttribute("data-close")) dialog.close();
+        if (target.dataset.retry) retry(target.dataset.retry);
+        if (target.hasAttribute("data-refresh")) {
+          const resource = target.dataset.refresh;
+          state.refreshing[resource] = true;
+          state.refreshError[resource] = false;
+          render();
+          clearTimeout(refreshTimers[resource]);
+          refreshTimers[resource] = setTimeout(() => {
+            state.refreshing[resource] = false;
+            state[`${resource}Status`] = "ready";
+            state.updated[resource] = "10:16";
+            render();
+          }, 650);
+        }
+      });
+      document.addEventListener("input", (event) => {
+        if (event.target.closest("#create-form")) {
+          state.draft[event.target.name] = event.target.value;
+          snapshot();
+        }
+      });
+      document.addEventListener("change", (event) => {
+        if (event.target.id === "schedule-date") {
+          state.day = event.target.value;
+          render();
+        }
+      });
+      document.addEventListener("submit", (event) => {
+        if (event.target.id !== "create-form") return;
+        event.preventDefault();
+        if (state.saving) return;
+        if (state.unknownSave) {
+          sendCreation();
+          return;
+        }
+        const values = Object.fromEntries(new FormData(event.target));
+        state.draft = values;
+        const name = values.name.trim();
+        const description = values.description.trim();
+        const duration = Number(values.duration);
+        state.errors = {};
+        if (!name || name.length > 100 || /[\r\n]/.test(name))
+          state.errors.name =
+            "Укажите название от 1 до 100 символов, без переноса строки.";
+        if (
+          !values.duration.trim() ||
+          !Number.isInteger(duration) ||
+          duration < 1 ||
+          duration > 540
+        )
+          state.errors.duration = "Укажите целое число от 1 до 540.";
+        if (description.length > 2000)
+          state.errors.description =
+            "Описание должно содержать не более 2000 символов.";
+        if (Object.keys(state.errors).length) {
+          render(`field-${Object.keys(state.errors)[0]}`);
+          return;
+        }
+        state.creation = {
+          payload: { name, duration, description },
+          record: null,
+        };
+        sendCreation();
+      });
+      function persistCreation() {
+        // Only the unresolved demo attempt is retained, not a product database.
+        sessionStorage.setItem(pendingStorage, JSON.stringify(state));
+      }
+      function sendCreation() {
+        state.saving = true;
+        state.unknownSave = false;
+        persistCreation();
+        render();
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(() => {
+          state.saving = false;
+          if (state.failSave) {
+            state.failSave = false;
+            state.creation = null;
+            sessionStorage.removeItem(pendingStorage);
+            state.errors.save =
+              "Тип встречи не создан. Введённые данные сохранены — попробуйте ещё раз.";
+            render("field-name");
+            return;
+          }
+          if (state.loseResponse !== "unsaved" && !state.creation.record) {
+            const id = String(state.types.length + 1).padStart(2, "0");
+            state.creation.record = { id, ...state.creation.payload };
+            state.types.push(state.creation.record);
+          }
+          if (state.loseResponse) {
+            state.loseResponse = null;
+            state.unknownSave = true;
+            state.tab = "types";
+            persistCreation();
+            render("creation-result");
+            return;
+          }
+          const { name, duration } = state.creation.record;
+          state.typesStatus = "ready";
+          state.draft = { name: "", duration: "30", description: "" };
+          state.message = `Тип встречи «${name}» создан · ${duration} мин. Он появился на странице записи.`;
+          state.creation = null;
+          sessionStorage.removeItem(pendingStorage);
+          state.errors = {};
+          state.tab = "types";
+          if (dialog.open) dialog.close();
+          render("page-title");
+        }, 650);
+      }
+      dialog.addEventListener("cancel", (event) => {
+        if (state.saving) event.preventDefault();
+      });
+      dialog.addEventListener("close", () => {
+        if (opener?.isConnected) opener.focus();
+      });
+      document
+        .querySelector("#previous")
+        .addEventListener("click", () => switchVariant(-1));
+      document
+        .querySelector("#next")
+        .addEventListener("click", () => switchVariant(1));
+      document.addEventListener("keydown", (event) => {
+        if (
+          dialog.open ||
+          event.target.closest("input, textarea, select, [contenteditable]")
+        )
+          return;
+        if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+          event.preventDefault();
+          switchVariant(event.key === "ArrowLeft" ? -1 : 1);
+        }
+      });
+      document
+        .querySelector("#scenarios")
+        .addEventListener("click", (event) => {
+          const scenario = event.target.dataset.scenario;
+          if (!scenario) return;
+          reset();
+          state.scenario = scenario;
+          page = "owner";
+          const notes = {
+            normal: "Демо: есть прошедшая, текущая и будущие встречи.",
+            first:
+              "Демо: ни одного типа и ни одного бронирования. Типы по умолчанию не создаются.",
+            empty: "Демо: типы есть, но гости ещё не записывались.",
+            load: "Демо: два списка загружаются независимо.",
+            "types-error": "Демо: типы не загрузились. Второй список доступен.",
+            "bookings-error":
+              "Демо: бронирования не загрузились. Создание типов доступно.",
+            "refresh-error":
+              "Демо: не удалось обновить — прежние записи помечены как старые.",
+            "save-error":
+              "Демо: следующая отправка гарантированно не создаст тип; повтор успешен.",
+            "lost-saved":
+              "Демо: тип сохранён, ответ потерян. Повтор вернёт тот же тип. Можно обновить эту вкладку и повторить после восстановления.",
+            "lost-unsaved":
+              "Демо: первая отправка не сохранила тип, ответ потерян. Повтор той же отправки создаст один тип.",
+            long: "Демо: полные длинные поля и два разных типа с одинаковым названием.",
+          };
+          if (scenario === "first") {
+            state.types = [];
+            state.bookings = [];
+          }
+          if (scenario === "empty") state.bookings = [];
+          if (scenario === "load") {
+            state.typesStatus = "loading";
+            state.bookingsStatus = "loading";
+            timer = setTimeout(() => {
+              state.typesStatus = "ready";
+              state.bookingsStatus = "ready";
+              render();
+            }, 1800);
+          }
+          if (scenario === "types-error") state.typesStatus = "error";
+          if (scenario === "bookings-error") state.bookingsStatus = "error";
+          if (scenario === "refresh-error") {
+            state.refreshError.bookings = true;
+            state.updated.bookings = "10:05";
+          }
+          if (scenario === "save-error") {
+            state.failSave = true;
+            state.tab = "types";
+          }
+          if (scenario === "lost-saved" || scenario === "lost-unsaved") {
+            state.loseResponse =
+              scenario === "lost-saved" ? "saved" : "unsaved";
+            state.tab = "types";
+          }
+          if (scenario === "long") {
+            state.types.push({
+              id: "03",
+              name: "Знакомство",
+              duration: 540,
+              description:
+                "Отдельный тип с тем же названием. Полный рабочий день, без округления длительности.",
+            });
+            state.bookings[2].name =
+              "Александра-Мария Длинное Имя Для Проверки Переноса Строк";
+            state.bookings[2].email =
+              "a-very-long-contact-address-to-check-wrapping@example.com";
+          }
+          document.querySelector("#scenario-note").textContent =
+            notes[scenario];
+          syncUrl();
+          render();
+        });
+      // Vite serves this file for development only; the product build has no entry for it.
+      // Hide the variant bar in any accidental Vite production transform.
+      if (import.meta.env?.PROD)
+        document.querySelector("#switcher").hidden = true;
+      reset(false);
+      try {
+        const pending = JSON.parse(sessionStorage.getItem(pendingStorage));
+        if (pending?.creation) {
+          state = {
+            ...pending,
+            saving: false,
+            unknownSave: true,
+            tab: "types",
+            typesStatus: "ready",
+            bookingsStatus: "ready",
+            refreshing: { types: false, bookings: false },
+          };
+          page = "owner";
+        }
+      } catch {
+        // A damaged demo snapshot simply starts a fresh simulation.
+      }
+      syncUrl();
+      render();
+    </script>
+  </body>
+</html>

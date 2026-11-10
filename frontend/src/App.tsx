@@ -1,3 +1,6 @@
+import { Owner } from "./Owner.tsx";
+import { GuestBooking } from "./GuestBooking.tsx";
+
 function CalendarMark() {
   return (
     <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
@@ -7,7 +10,13 @@ function CalendarMark() {
   );
 }
 
-function Header({ isBooking }: { isBooking: boolean }) {
+function Header({
+  isBooking,
+  isOwner,
+}: {
+  isBooking: boolean;
+  isOwner: boolean;
+}) {
   return (
     <header className="site-header">
       <a className="brand" href="/">
@@ -15,11 +24,14 @@ function Header({ isBooking }: { isBooking: boolean }) {
         <span>Календарь звонков</span>
       </a>
       <nav aria-label="Основная навигация">
-        <a href="/" aria-current={!isBooking ? "page" : undefined}>
+        <a href="/" aria-current={!isBooking && !isOwner ? "page" : undefined}>
           Главная
         </a>
         <a href="/booking" aria-current={isBooking ? "page" : undefined}>
           Запись
+        </a>
+        <a href="/owner" aria-current={isOwner ? "page" : undefined}>
+          Владельцу календаря
         </a>
       </nav>
     </header>
@@ -66,7 +78,7 @@ function HomePage() {
 
       <section className="steps-section" aria-labelledby="steps-title">
         <div className="section-heading">
-          <h2 id="steps-title">Как будет устроена запись</h2>
+          <h2 id="steps-title">Как записаться на встречу</h2>
           <p>Три простых шага — и можно готовиться к встрече.</p>
         </div>
         <ol className="steps" aria-labelledby="steps-title">
@@ -92,9 +104,8 @@ function HomePage() {
             <p>Оставьте свои данные, чтобы завершить запись на встречу.</p>
           </li>
         </ol>
-        <p className="coming-soon-note">
-          Онлайн-запись скоро появится. Эти шаги — о том, как она будет
-          работать.
+        <p className="booking-note">
+          Подтверждение появится на экране. Письмо на email не придёт.
         </p>
       </section>
     </main>
@@ -106,10 +117,7 @@ function BookingPage() {
     <main className="booking-main">
       <h1>Запись на встречу</h1>
       <div className="booking-card">
-        <div className="booking-mark">
-          <CalendarMark />
-        </div>
-        <p className="booking-message">Онлайн-запись скоро появится</p>
+        <GuestBooking />
         <a className="home-link" href="/">
           <span aria-hidden="true">←</span> На главную
         </a>
@@ -119,12 +127,13 @@ function BookingPage() {
 }
 
 export default function App() {
+  const isOwner = window.location.pathname === "/owner";
   const isBooking = window.location.pathname === "/booking";
 
   return (
     <div className="site-shell">
-      <Header isBooking={isBooking} />
-      {isBooking ? <BookingPage /> : <HomePage />}
+      <Header isBooking={isBooking} isOwner={isOwner} />
+      {isOwner ? <Owner /> : isBooking ? <BookingPage /> : <HomePage />}
       <footer className="site-footer">
         <span>Календарь звонков</span>
         <span>Для встреч, которым хочется уделить время.</span>

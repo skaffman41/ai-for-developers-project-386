@@ -23,16 +23,35 @@ description = "Install hk hooks for this clone through mise"
 depends = ["env:check"]
 run = "hk install --mise"
 
+[tasks."api:generate"]
+description = "Regenerate API models, schemas, SDK, server types, registry and documentation"
+depends = ["env:check"]
+run = "npm run api:generate"
+
+[tasks."api:check"]
+description = "Validate OpenAPI and compare all generated API artifacts"
+depends = ["env:check"]
+run = "npm run api:check"
+
+[tasks."build:contract"]
+depends = ["env:check"]
+run = "npm run build --workspace @call-calendar/contract"
+
+[tasks."db:prepare"]
+description = "Explicitly prepare an empty SQLite file at DATABASE_PATH"
+depends = ["env:check"]
+run = "node backend/src/prepare.ts"
+
 [tasks.dev]
 description = "Run both applications; stop both on failure or Ctrl+C"
 depends = ["dev:frontend", "dev:backend"]
 
 [tasks."dev:frontend"]
-depends = ["env:check"]
+depends = ["build:contract"]
 run = "npm run dev --workspace frontend --"
 
 [tasks."dev:backend"]
-depends = ["env:check"]
+depends = ["build:contract"]
 run = "npm run dev --workspace backend"
 
 [tasks.build]
@@ -53,13 +72,23 @@ description = "Check formatting without changing files"
 depends = ["env:check"]
 run = "npm run format:check"
 
+[tasks."release:check"]
+description = "Validate release configuration with the pinned release-please schemas"
+depends = ["env:check"]
+run = "npm run release:check"
+
+[tasks."release:dry-run"]
+description = "Plan a release against controlled GitHub history without publication"
+depends = ["release:check"]
+run = "npm run release:dry-run"
+
 [tasks.format]
 description = "Format files except generated output, lockfiles and the Hexlet workflow"
 depends = ["env:check"]
 run = "npm run format"
 
 [tasks.test]
-description = "Build both applications and run the HTTP smoke once"
+description = "Build all workspaces and run HTTP, SQLite, process and release tests once"
 depends = ["build"]
 run = "npm test"
 
@@ -69,13 +98,13 @@ depends = ["env:check"]
 run = "npm run browser:install --"
 
 [tasks."test:browser"]
-description = "Build and check the guest journey in Chromium against frontend preview"
+description = "Build and check both roles in Chromium against frontend preview and isolated real backend"
 depends = ["build"]
 run = "npm run test:browser --"
 
 [tasks.check]
-description = "Check versions, lint, formatting, types, build, HTTP smoke, browser and hk config"
-depends = ["env:check", "lint", "format:check", "typecheck", "test", "test:browser"]
+description = "Check versions, lint, format, types, build, API generation, release, HTTP/process/browser and hk"
+depends = ["env:check", "lint", "format:check", "typecheck", "test", "test:browser", "release:check", "api:check"]
 run = "hk validate"
 
 [tasks."start:backend"]
