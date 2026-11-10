@@ -167,7 +167,7 @@ Ctrl+C останавливает обе части и освобождает п
 | `mise run typecheck`             | Строгая проверка типов обеих частей и конфигурации, включая вспомогательные скрипты.                                                           |
 | `mise run lint`                  | ESLint для JavaScript/TypeScript обеих частей, тестов и конфигурации; предупреждения считаются ошибкой.                                        |
 | `mise run format:check`          | Проверка форматирования Prettier и TypeSpec без изменения файлов.                                                                              |
-| `mise run format`                | Форматирование Prettier и исходника TypeSpec; результаты сборки, зависимости, lockfiles, производные и workflow Hexlet исключены.              |
+| `mise run format`                | Форматирование Prettier и исходника TypeSpec; результаты сборки, зависимости, lockfiles, CHANGELOG и workflow Hexlet исключены.                |
 | `mise run api:generate`          | Полная генерация TypeSpec → OpenAPI → SDK, модели, серверные типы, схемы, реестр операций и документация API.                                  |
 | `mise run api:check`             | Независимая генерация и сравнение всего набора производных без перезаписи сохранённых файлов.                                                  |
 | `mise run check`                 | Версии, lint, форматирование, типы, сборки, генерация API, release-конфигурация, все Vitest/Playwright и `hk validate`. Сборка одна до тестов. |
