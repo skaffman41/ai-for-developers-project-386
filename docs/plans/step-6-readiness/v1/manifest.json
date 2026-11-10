@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "repository": "skaffman41/ai-for-developers-project-386",
+  "feature": "step-6-readiness",
+  "version": "v1",
+  "approved": true,
+  "approval": "2026-11-10: пользователь принял объём дополнения и Testing Decisions в grill-with-docs; после to-tickets согласовал четыре тикета и зависимости contract → agent-rules → acceptance, overlap → acceptance сообщением «Согласовываем». Новые тесты не входят в объём.",
+  "baseCommit": "953ad8f13b95860d717bc358855a81698f68f077",
+  "records": [
+    {
+      "file": "spec.md",
+      "number": 48,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/48",
+      "title": "Довести реализацию до требований шага 6: TypeSpec и доказательства готовности",
+      "parent": null,
+      "snapshotSha256": "e85db9038c9ec5eba9d7597cec78544f645fa01c781a440527957baccba81a08",
+      "publishedBodySha256": "e85db9038c9ec5eba9d7597cec78544f645fa01c781a440527957baccba81a08",
+      "blockedBy": []
+    },
+    {
+      "file": "49-typespec-api-chain.md",
+      "number": 49,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/49",
+      "title": "Перевести действующий API на воспроизводимую цепочку TypeSpec",
+      "parent": 48,
+      "snapshotSha256": "6b59157e947b978541cc56efae8e1d46ce18edf6e5a10a50528eace6623172fc",
+      "publishedBodySha256": "6b59157e947b978541cc56efae8e1d46ce18edf6e5a10a50528eace6623172fc",
+      "blockedBy": [],
+      "acceptanceCriteria": ["AC1", "AC2", "AC3", "AC4", "AC8"],
+      "testingDecisions": ["T1", "T2", "T3", "T5", "T6", "T7"]
+    },
+    {
+      "file": "50-overlap-test-evidence.md",
+      "number": 50,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/50",
+      "title": "Доказать чувствительность существующего теста к пересечению встреч",
+      "parent": 48,
+      "snapshotSha256": "7e8f5ed07fef6174c4b1a3edf14c2e5264a1ca841bc9d85a9ef9f589fb61ecd5",
+      "publishedBodySha256": "7e8f5ed07fef6174c4b1a3edf14c2e5264a1ca841bc9d85a9ef9f589fb61ecd5",
+      "blockedBy": [],
+      "acceptanceCriteria": ["AC5"],
+      "testingDecisions": ["T3", "T4", "T6", "T7"]
+    },
+    {
+      "file": "51-agent-contract-rules.md",
+      "number": 51,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/51",
+      "title": "Закрепить правила коммитов и генерируемого контракта для агентов",
+      "parent": 48,
+      "snapshotSha256": "4fcd76a520eeda063b8fea4c62b25bb0a425c785919d72b395569c21c28c9593",
+      "publishedBodySha256": "4fcd76a520eeda063b8fea4c62b25bb0a425c785919d72b395569c21c28c9593",
+      "blockedBy": [49],
+      "acceptanceCriteria": ["AC6"],
+      "testingDecisions": ["T7"]
+    },
+    {
+      "file": "52-readiness-acceptance.md",
+      "number": 52,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/52",
+      "title": "Подтвердить локальную готовность дополнения и актуализировать приёмку",
+      "parent": 48,
+      "snapshotSha256": "7681d6343fc586c6da648ae89072c626d256db5ecab5d38d79e5f534fb37c9bf",
+      "publishedBodySha256": "7681d6343fc586c6da648ae89072c626d256db5ecab5d38d79e5f534fb37c9bf",
+      "blockedBy": [50, 51],
+      "acceptanceCriteria": ["AC7", "AC8"],
+      "testingDecisions": ["T1", "T2", "T3", "T4", "T5", "T6", "T7"]
+    }
+  ],
+  "ticketOrder": [49, 50, 51, 52],
+  "frontierAtPlanning": [49, 50],
+  "parentBodyPreserved": true,
+  "relatedDecisions": [
+    {
+      "file": "docs/adr/0005-typespec-contract-source.md",
+      "sha256": "732205da8e3d47628b9a218cda03e67d66ed32c12ead992a4684de8d692bf728"
+    }
+  ],
+  "completionBoundary": "Снимок разрешает реализацию согласованного графа по отдельной команде. Локальные результаты implementation-ready оставляют Issues открытыми; push, PR, merge в main и подтверждение удалённого CI требуют отдельных явных команд. Завершение шага 6 требует CI актуального SHA после разрешённой интеграции."
+}
