@@ -10,7 +10,7 @@ import { format } from "prettier";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 /** @typedef {import("ajv").AnySchemaObject} Schema */
-/** @typedef {{ operationId: string, summary: string, description?: string, parameters?: { in: string, name: string, required?: boolean, schema: Schema }[], requestBody?: { required?: boolean, content: Record<string, { schema: Schema }> }, responses: Record<string, { content: Record<string, { schema: Schema }> }> }} Operation */
+/** @typedef {{ operationId: string, summary: string, description?: string, parameters?: { in: string, name: string, required?: boolean, schema: Schema }[], requestBody?: { required?: boolean, content: Record<string, { schema: Schema }> }, responses: Record<string, { headers?: Record<string, { required?: boolean, schema: Schema }>, content: Record<string, { schema: Schema }> }> }} Operation */
 /** @typedef {{ info: { title: string }, paths: Record<string, Record<string, Operation>>, components: { schemas: Record<string, Schema> } }} OpenApi */
 const document = JSON.parse(
   await readFile(join(root, "contract/openapi.json"), "utf8"),
@@ -104,7 +104,22 @@ try {
             );
           return [
             status,
-            { mediaType: content[0][0], schema: content[0][1].schema },
+            {
+              mediaType: content[0][0],
+              schema: content[0][1].schema,
+              headers: {
+                type: "object",
+                additionalProperties: true,
+                properties: Object.fromEntries(
+                  Object.entries(response.headers ?? {}).map(
+                    ([name, header]) => [name.toLowerCase(), header.schema],
+                  ),
+                ),
+                required: Object.entries(response.headers ?? {})
+                  .filter(([, header]) => header.required)
+                  .map(([name]) => name.toLowerCase()),
+              },
+            },
           ];
         }),
       );

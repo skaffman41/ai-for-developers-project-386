@@ -32,6 +32,14 @@ Responses: 201, 400, 409, 422, 500, 503.
 
 Responses: 200, 400, 404, 422, 500, 503.
 
+## GET /api/owner/bookings
+
+Бронирования владельца календаря
+
+Whole saved history, independent of the guest horizon. Default upcoming: endsAt > X-Server-Time, ascending startsAt. past: endsAt <= X-Server-Time, descending startsAt. all: ascending startsAt. Equal starts use ascending opaque id.
+
+Responses: 200, 400, 500, 503.
+
 ## Schemas
 
 ```json
@@ -476,6 +484,61 @@ Responses: 200, 400, 404, 422, 500, 503.
     "properties": {
       "data": {
         "$ref": "#/components/schemas/Availability"
+      }
+    }
+  },
+  "Booking": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "id",
+      "eventType",
+      "startsAt",
+      "endsAt",
+      "guestName",
+      "guestEmail"
+    ],
+    "properties": {
+      "id": {
+        "type": "string",
+        "minLength": 1
+      },
+      "eventType": {
+        "$ref": "#/components/schemas/EventType"
+      },
+      "startsAt": {
+        "type": "string",
+        "format": "date-time",
+        "pattern": "Z$"
+      },
+      "endsAt": {
+        "type": "string",
+        "format": "date-time",
+        "pattern": "Z$"
+      },
+      "guestName": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100,
+        "pattern": "^(?=\\S)[^\\r\\n\\u2028\\u2029]*\\S$|^\\S$"
+      },
+      "guestEmail": {
+        "type": "string",
+        "format": "email",
+        "maxLength": 254
+      }
+    }
+  },
+  "Bookings": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["data"],
+    "properties": {
+      "data": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Booking"
+        }
       }
     }
   }

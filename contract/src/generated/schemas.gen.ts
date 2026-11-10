@@ -458,3 +458,60 @@ export const AvailabilityResponseSchema = {
     },
   },
 } as const;
+
+export const BookingSchema = {
+  type: "object",
+  additionalProperties: false,
+  required: [
+    "id",
+    "eventType",
+    "startsAt",
+    "endsAt",
+    "guestName",
+    "guestEmail",
+  ],
+  properties: {
+    id: {
+      type: "string",
+      minLength: 1,
+    },
+    eventType: {
+      $ref: "#/components/schemas/EventType",
+    },
+    startsAt: {
+      type: "string",
+      format: "date-time",
+      pattern: "Z$",
+    },
+    endsAt: {
+      type: "string",
+      format: "date-time",
+      pattern: "Z$",
+    },
+    guestName: {
+      type: "string",
+      minLength: 1,
+      maxLength: 100,
+      pattern: "^(?=\\S)[^\\r\\n\\u2028\\u2029]*\\S$|^\\S$",
+    },
+    guestEmail: {
+      type: "string",
+      format: "email",
+      maxLength: 254,
+    },
+  },
+} as const;
+
+export const BookingsSchema = {
+  type: "object",
+  additionalProperties: false,
+  required: ["data"],
+  properties: {
+    data: {
+      type: "array",
+      items: {
+        $ref: "#/components/schemas/Booking",
+      },
+    },
+  },
+} as const;

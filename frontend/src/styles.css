@@ -381,6 +381,92 @@ h3 {
 button {
   font: inherit;
 }
+[hidden] {
+  display: none !important;
+}
+.owner-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.owner-tabs button {
+  cursor: pointer;
+  background: transparent;
+  color: #6b685f;
+  border: 1px solid #9d9587;
+  border-radius: 6px;
+  padding: 10px 16px;
+}
+.owner-tabs button[aria-selected="true"] {
+  color: #783523;
+  border-color: #a0472e;
+  background: #efebe1;
+}
+[role="tabpanel"]:focus-visible,
+select:focus-visible {
+  outline: 3px solid #a0472e;
+  outline-offset: 3px;
+}
+.bookings-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.bookings-toolbar h2 {
+  flex: 1 1 220px;
+}
+.bookings-toolbar select {
+  max-width: 100%;
+  font: inherit;
+  padding: 10px;
+  border: 1px solid #9d9587;
+  border-radius: 6px;
+  background: #fffefb;
+  color: #302f2b;
+}
+.bookings-toolbar .reload-button {
+  margin: 0;
+}
+.booking-list {
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.booking-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+  padding: 24px 0;
+  border-top: 1px solid #e3dfd5;
+  overflow-wrap: anywhere;
+}
+.booking-row > div {
+  min-width: 0;
+}
+.booking-row h3 {
+  margin: 6px 0;
+}
+.booking-row p {
+  margin: 4px 0;
+}
+.booking-state {
+  color: #783523;
+  background: #efebe1;
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 13px;
+}
+.booking-interval,
+.guest-name {
+  font-weight: 600;
+}
+@media (max-width: 800px) {
+  .booking-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
 .meeting-types {
   text-align: left;
 }

@@ -17,6 +17,8 @@ export const components = {
   Slot: schemas.SlotSchema,
   Availability: schemas.AvailabilitySchema,
   AvailabilityResponse: schemas.AvailabilityResponseSchema,
+  Booking: schemas.BookingSchema,
+  Bookings: schemas.BookingsSchema,
 } as const;
 export const operations = {
   getHealth: {
@@ -40,18 +42,42 @@ export const operations = {
       "200": {
         mediaType: "application/json",
         schema: { $ref: "#/components/schemas/Health" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
       },
       "400": {
         mediaType: "application/json",
         schema: { $ref: "#/components/schemas/ReadError" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
       },
       "500": {
         mediaType: "application/json",
         schema: { $ref: "#/components/schemas/ReadError" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
       },
       "503": {
         mediaType: "application/json",
         schema: { $ref: "#/components/schemas/ReadError" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
       },
     },
   },
@@ -76,18 +102,48 @@ export const operations = {
       "200": {
         mediaType: "application/json",
         schema: { $ref: "#/components/schemas/EventTypes" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {
+            "x-server-time": {
+              type: "string",
+              format: "date-time",
+              pattern: "Z$",
+            },
+          },
+          required: ["x-server-time"],
+        },
       },
       "400": {
         mediaType: "application/json",
         schema: { $ref: "#/components/schemas/ReadError" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
       },
       "500": {
         mediaType: "application/json",
         schema: { $ref: "#/components/schemas/ReadError" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
       },
       "503": {
         mediaType: "application/json",
         schema: { $ref: "#/components/schemas/ReadError" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
       },
     },
   },
@@ -112,26 +168,62 @@ export const operations = {
       "201": {
         mediaType: "application/json",
         schema: { $ref: "#/components/schemas/CreatedEventType" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
       },
       "400": {
         mediaType: "application/json",
         schema: { $ref: "#/components/schemas/WriteError400" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
       },
       "409": {
         mediaType: "application/json",
         schema: { $ref: "#/components/schemas/WriteError409" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
       },
       "422": {
         mediaType: "application/json",
         schema: { $ref: "#/components/schemas/WriteError422" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
       },
       "500": {
         mediaType: "application/json",
         schema: { $ref: "#/components/schemas/WriteError500" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
       },
       "503": {
         mediaType: "application/json",
         schema: { $ref: "#/components/schemas/WriteError503" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
       },
     },
   },
@@ -159,26 +251,130 @@ export const operations = {
       "200": {
         mediaType: "application/json",
         schema: { $ref: "#/components/schemas/AvailabilityResponse" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
       },
       "400": {
         mediaType: "application/json",
         schema: { $ref: "#/components/schemas/ReadError" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
       },
       "404": {
         mediaType: "application/json",
         schema: { $ref: "#/components/schemas/ReadError" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
       },
       "422": {
         mediaType: "application/json",
         schema: { $ref: "#/components/schemas/ReadError" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
       },
       "500": {
         mediaType: "application/json",
         schema: { $ref: "#/components/schemas/ReadError" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
       },
       "503": {
         mediaType: "application/json",
         schema: { $ref: "#/components/schemas/ReadError" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
+      },
+    },
+  },
+  getOwnerBookings: {
+    method: "GET",
+    path: "/api/owner/bookings",
+    query: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        period: { type: "string", enum: ["upcoming", "past", "all"] },
+      },
+      required: [],
+    },
+    headers: {
+      type: "object",
+      additionalProperties: false,
+      properties: {},
+      required: [],
+    },
+    body: null,
+    requestMediaType: null,
+    responses: {
+      "200": {
+        mediaType: "application/json",
+        schema: { $ref: "#/components/schemas/Bookings" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {
+            "x-server-time": {
+              type: "string",
+              format: "date-time",
+              pattern: "Z$",
+            },
+          },
+          required: ["x-server-time"],
+        },
+      },
+      "400": {
+        mediaType: "application/json",
+        schema: { $ref: "#/components/schemas/ReadError" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
+      },
+      "500": {
+        mediaType: "application/json",
+        schema: { $ref: "#/components/schemas/ReadError" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
+      },
+      "503": {
+        mediaType: "application/json",
+        schema: { $ref: "#/components/schemas/ReadError" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
       },
     },
   },

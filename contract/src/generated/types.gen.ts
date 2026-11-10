@@ -146,6 +146,19 @@ export type AvailabilityResponse = {
   data: Availability;
 };
 
+export type Booking = {
+  id: string;
+  eventType: EventType;
+  startsAt: string;
+  endsAt: string;
+  guestName: string;
+  guestEmail: string;
+};
+
+export type Bookings = {
+  data: Array<Booking>;
+};
+
 export type GetHealthData = {
   body?: never;
   path?: never;
@@ -304,3 +317,40 @@ export type GetAvailabilityResponses = {
 
 export type GetAvailabilityResponse =
   GetAvailabilityResponses[keyof GetAvailabilityResponses];
+
+export type GetOwnerBookingsData = {
+  body?: never;
+  path?: never;
+  query?: {
+    period?: "upcoming" | "past" | "all";
+  };
+  url: "/api/owner/bookings";
+};
+
+export type GetOwnerBookingsErrors = {
+  /**
+   * Ошибка чтения
+   */
+  400: ReadError;
+  /**
+   * Ошибка чтения
+   */
+  500: ReadError;
+  /**
+   * Ошибка чтения
+   */
+  503: ReadError;
+};
+
+export type GetOwnerBookingsError =
+  GetOwnerBookingsErrors[keyof GetOwnerBookingsErrors];
+
+export type GetOwnerBookingsResponses = {
+  /**
+   * Бронирования выбранного периода
+   */
+  200: Bookings;
+};
+
+export type GetOwnerBookingsResponse =
+  GetOwnerBookingsResponses[keyof GetOwnerBookingsResponses];

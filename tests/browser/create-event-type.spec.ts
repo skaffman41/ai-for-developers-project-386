@@ -5,6 +5,7 @@ test("owner creates a type with keyboard and guest reads the same record", async
   backend,
 }, info) => {
   await page.goto("/owner");
+  await page.getByRole("tab", { name: "Типы встреч", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "Календарь владельца", exact: true }),
   ).toBeVisible();
@@ -37,6 +38,7 @@ test("owner creates a type with keyboard and guest reads the same record", async
     });
   }
   await page.reload();
+  await page.getByRole("tab", { name: "Типы встреч", exact: true }).click();
   await expect(page.getByRole("list", { name: "Типы встреч" })).toContainText(
     data[0].displayCode,
   );
@@ -103,6 +105,7 @@ for (const problem of [
       await route.fulfill({ response, json });
     });
     await page.goto("/owner");
+    await page.getByRole("tab", { name: "Типы встреч", exact: true }).click();
     await page.getByLabel("Название").fill(" Разговор ");
     await page.getByLabel("Название").focus();
     await page.keyboard.press("Tab");
@@ -120,6 +123,20 @@ for (const problem of [
     await expect(
       page.getByRole("button", { name: "Создать тип", exact: true }),
     ).toBeDisabled();
+    if (problem === "after-save") {
+      await page
+        .getByRole("tab", { name: "Бронирования", exact: true })
+        .click();
+      await page.getByRole("button", { name: "Обновить бронирования" }).click();
+      await expect(
+        page.getByRole("button", { name: "Обновить бронирования" }),
+      ).toBeEnabled();
+      await page.getByRole("tab", { name: "Типы встреч", exact: true }).click();
+      await expect(page.getByLabel("Название")).toHaveValue(" Разговор ");
+      await expect(page.getByLabel("Длительность, минут")).toHaveValue("45");
+      await expect(page.getByLabel("Название")).toBeDisabled();
+      expect(requests).toHaveLength(1);
+    }
     const { data } = await (
       await fetch(`${backend.url}/api/event-types`)
     ).json();
@@ -137,6 +154,7 @@ for (const problem of [
       }
     }
     await page.reload();
+    await page.getByRole("tab", { name: "Типы встреч", exact: true }).click();
     await expect(page.getByRole("alert")).toContainText(
       "Не удалось узнать результат создания типа",
     );
@@ -165,6 +183,7 @@ test("overlong pasted text is retained with associated errors and focus on the f
   page,
 }, info) => {
   await page.goto("/owner");
+  await page.getByRole("tab", { name: "Типы встреч", exact: true }).click();
   const name = page.getByLabel("Название");
   await name.fill("я".repeat(101));
   await page.getByLabel("Длительность, минут").fill("541");
@@ -208,6 +227,7 @@ test("sessionStorage failure before saving prevents POST and retains the draft",
     if (request.method() === "POST") posts += 1;
   });
   await page.goto("/owner");
+  await page.getByRole("tab", { name: "Типы встреч", exact: true }).click();
   await page.getByLabel("Название").fill("Тип");
   await page.getByRole("button", { name: "Создать тип", exact: true }).click();
   await expect(
@@ -241,12 +261,14 @@ test("failed local completion preserves the original attempt for a safe reload r
     };
   });
   await page.goto("/owner");
+  await page.getByRole("tab", { name: "Типы встреч", exact: true }).click();
   await page.getByLabel("Название").fill("Тип");
   await page.getByRole("button", { name: "Создать тип", exact: true }).click();
   await expect(page.getByRole("alert")).toContainText(
     "Не удалось узнать результат создания типа",
   );
   await page.reload();
+  await page.getByRole("tab", { name: "Типы встреч", exact: true }).click();
   await expect(page.getByLabel("Название")).toBeDisabled();
   await page.getByRole("button", { name: "Повторить создание" }).click();
   await expect(
@@ -281,6 +303,7 @@ test("a known validation refusal retains draft and allows a new independent key"
     });
   });
   await page.goto("/owner");
+  await page.getByRole("tab", { name: "Типы встреч", exact: true }).click();
   await page.getByLabel("Название").fill("Тип");
   await page.getByRole("button", { name: "Создать тип", exact: true }).click();
   await expect(page.getByLabel("Название")).toBeFocused();
@@ -297,33 +320,59 @@ test("older refresh cannot remove a just-created type or reset a filled form", a
   page,
 }) => {
   await page.goto("/owner");
+  await page.getByRole("tab", { name: "Типы встреч", exact: true }).click();
   await expect(
     page.getByText("Типов встреч пока нет. Создайте первый тип."),
   ).toBeVisible();
   let release: () => void = () => {};
+  let releasePost: () => void = () => {};
+  let oldListFetched = false;
+  let postSaved = false;
   const gate = new Promise<void>((resolve) => {
     release = resolve;
   });
+  const postGate = new Promise<void>((resolve) => {
+    releasePost = resolve;
+  });
   await page.route("**/api/event-types", async (route) => {
     if (route.request().method() === "POST") {
-      await route.continue();
+      const response = await route.fetch();
+      postSaved = true;
+      await postGate;
+      await route.fulfill({ response });
       return;
     }
     const response = await route.fetch();
+    oldListFetched = true;
     await gate;
     await route.fulfill({ response });
   });
   try {
     await page.getByRole("button", { name: "Обновить список" }).click();
+    await expect.poll(() => oldListFetched).toBe(true);
     await page.getByLabel("Название").fill("Первый");
+    await page.getByLabel("Длительность, минут").fill("45");
+    await page.getByLabel("Описание", { exact: true }).fill("Исходные данные");
     await page
       .getByRole("button", { name: "Создать тип", exact: true })
       .click();
+    await expect.poll(() => postSaved).toBe(true);
+    await page.getByRole("tab", { name: "Бронирования", exact: true }).click();
+    await page.getByRole("button", { name: "Обновить бронирования" }).click();
+    await page.getByRole("tab", { name: "Типы встреч", exact: true }).click();
+    await expect(page.getByLabel("Название")).toBeDisabled();
+    await expect(page.getByLabel("Название")).toHaveValue("Первый");
+    await expect(page.getByLabel("Длительность, минут")).toHaveValue("45");
+    await expect(page.getByLabel("Описание", { exact: true })).toHaveValue(
+      "Исходные данные",
+    );
+    releasePost();
     await expect(
       page.getByRole("status").filter({ hasText: "Тип встречи создан" }),
     ).toBeVisible();
     await page.getByLabel("Название").fill("Следующий");
   } finally {
+    releasePost();
     release();
   }
   await expect(
@@ -348,6 +397,7 @@ test("independently filled tabs create separate types with separate attempt keys
         keys.push(request.headers()["idempotency-key"]);
     });
     await tab.goto("/owner");
+    await tab.getByRole("tab", { name: "Типы встреч", exact: true }).click();
     await tab.getByLabel("Название").fill("Одинаковое название");
   }
   await Promise.all(
@@ -377,6 +427,7 @@ test("retrying an older saved success preserves the authoritative newest-first o
     } else await route.continue();
   });
   await page.goto("/owner");
+  await page.getByRole("tab", { name: "Типы встреч", exact: true }).click();
   await expect(
     page.getByText("Типов встреч пока нет. Создайте первый тип."),
   ).toBeVisible();
@@ -395,6 +446,7 @@ test("retrying an older saved success preserves the authoritative newest-first o
   });
   expect(newer.status).toBe(201);
   await page.reload();
+  await page.getByRole("tab", { name: "Типы встреч", exact: true }).click();
   const headings = page
     .getByRole("list", { name: "Типы встреч" })
     .getByRole("heading");

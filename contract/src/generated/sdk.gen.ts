@@ -21,6 +21,9 @@ import type {
   GetHealthData,
   GetHealthErrors,
   GetHealthResponses,
+  GetOwnerBookingsData,
+  GetOwnerBookingsErrors,
+  GetOwnerBookingsResponses,
 } from "./types.gen.js";
 
 export type Options<
@@ -109,3 +112,21 @@ export const getAvailability = <ThrowOnError extends boolean = false>(
     GetAvailabilityErrors,
     ThrowOnError
   >({ url: "/api/availability", ...options });
+
+/**
+ * Бронирования владельца календаря
+ *
+ * Whole saved history, independent of the guest horizon. Default upcoming: endsAt > X-Server-Time, ascending startsAt. past: endsAt <= X-Server-Time, descending startsAt. all: ascending startsAt. Equal starts use ascending opaque id.
+ */
+export const getOwnerBookings = <ThrowOnError extends boolean = false>(
+  options?: Options<GetOwnerBookingsData, ThrowOnError>,
+): RequestResult<
+  GetOwnerBookingsResponses,
+  GetOwnerBookingsErrors,
+  ThrowOnError
+> =>
+  (options?.client ?? client).get<
+    GetOwnerBookingsResponses,
+    GetOwnerBookingsErrors,
+    ThrowOnError
+  >({ url: "/api/owner/bookings", ...options });

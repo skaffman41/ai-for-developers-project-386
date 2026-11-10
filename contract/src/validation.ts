@@ -38,6 +38,7 @@ function compile(schema: unknown) {
 
 const requests = new Map<OperationId, ValidateFunction>();
 const responses = new Map<string, ValidateFunction>();
+const responseHeaders = new Map<string, ValidateFunction>();
 const headers = new Map<OperationId, ValidateFunction>();
 const bodies = new Map<OperationId, ValidateFunction>();
 const schemas = new Map(
@@ -49,6 +50,7 @@ for (const [id, operation] of Object.entries(operations)) {
   if (operation.body) bodies.set(id as OperationId, compile(operation.body));
   for (const [status, response] of Object.entries(operation.responses)) {
     responses.set(`${id}:${status}`, compile(response.schema));
+    responseHeaders.set(`${id}:${status}`, compile(response.headers));
   }
 }
 
@@ -65,12 +67,14 @@ export function assertResponse(
   status: number,
   mediaType: string | null,
   data: unknown,
+  headerValues: Record<string, unknown> = {},
 ): void {
   const validate = responses.get(`${operation}:${status}`);
   if (
     !validate ||
     mediaType?.split(";", 1)[0].trim().toLowerCase() !== "application/json" ||
-    !validate(data)
+    !validate(data) ||
+    !responseHeaders.get(`${operation}:${status}`)!(headerValues)
   ) {
     throw new Error(`Invalid ${operation} response (${status})`);
   }

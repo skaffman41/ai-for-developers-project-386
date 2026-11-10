@@ -13,6 +13,9 @@ import type {
   GetEventTypesResponses,
   GetHealthErrors,
   GetHealthResponses,
+  GetOwnerBookingsData,
+  GetOwnerBookingsErrors,
+  GetOwnerBookingsResponses,
 } from "./types.gen.js";
 
 export type RouteHandlers = {
@@ -30,5 +33,9 @@ export type RouteHandlers = {
   getAvailability: RouteHandler<{
     Querystring: GetAvailabilityData["query"];
     Reply: GetAvailabilityErrors & GetAvailabilityResponses;
+  }>;
+  getOwnerBookings: RouteHandler<{
+    Querystring?: GetOwnerBookingsData["query"];
+    Reply: GetOwnerBookingsErrors & GetOwnerBookingsResponses;
   }>;
 };

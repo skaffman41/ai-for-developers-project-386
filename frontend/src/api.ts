@@ -2,6 +2,7 @@ import {
   createEventType,
   getEventTypes,
   getAvailability,
+  getOwnerBookings,
 } from "@call-calendar/contract/sdk";
 import { assertResponse } from "@call-calendar/contract/validation";
 import type { OperationId } from "@call-calendar/contract/validation";
@@ -17,6 +18,7 @@ function validatedFetch(operation: OperationId): typeof fetch {
       response.status,
       response.headers.get("content-type"),
       data,
+      Object.fromEntries(response.headers),
     );
     return response;
   };
@@ -25,11 +27,36 @@ function validatedFetch(operation: OperationId): typeof fetch {
 export class AvailabilityDateExpired extends Error {}
 
 export async function loadEventTypes(signal: AbortSignal) {
+  return (await loadOwnerEventTypes(signal)).values;
+}
+
+export async function loadOwnerEventTypes(signal: AbortSignal) {
   return getEventTypes({
     signal,
     throwOnError: true,
     fetch: validatedFetch("getEventTypes"),
-  }).then((result) => result.data!.data);
+  }).then((result) => ({
+    values: result.data!.data,
+    asOf: result.response.headers.get("x-server-time")!,
+  }));
+}
+
+export async function loadOwnerBookings(
+  period: NonNullable<
+    import("@call-calendar/contract/types").GetOwnerBookingsData["query"]
+  >["period"],
+  signal: AbortSignal,
+) {
+  const result = await getOwnerBookings({
+    query: { period },
+    signal,
+    throwOnError: true,
+    fetch: validatedFetch("getOwnerBookings"),
+  });
+  return {
+    values: result.data!.data,
+    asOf: result.response.headers.get("x-server-time")!,
+  };
 }
 
 export async function loadAvailability(

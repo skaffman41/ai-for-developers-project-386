@@ -8,7 +8,8 @@ import {
   schemaErrors,
   validRequestBody,
 } from "@call-calendar/contract/validation";
-import { loadEventTypes, sendEventType } from "./api.ts";
+import { loadOwnerEventTypes, sendEventType } from "./api.ts";
+import { OwnerBookings, ownerTimestamp } from "./OwnerBookings.tsx";
 import { completeAttempt, readAttempt, saveAttempt } from "./attempts.ts";
 import type { PendingAttempt } from "./attempts.ts";
 
@@ -42,6 +43,7 @@ function draftErrors(raw: CreateEventTypeInput) {
 }
 
 export function Owner() {
+  const [tab, setTab] = useState<"bookings" | "types">("bookings");
   const [restored] = useState(restore);
   const [pending, setPending] = useState<
     PendingAttempt<CreateEventTypeInput> | undefined
@@ -71,15 +73,15 @@ export function Owner() {
   const form = useRef<HTMLFormElement>(null);
   const needsFocus = useRef(false);
   useEffect(() => {
-    if (phase === "idle" && needsFocus.current) {
+    if (tab === "types" && phase === "idle" && needsFocus.current) {
       needsFocus.current = false;
       focusError(errors);
     }
-  }, [errors, phase]);
+  }, [errors, phase, tab]);
   useEffect(() => {
     const controller = new AbortController();
-    loadEventTypes(controller.signal).then(
-      (values) => {
+    loadOwnerEventTypes(controller.signal).then(
+      ({ values, asOf }) => {
         if (controller.signal.aborted) return;
         setTypes([
           ...created.current.filter(
@@ -88,13 +90,7 @@ export function Owner() {
           ...values,
         ]);
         setListStatus("loaded");
-        setLoadedAt(
-          new Date().toLocaleTimeString("ru-RU", {
-            timeZone: "Europe/Moscow",
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-        );
+        setLoadedAt(asOf);
       },
       () => {
         if (!controller.signal.aborted) setListStatus("error");
@@ -187,12 +183,77 @@ export function Owner() {
       <p className="eyebrow">Для ваших встреч</p>
       <h1>Календарь владельца</h1>
       <div className="owner-heading">
-        <h2>Типы встреч</h2>
+        <div
+          className="owner-tabs"
+          role="tablist"
+          aria-label="Раздел календаря"
+          onKeyDown={(event) => {
+            if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key))
+              return;
+            event.preventDefault();
+            const next =
+              event.key === "Home"
+                ? "bookings"
+                : event.key === "End"
+                  ? "types"
+                  : tab === "types"
+                    ? "bookings"
+                    : "types";
+            setTab(next);
+            document.getElementById(`owner-tab-${next}`)?.focus();
+          }}
+        >
+          {(
+            [
+              ["bookings", "Бронирования"],
+              ["types", "Типы встреч"],
+            ] as const
+          ).map(([value, label]) => (
+            <button
+              key={value}
+              id={`owner-tab-${value}`}
+              role="tab"
+              type="button"
+              aria-selected={tab === value}
+              aria-controls={`owner-panel-${value}`}
+              tabIndex={tab === value ? 0 : -1}
+              onClick={() => setTab(value)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
         <a className="home-link" href="/booking">
           Открыть запись гостя ↗
         </a>
       </div>
-      <div className="owner-columns">
+      <div
+        id="owner-panel-bookings"
+        role="tabpanel"
+        aria-labelledby="owner-tab-bookings"
+        tabIndex={0}
+        hidden={tab !== "bookings"}
+      >
+        <OwnerBookings
+          hasTypes={
+            types.length ? true : listStatus === "loaded" ? false : undefined
+          }
+          createType={() => {
+            setTab("types");
+            requestAnimationFrame(() =>
+              document.getElementById("type-name")?.focus(),
+            );
+          }}
+        />
+      </div>
+      <div
+        id="owner-panel-types"
+        role="tabpanel"
+        aria-labelledby="owner-tab-types"
+        tabIndex={0}
+        hidden={tab !== "types"}
+        className="owner-columns"
+      >
         <section className="owner-panel" aria-label="Создание типа встречи">
           <h2>Новый тип встречи</h2>
           <p>
@@ -295,7 +356,13 @@ export function Owner() {
             {listStatus === "loaded" && !types.length && (
               <p>Типов встреч пока нет. Создайте первый тип.</p>
             )}
-            {loadedAt && <p>Последняя загрузка: {loadedAt}, Москва</p>}
+            {loadedAt && (
+              <p>
+                Последняя загрузка:{" "}
+                <time dateTime={loadedAt}>{ownerTimestamp(loadedAt)}</time>,
+                Москва
+              </p>
+            )}
           </div>
           <button
             type="button"

@@ -69,6 +69,17 @@
                   "$ref": "#/components/schemas/EventTypes"
                 }
               }
+            },
+            "headers": {
+              "X-Server-Time": {
+                "description": "Authoritative UTC server time of this successful read. Owner classification and last successful-load display use this instant; refresh explicitly to update it.",
+                "required": true,
+                "schema": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "Z$"
+                }
+              }
             }
           },
           "400": {
@@ -268,6 +279,77 @@
           },
           "422": {
             "description": "Invalid date or outside availability horizon",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/owner/bookings": {
+      "get": {
+        "operationId": "getOwnerBookings",
+        "summary": "Бронирования владельца календаря",
+        "description": "Whole saved history, independent of the guest horizon. Default upcoming: endsAt > X-Server-Time, ascending startsAt. past: endsAt <= X-Server-Time, descending startsAt. all: ascending startsAt. Equal starts use ascending opaque id.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "period",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["upcoming", "past", "all"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Бронирования выбранного периода",
+            "headers": {
+              "X-Server-Time": {
+                "description": "Authoritative UTC server time of this successful read. Owner classification and last successful-load display use this instant; refresh explicitly to update it.",
+                "required": true,
+                "schema": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "Z$"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Bookings"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ошибка чтения",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Ошибка чтения",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Ошибка чтения",
             "content": {
               "application/json": {
                 "schema": {
@@ -722,6 +804,61 @@
         "properties": {
           "data": {
             "$ref": "#/components/schemas/Availability"
+          }
+        }
+      },
+      "Booking": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "eventType",
+          "startsAt",
+          "endsAt",
+          "guestName",
+          "guestEmail"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "eventType": {
+            "$ref": "#/components/schemas/EventType"
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "Z$"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "Z$"
+          },
+          "guestName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^(?=\\S)[^\\r\\n\\u2028\\u2029]*\\S$|^\\S$"
+          },
+          "guestEmail": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          }
+        }
+      },
+      "Bookings": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data"],
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Booking"
+            }
           }
         }
       }

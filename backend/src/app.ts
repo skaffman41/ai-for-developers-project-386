@@ -13,10 +13,12 @@ import type {
   CreateEventTypeData,
   CreateEventTypeErrors,
   CreateEventTypeResponses,
-  EventType,
   GetAvailabilityData,
   GetAvailabilityErrors,
   GetAvailabilityResponses,
+  GetOwnerBookingsData,
+  GetOwnerBookingsErrors,
+  GetOwnerBookingsResponses,
 } from "@call-calendar/contract/types";
 import { createEventType } from "./create-event-type.ts";
 import type { AttemptOptions } from "./attempts.ts";
@@ -29,6 +31,8 @@ import {
   systemClock,
 } from "./availability.ts";
 import type { Clock } from "./availability.ts";
+import { ownerBookings } from "./owner-bookings.ts";
+import { eventTypeFromRow } from "./event-types.ts";
 
 function contractRoute(id: OperationId) {
   return {
@@ -73,7 +77,13 @@ function contractRoute(id: OperationId) {
       reply: FastifyReply,
       payload: unknown,
     ) {
-      assertResponse(id, reply.statusCode, "application/json", payload);
+      assertResponse(
+        id,
+        reply.statusCode,
+        "application/json",
+        payload,
+        reply.getHeaders(),
+      );
       return payload;
     },
   };
@@ -121,28 +131,47 @@ export function buildApp(options: AttemptOptions & { now?: Clock } = {}) {
     _request,
     reply,
   ) => {
-    await reply.code(200).send({
-      data: database
-        .prepare(
-          "SELECT * FROM event_types ORDER BY created_at DESC, sequence DESC",
-        )
-        .all()
-        .map((row): EventType => ({
-          id: String(row.id),
-          name: String(row.name),
-          durationMinutes: Number(row.duration_minutes),
-          ...(row.description === null
-            ? {}
-            : { description: String(row.description) }),
-          displayCode: `В-${String(row.sequence).padStart(6, "0")}`,
-        })),
-    });
+    await reply
+      .header("X-Server-Time", now().toISOString())
+      .code(200)
+      .send({
+        data: database
+          .prepare(
+            "SELECT * FROM event_types ORDER BY created_at DESC, sequence DESC",
+          )
+          .all()
+          .map(eventTypeFromRow),
+      });
   };
   app.get(operations.getHealth.path, contractRoute("getHealth"), health);
   app.get(
     operations.getEventTypes.path,
     contractRoute("getEventTypes"),
     eventTypes,
+  );
+  const bookings: RouteHandlers["getOwnerBookings"] = async (
+    request,
+    reply,
+  ) => {
+    const clock = now();
+    await reply
+      .header("X-Server-Time", clock.toISOString())
+      .code(200)
+      .send({
+        data: ownerBookings(
+          database,
+          request.query?.period ?? "upcoming",
+          clock,
+        ),
+      });
+  };
+  app.get<{
+    Querystring: GetOwnerBookingsData["query"];
+    Reply: GetOwnerBookingsErrors & GetOwnerBookingsResponses;
+  }>(
+    operations.getOwnerBookings.path,
+    contractRoute("getOwnerBookings"),
+    bookings,
   );
   const create: RouteHandlers["createEventType"] = async (request, reply) => {
     const result = createEventType(

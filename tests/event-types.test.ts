@@ -243,7 +243,7 @@ test("explicit preparation records schema version and all required durability se
   }
 });
 
-for (const path of ["/health", "/api/event-types"]) {
+for (const path of ["/health", "/api/event-types", "/api/owner/bookings"]) {
   test.each([
     {
       name: "JSON object",
