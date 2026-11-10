@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { createClient } from "@hey-api/openapi-ts";
 import { Ajv2020 } from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
@@ -12,41 +13,59 @@ const root = fileURLToPath(new URL("../", import.meta.url));
 /** @typedef {import("ajv").AnySchemaObject} Schema */
 /** @typedef {{ operationId: string, summary: string, description?: string, parameters?: { in: string, name: string, required?: boolean, schema: Schema }[], requestBody?: { required?: boolean, content: Record<string, { schema: Schema }> }, responses: Record<string, { headers?: Record<string, { required?: boolean, schema: Schema }>, content: Record<string, { schema: Schema }> }> }} Operation */
 /** @typedef {{ info: { title: string }, paths: Record<string, Record<string, Operation>>, components: { schemas: Record<string, Schema> } }} OpenApi */
-const document = JSON.parse(
-  await readFile(join(root, "contract/openapi.json"), "utf8"),
-);
-const meta = JSON.parse(
-  await readFile(join(root, "contract/vendor/openapi-3.1-schema.json"), "utf8"),
-);
-// This standalone structural schema has no dynamic-scope override. Resolve its meta
-// anchor explicitly: Ajv otherwise recurses into the OpenAPI document at #meta.
-const structural = JSON.parse(
-  JSON.stringify(meta).replaceAll(
-    '"$dynamicRef":"#meta"',
-    '"$ref":"#/$defs/schema"',
-  ),
-);
-const validate = new Ajv2020({ strict: false, validateFormats: false }).compile(
-  structural,
-);
-if (!validate(document))
-  throw new Error(`Invalid OpenAPI: ${JSON.stringify(validate.errors)}`);
-const source = /** @type {OpenApi} */ (document);
-const schemaCompiler = addFormats.default(new Ajv2020({ strict: true }));
-const schemaDocument = JSON.parse(
-  JSON.stringify({ $defs: source.components.schemas }).replaceAll(
-    "#/components/schemas/",
-    "#/$defs/",
-  ),
-);
-for (const name of Object.keys(source.components.schemas))
-  schemaCompiler.compile({ ...schemaDocument, $ref: `#/$defs/${name}` });
-
 const temporary = await mkdtemp(join(tmpdir(), "call-calendar-contract-"));
 try {
+  // Compile into isolation in both modes. A failing check must never repair the
+  // committed OpenAPI or any derivative before comparing the complete set.
+  execFileSync(
+    process.execPath,
+    [
+      join(root, "node_modules/@typespec/compiler/cmd/tsp.js"),
+      "compile",
+      join(root, "contract/main.tsp"),
+      "--output-dir",
+      temporary,
+      "--warn-as-error",
+    ],
+    { cwd: root, stdio: "inherit" },
+  );
+  const document = JSON.parse(
+    await readFile(join(temporary, "openapi.json"), "utf8"),
+  );
+  const meta = JSON.parse(
+    await readFile(
+      join(root, "contract/vendor/openapi-3.1-schema.json"),
+      "utf8",
+    ),
+  );
+  // This standalone structural schema has no dynamic-scope override. Resolve its meta
+  // anchor explicitly: Ajv otherwise recurses into the OpenAPI document at #meta.
+  const structural = JSON.parse(
+    JSON.stringify(meta).replaceAll(
+      '"$dynamicRef":"#meta"',
+      '"$ref":"#/$defs/schema"',
+    ),
+  );
+  const validate = new Ajv2020({
+    strict: false,
+    validateFormats: false,
+  }).compile(structural);
+  if (!validate(document))
+    throw new Error(`Invalid OpenAPI: ${JSON.stringify(validate.errors)}`);
+  const source = /** @type {OpenApi} */ (document);
+  const schemaCompiler = addFormats.default(new Ajv2020({ strict: true }));
+  const schemaDocument = JSON.parse(
+    JSON.stringify({ $defs: source.components.schemas }).replaceAll(
+      "#/components/schemas/",
+      "#/$defs/",
+    ),
+  );
+  for (const name of Object.keys(source.components.schemas))
+    schemaCompiler.compile({ ...schemaDocument, $ref: `#/$defs/${name}` });
+
   const generated = join(temporary, "generated");
   await createClient({
-    input: join(root, "contract/openapi.json"),
+    input: join(temporary, "openapi.json"),
     output: { path: generated, importFileExtension: ".js" },
     plugins: [
       "@hey-api/typescript",
@@ -58,7 +77,7 @@ try {
   });
   /** @type {Record<string, unknown>} */
   const operations = {};
-  let documentation = `# ${source.info.title}\n\nGenerated from [openapi.json](openapi.json). Do not edit by hand.\n`;
+  let documentation = `# ${source.info.title}\n\nGenerated from [main.tsp](main.tsp) via [openapi.json](openapi.json). Do not edit by hand.\n`;
   for (const [path, item] of Object.entries(source.paths)) {
     for (const [method, operation] of Object.entries(item)) {
       if (!["get", "post", "put", "patch", "delete"].includes(method)) continue;
@@ -145,6 +164,10 @@ try {
   documentation += `\n## Schemas\n\n\`\`\`json\n${JSON.stringify(source.components.schemas, null, 2)}\n\`\`\`\n`;
   /** @type {Map<string, string>} */
   const files = new Map();
+  files.set(
+    "contract/openapi.json",
+    await format(JSON.stringify(source), { parser: "json" }),
+  );
   /** @param {string} directory */
   async function collect(directory) {
     for (const entry of await readdir(directory, { withFileTypes: true })) {
@@ -210,7 +233,9 @@ try {
       throw new Error(
         `Generated API differs: ${differences.join(", ")}. Run npm run api:generate.`,
       );
-    console.log("OpenAPI valid; all generated API artifacts match.");
+    console.log(
+      "TypeSpec and OpenAPI valid; all generated API artifacts match.",
+    );
   } else {
     // Hey API owns this directory. Remove stale derivatives when operations disappear.
     await rm(join(root, "contract/src/generated"), {

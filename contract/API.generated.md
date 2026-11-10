@@ -1,12 +1,22 @@
 # Календарь звонков — HTTP API
 
-Generated from [openapi.json](openapi.json). Do not edit by hand.
+Generated from [main.tsp](main.tsp) via [openapi.json](openapi.json). Do not edit by hand.
 
-## GET /health
+## GET /api/availability
 
-Проверить здоровье сервиса
+Получить свободные интервалы по московскому времени
 
-Responses: 200, 400, 500, 503.
+Сегодня и следующие 13 московских дней; будни 09:00–18:00, начала через 30 минут строго после asOf. Чтение не резервирует время.
+
+Responses: 200, 400, 404, 422, 500, 503.
+
+## POST /api/bookings
+
+Подтвердить бронирование с безопасным повтором
+
+Idempotency-Key — UUID. Сравниваются исходные значения JSON, порядок свойств незначим. Структурные ошибки parseable JSON с действительным ключом сохраняются как окончательный VALIDATION_ERROR. Нормализация trim явная, длина проверяется после неё. Переполненные при разборе JSON числа (например 1e400) нельзя интерпретировать: INVALID_REQUEST/unknown до регистрации попытки. rejected возвращается только после commit; технический сбой оставляет unknown. Результаты не имеют TTL.
+
+Responses: 201, 400, 404, 409, 422, 500, 503.
 
 ## GET /api/event-types
 
@@ -24,14 +34,6 @@ Idempotency-Key — UUID. Сравниваются исходные значен
 
 Responses: 201, 400, 409, 422, 500, 503.
 
-## GET /api/availability
-
-Получить свободные интервалы по московскому времени
-
-Сегодня и следующие 13 московских дней; будни 09:00–18:00, начала через 30 минут строго после asOf. Чтение не резервирует время.
-
-Responses: 200, 400, 404, 422, 500, 503.
-
 ## GET /api/owner/bookings
 
 Бронирования владельца календаря
@@ -40,32 +42,370 @@ Whole saved history, independent of the guest horizon. Default upcoming: endsAt 
 
 Responses: 200, 400, 500, 503.
 
-## POST /api/bookings
+## GET /health
 
-Подтвердить бронирование с безопасным повтором
+Проверить здоровье сервиса
 
-Idempotency-Key — UUID. Сравниваются исходные значения JSON, порядок свойств незначим. Структурные ошибки parseable JSON с действительным ключом сохраняются как окончательный VALIDATION_ERROR. Нормализация trim явная, длина проверяется после неё. Переполненные при разборе JSON числа (например 1e400) нельзя интерпретировать: INVALID_REQUEST/unknown до регистрации попытки. rejected возвращается только после commit; технический сбой оставляет unknown. Результаты не имеют TTL.
-
-Responses: 201, 400, 404, 409, 422, 500, 503.
+Responses: 200, 400, 500, 503.
 
 ## Schemas
 
 ```json
 {
-  "Health": {
+  "Availability": {
     "type": "object",
-    "additionalProperties": false,
-    "required": ["status"],
+    "required": [
+      "eventTypeId",
+      "date",
+      "timeZone",
+      "firstDate",
+      "lastDate",
+      "asOf",
+      "slots"
+    ],
     "properties": {
-      "status": {
-        "const": "ok",
+      "eventTypeId": {
+        "type": "string",
+        "minLength": 1
+      },
+      "date": {
+        "type": "string",
+        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+        "format": "date"
+      },
+      "timeZone": {
+        "type": "string",
+        "enum": ["Europe/Moscow"]
+      },
+      "firstDate": {
+        "type": "string",
+        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+        "format": "date"
+      },
+      "lastDate": {
+        "type": "string",
+        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+        "format": "date"
+      },
+      "asOf": {
+        "type": "string",
+        "pattern": "Z$",
+        "format": "date-time"
+      },
+      "slots": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Slot"
+        }
+      }
+    },
+    "unevaluatedProperties": {
+      "not": {}
+    }
+  },
+  "AvailabilityResponse": {
+    "type": "object",
+    "required": ["data"],
+    "properties": {
+      "data": {
+        "$ref": "#/components/schemas/Availability"
+      }
+    },
+    "unevaluatedProperties": {
+      "not": {}
+    }
+  },
+  "Booking": {
+    "type": "object",
+    "required": [
+      "id",
+      "eventType",
+      "startsAt",
+      "endsAt",
+      "guestName",
+      "guestEmail"
+    ],
+    "properties": {
+      "id": {
+        "type": "string",
+        "minLength": 1
+      },
+      "eventType": {
+        "$ref": "#/components/schemas/EventType"
+      },
+      "startsAt": {
+        "type": "string",
+        "pattern": "Z$",
+        "format": "date-time"
+      },
+      "endsAt": {
+        "type": "string",
+        "pattern": "Z$",
+        "format": "date-time"
+      },
+      "guestName": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100,
+        "pattern": "^(?=\\S)[^\\r\\n\\u2028\\u2029]*\\S$|^\\S$"
+      },
+      "guestEmail": {
+        "type": "string",
+        "maxLength": 254,
+        "format": "email"
+      }
+    },
+    "unevaluatedProperties": {
+      "not": {}
+    }
+  },
+  "BookingDraft": {
+    "type": "object",
+    "required": ["eventTypeId", "startsAt", "guestName", "guestEmail"],
+    "properties": {
+      "eventTypeId": {
+        "type": "string",
+        "minLength": 1
+      },
+      "startsAt": {
+        "type": "string",
+        "pattern": "Z$",
+        "format": "date-time"
+      },
+      "guestName": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100,
+        "pattern": "^(?=\\S)[^\\r\\n\\u2028\\u2029]*\\S$|^\\S$"
+      },
+      "guestEmail": {
+        "type": "string",
+        "maxLength": 254,
+        "format": "email"
+      }
+    },
+    "unevaluatedProperties": {
+      "not": {}
+    }
+  },
+  "BookingError404": {
+    "type": "object",
+    "required": ["idempotencyKey", "outcome", "error"],
+    "properties": {
+      "idempotencyKey": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "outcome": {
+        "type": "string",
+        "enum": ["rejected"]
+      },
+      "error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": ["EVENT_TYPE_NOT_FOUND"]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "fieldErrors": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/NonEmptyString"
+            }
+          }
+        },
+        "required": ["code", "message"],
+        "unevaluatedProperties": {
+          "not": {}
+        }
+      }
+    },
+    "unevaluatedProperties": {
+      "not": {}
+    }
+  },
+  "BookingError409": {
+    "oneOf": [
+      {
+        "$ref": "#/components/schemas/WriteError409"
+      },
+      {
+        "$ref": "#/components/schemas/BookingRefusal409"
+      }
+    ]
+  },
+  "BookingError422": {
+    "type": "object",
+    "required": ["idempotencyKey", "outcome", "error"],
+    "properties": {
+      "idempotencyKey": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "outcome": {
+        "type": "string",
+        "enum": ["rejected"]
+      },
+      "error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": ["VALIDATION_ERROR", "TIME_UNAVAILABLE"]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "fieldErrors": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/NonEmptyString"
+            }
+          }
+        },
+        "required": ["code", "message"],
+        "unevaluatedProperties": {
+          "not": {}
+        }
+      }
+    },
+    "unevaluatedProperties": {
+      "not": {}
+    }
+  },
+  "BookingRefusal409": {
+    "type": "object",
+    "required": ["idempotencyKey", "outcome", "error"],
+    "properties": {
+      "idempotencyKey": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "outcome": {
+        "type": "string",
+        "enum": ["rejected"]
+      },
+      "error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": ["SLOT_TAKEN"]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "fieldErrors": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/NonEmptyString"
+            }
+          }
+        },
+        "required": ["code", "message"],
+        "unevaluatedProperties": {
+          "not": {}
+        }
+      }
+    },
+    "unevaluatedProperties": {
+      "not": {}
+    }
+  },
+  "Bookings": {
+    "type": "object",
+    "required": ["data"],
+    "properties": {
+      "data": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Booking"
+        }
+      }
+    },
+    "unevaluatedProperties": {
+      "not": {}
+    }
+  },
+  "CreateBookingInput": {
+    "type": "object",
+    "required": ["eventTypeId", "startsAt", "guestName", "guestEmail"],
+    "properties": {
+      "eventTypeId": {
+        "type": "string"
+      },
+      "startsAt": {
+        "type": "string"
+      },
+      "guestName": {
+        "type": "string"
+      },
+      "guestEmail": {
         "type": "string"
       }
+    },
+    "unevaluatedProperties": {
+      "not": {}
+    }
+  },
+  "CreateEventTypeInput": {
+    "type": "object",
+    "required": ["name", "durationMinutes"],
+    "properties": {
+      "name": {
+        "type": "string"
+      },
+      "durationMinutes": {
+        "type": "integer"
+      },
+      "description": {
+        "type": "string"
+      }
+    },
+    "unevaluatedProperties": {
+      "not": {}
+    }
+  },
+  "CreatedBooking": {
+    "type": "object",
+    "required": ["idempotencyKey", "data"],
+    "properties": {
+      "idempotencyKey": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "data": {
+        "$ref": "#/components/schemas/Booking"
+      }
+    },
+    "unevaluatedProperties": {
+      "not": {}
+    }
+  },
+  "CreatedEventType": {
+    "type": "object",
+    "required": ["idempotencyKey", "data"],
+    "properties": {
+      "idempotencyKey": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "data": {
+        "$ref": "#/components/schemas/EventType"
+      }
+    },
+    "unevaluatedProperties": {
+      "not": {}
     }
   },
   "EventType": {
     "type": "object",
-    "additionalProperties": false,
     "required": ["id", "name", "durationMinutes", "displayCode"],
     "properties": {
       "id": {
@@ -93,69 +433,14 @@ Responses: 201, 400, 404, 409, 422, 500, 503.
         "type": "string",
         "pattern": "^В-[0-9]{6,}$"
       }
-    }
-  },
-  "EventTypes": {
-    "type": "object",
-    "additionalProperties": false,
-    "required": ["data"],
-    "properties": {
-      "data": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/EventType"
-        }
-      }
-    }
-  },
-  "ReadError": {
-    "type": "object",
-    "additionalProperties": false,
-    "required": ["error"],
-    "properties": {
-      "error": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": ["code", "message"],
-        "properties": {
-          "code": {
-            "type": "string",
-            "enum": [
-              "INVALID_REQUEST",
-              "INTERNAL_ERROR",
-              "TEMPORARILY_UNAVAILABLE",
-              "EVENT_TYPE_NOT_FOUND",
-              "VALIDATION_ERROR",
-              "TIME_UNAVAILABLE"
-            ]
-          },
-          "message": {
-            "type": "string",
-            "minLength": 1
-          }
-        }
-      }
-    }
-  },
-  "CreateEventTypeInput": {
-    "type": "object",
-    "additionalProperties": false,
-    "properties": {
-      "name": {
-        "type": "string"
-      },
-      "durationMinutes": {
-        "type": "integer"
-      },
-      "description": {
-        "type": "string"
-      }
     },
-    "required": ["name", "durationMinutes"]
+    "unevaluatedProperties": {
+      "not": {}
+    }
   },
   "EventTypeDraft": {
     "type": "object",
-    "additionalProperties": false,
+    "required": ["name", "durationMinutes"],
     "properties": {
       "name": {
         "type": "string",
@@ -175,25 +460,102 @@ Responses: 201, 400, 404, 409, 422, 500, 503.
         "pattern": "^\\S(?:[\\s\\S]*\\S)?$"
       }
     },
-    "required": ["name", "durationMinutes"]
+    "unevaluatedProperties": {
+      "not": {}
+    }
   },
-  "CreatedEventType": {
+  "EventTypes": {
     "type": "object",
-    "additionalProperties": false,
+    "required": ["data"],
     "properties": {
-      "idempotencyKey": {
-        "type": "string",
-        "format": "uuid"
-      },
       "data": {
-        "$ref": "#/components/schemas/EventType"
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/EventType"
+        }
       }
     },
-    "required": ["idempotencyKey", "data"]
+    "unevaluatedProperties": {
+      "not": {}
+    }
+  },
+  "Health": {
+    "type": "object",
+    "required": ["status"],
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": ["ok"]
+      }
+    },
+    "unevaluatedProperties": {
+      "not": {}
+    }
+  },
+  "NonEmptyString": {
+    "type": "string",
+    "minLength": 1
+  },
+  "ReadError": {
+    "type": "object",
+    "required": ["error"],
+    "properties": {
+      "error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": [
+              "INVALID_REQUEST",
+              "INTERNAL_ERROR",
+              "TEMPORARILY_UNAVAILABLE",
+              "EVENT_TYPE_NOT_FOUND",
+              "VALIDATION_ERROR",
+              "TIME_UNAVAILABLE"
+            ]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": ["code", "message"],
+        "unevaluatedProperties": {
+          "not": {}
+        }
+      }
+    },
+    "unevaluatedProperties": {
+      "not": {}
+    }
+  },
+  "Slot": {
+    "type": "object",
+    "required": ["startsAt", "endsAt"],
+    "properties": {
+      "startsAt": {
+        "type": "string",
+        "pattern": "Z$",
+        "format": "date-time"
+      },
+      "endsAt": {
+        "type": "string",
+        "pattern": "Z$",
+        "format": "date-time"
+      }
+    },
+    "unevaluatedProperties": {
+      "not": {}
+    }
+  },
+  "UtcInstant": {
+    "type": "string",
+    "pattern": "Z$",
+    "format": "date-time"
   },
   "WriteError": {
     "type": "object",
-    "additionalProperties": false,
+    "required": ["outcome", "error"],
     "properties": {
       "idempotencyKey": {
         "type": "string",
@@ -205,7 +567,6 @@ Responses: 201, 400, 404, 409, 422, 500, 503.
       },
       "error": {
         "type": "object",
-        "additionalProperties": false,
         "properties": {
           "code": {
             "type": "string",
@@ -224,19 +585,23 @@ Responses: 201, 400, 404, 409, 422, 500, 503.
           "fieldErrors": {
             "type": "object",
             "additionalProperties": {
-              "type": "string",
-              "minLength": 1
+              "$ref": "#/components/schemas/NonEmptyString"
             }
           }
         },
-        "required": ["code", "message"]
+        "required": ["code", "message"],
+        "unevaluatedProperties": {
+          "not": {}
+        }
       }
     },
-    "required": ["error", "outcome"]
+    "unevaluatedProperties": {
+      "not": {}
+    }
   },
   "WriteError400": {
     "type": "object",
-    "additionalProperties": false,
+    "required": ["outcome", "error"],
     "properties": {
       "idempotencyKey": {
         "type": "string",
@@ -244,15 +609,14 @@ Responses: 201, 400, 404, 409, 422, 500, 503.
       },
       "outcome": {
         "type": "string",
-        "const": "unknown"
+        "enum": ["unknown"]
       },
       "error": {
         "type": "object",
-        "additionalProperties": false,
         "properties": {
           "code": {
             "type": "string",
-            "const": "INVALID_REQUEST"
+            "enum": ["INVALID_REQUEST"]
           },
           "message": {
             "type": "string",
@@ -261,19 +625,23 @@ Responses: 201, 400, 404, 409, 422, 500, 503.
           "fieldErrors": {
             "type": "object",
             "additionalProperties": {
-              "type": "string",
-              "minLength": 1
+              "$ref": "#/components/schemas/NonEmptyString"
             }
           }
         },
-        "required": ["code", "message"]
+        "required": ["code", "message"],
+        "unevaluatedProperties": {
+          "not": {}
+        }
       }
     },
-    "required": ["error", "outcome"]
+    "unevaluatedProperties": {
+      "not": {}
+    }
   },
   "WriteError409": {
     "type": "object",
-    "additionalProperties": false,
+    "required": ["idempotencyKey", "outcome", "error"],
     "properties": {
       "idempotencyKey": {
         "type": "string",
@@ -281,15 +649,14 @@ Responses: 201, 400, 404, 409, 422, 500, 503.
       },
       "outcome": {
         "type": "string",
-        "const": "unknown"
+        "enum": ["unknown"]
       },
       "error": {
         "type": "object",
-        "additionalProperties": false,
         "properties": {
           "code": {
             "type": "string",
-            "const": "IDEMPOTENCY_KEY_REUSED"
+            "enum": ["IDEMPOTENCY_KEY_REUSED"]
           },
           "message": {
             "type": "string",
@@ -298,19 +665,23 @@ Responses: 201, 400, 404, 409, 422, 500, 503.
           "fieldErrors": {
             "type": "object",
             "additionalProperties": {
-              "type": "string",
-              "minLength": 1
+              "$ref": "#/components/schemas/NonEmptyString"
             }
           }
         },
-        "required": ["code", "message"]
+        "required": ["code", "message"],
+        "unevaluatedProperties": {
+          "not": {}
+        }
       }
     },
-    "required": ["error", "outcome", "idempotencyKey"]
+    "unevaluatedProperties": {
+      "not": {}
+    }
   },
   "WriteError422": {
     "type": "object",
-    "additionalProperties": false,
+    "required": ["idempotencyKey", "outcome", "error"],
     "properties": {
       "idempotencyKey": {
         "type": "string",
@@ -318,15 +689,14 @@ Responses: 201, 400, 404, 409, 422, 500, 503.
       },
       "outcome": {
         "type": "string",
-        "const": "rejected"
+        "enum": ["rejected"]
       },
       "error": {
         "type": "object",
-        "additionalProperties": false,
         "properties": {
           "code": {
             "type": "string",
-            "const": "VALIDATION_ERROR"
+            "enum": ["VALIDATION_ERROR"]
           },
           "message": {
             "type": "string",
@@ -335,19 +705,23 @@ Responses: 201, 400, 404, 409, 422, 500, 503.
           "fieldErrors": {
             "type": "object",
             "additionalProperties": {
-              "type": "string",
-              "minLength": 1
+              "$ref": "#/components/schemas/NonEmptyString"
             }
           }
         },
-        "required": ["code", "message"]
+        "required": ["code", "message"],
+        "unevaluatedProperties": {
+          "not": {}
+        }
       }
     },
-    "required": ["error", "outcome", "idempotencyKey"]
+    "unevaluatedProperties": {
+      "not": {}
+    }
   },
   "WriteError500": {
     "type": "object",
-    "additionalProperties": false,
+    "required": ["outcome", "error"],
     "properties": {
       "idempotencyKey": {
         "type": "string",
@@ -355,15 +729,14 @@ Responses: 201, 400, 404, 409, 422, 500, 503.
       },
       "outcome": {
         "type": "string",
-        "const": "unknown"
+        "enum": ["unknown"]
       },
       "error": {
         "type": "object",
-        "additionalProperties": false,
         "properties": {
           "code": {
             "type": "string",
-            "const": "INTERNAL_ERROR"
+            "enum": ["INTERNAL_ERROR"]
           },
           "message": {
             "type": "string",
@@ -372,19 +745,23 @@ Responses: 201, 400, 404, 409, 422, 500, 503.
           "fieldErrors": {
             "type": "object",
             "additionalProperties": {
-              "type": "string",
-              "minLength": 1
+              "$ref": "#/components/schemas/NonEmptyString"
             }
           }
         },
-        "required": ["code", "message"]
+        "required": ["code", "message"],
+        "unevaluatedProperties": {
+          "not": {}
+        }
       }
     },
-    "required": ["error", "outcome"]
+    "unevaluatedProperties": {
+      "not": {}
+    }
   },
   "WriteError503": {
     "type": "object",
-    "additionalProperties": false,
+    "required": ["outcome", "error"],
     "properties": {
       "idempotencyKey": {
         "type": "string",
@@ -392,15 +769,14 @@ Responses: 201, 400, 404, 409, 422, 500, 503.
       },
       "outcome": {
         "type": "string",
-        "const": "unknown"
+        "enum": ["unknown"]
       },
       "error": {
         "type": "object",
-        "additionalProperties": false,
         "properties": {
           "code": {
             "type": "string",
-            "const": "TEMPORARILY_UNAVAILABLE"
+            "enum": ["TEMPORARILY_UNAVAILABLE"]
           },
           "message": {
             "type": "string",
@@ -409,327 +785,19 @@ Responses: 201, 400, 404, 409, 422, 500, 503.
           "fieldErrors": {
             "type": "object",
             "additionalProperties": {
-              "type": "string",
-              "minLength": 1
+              "$ref": "#/components/schemas/NonEmptyString"
             }
           }
         },
-        "required": ["code", "message"]
-      }
-    },
-    "required": ["error", "outcome"]
-  },
-  "Slot": {
-    "type": "object",
-    "additionalProperties": false,
-    "required": ["startsAt", "endsAt"],
-    "properties": {
-      "startsAt": {
-        "type": "string",
-        "format": "date-time",
-        "pattern": "Z$"
-      },
-      "endsAt": {
-        "type": "string",
-        "format": "date-time",
-        "pattern": "Z$"
-      }
-    }
-  },
-  "Availability": {
-    "type": "object",
-    "additionalProperties": false,
-    "required": [
-      "eventTypeId",
-      "date",
-      "timeZone",
-      "firstDate",
-      "lastDate",
-      "asOf",
-      "slots"
-    ],
-    "properties": {
-      "eventTypeId": {
-        "type": "string",
-        "minLength": 1
-      },
-      "date": {
-        "type": "string",
-        "format": "date",
-        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
-      },
-      "timeZone": {
-        "type": "string",
-        "const": "Europe/Moscow"
-      },
-      "firstDate": {
-        "type": "string",
-        "format": "date",
-        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
-      },
-      "lastDate": {
-        "type": "string",
-        "format": "date",
-        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
-      },
-      "asOf": {
-        "type": "string",
-        "format": "date-time",
-        "pattern": "Z$"
-      },
-      "slots": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/Slot"
+        "required": ["code", "message"],
+        "unevaluatedProperties": {
+          "not": {}
         }
       }
-    }
-  },
-  "AvailabilityResponse": {
-    "type": "object",
-    "additionalProperties": false,
-    "required": ["data"],
-    "properties": {
-      "data": {
-        "$ref": "#/components/schemas/Availability"
-      }
-    }
-  },
-  "Booking": {
-    "type": "object",
-    "additionalProperties": false,
-    "required": [
-      "id",
-      "eventType",
-      "startsAt",
-      "endsAt",
-      "guestName",
-      "guestEmail"
-    ],
-    "properties": {
-      "id": {
-        "type": "string",
-        "minLength": 1
-      },
-      "eventType": {
-        "$ref": "#/components/schemas/EventType"
-      },
-      "startsAt": {
-        "type": "string",
-        "format": "date-time",
-        "pattern": "Z$"
-      },
-      "endsAt": {
-        "type": "string",
-        "format": "date-time",
-        "pattern": "Z$"
-      },
-      "guestName": {
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 100,
-        "pattern": "^(?=\\S)[^\\r\\n\\u2028\\u2029]*\\S$|^\\S$"
-      },
-      "guestEmail": {
-        "type": "string",
-        "format": "email",
-        "maxLength": 254
-      }
-    }
-  },
-  "Bookings": {
-    "type": "object",
-    "additionalProperties": false,
-    "required": ["data"],
-    "properties": {
-      "data": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/Booking"
-        }
-      }
-    }
-  },
-  "CreateBookingInput": {
-    "type": "object",
-    "additionalProperties": false,
-    "required": ["eventTypeId", "startsAt", "guestName", "guestEmail"],
-    "properties": {
-      "eventTypeId": {
-        "type": "string"
-      },
-      "startsAt": {
-        "type": "string"
-      },
-      "guestName": {
-        "type": "string"
-      },
-      "guestEmail": {
-        "type": "string"
-      }
-    }
-  },
-  "BookingDraft": {
-    "type": "object",
-    "additionalProperties": false,
-    "required": ["eventTypeId", "startsAt", "guestName", "guestEmail"],
-    "properties": {
-      "eventTypeId": {
-        "type": "string",
-        "minLength": 1
-      },
-      "startsAt": {
-        "type": "string",
-        "format": "date-time",
-        "pattern": "Z$"
-      },
-      "guestName": {
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 100,
-        "pattern": "^(?=\\S)[^\\r\\n\\u2028\\u2029]*\\S$|^\\S$"
-      },
-      "guestEmail": {
-        "type": "string",
-        "format": "email",
-        "maxLength": 254
-      }
-    }
-  },
-  "CreatedBooking": {
-    "type": "object",
-    "additionalProperties": false,
-    "properties": {
-      "idempotencyKey": {
-        "type": "string",
-        "format": "uuid"
-      },
-      "data": {
-        "$ref": "#/components/schemas/Booking"
-      }
     },
-    "required": ["idempotencyKey", "data"]
-  },
-  "BookingError404": {
-    "type": "object",
-    "additionalProperties": false,
-    "properties": {
-      "idempotencyKey": {
-        "type": "string",
-        "format": "uuid"
-      },
-      "outcome": {
-        "type": "string",
-        "const": "rejected"
-      },
-      "error": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "code": {
-            "type": "string",
-            "enum": ["EVENT_TYPE_NOT_FOUND"]
-          },
-          "message": {
-            "type": "string",
-            "minLength": 1
-          },
-          "fieldErrors": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string",
-              "minLength": 1
-            }
-          }
-        },
-        "required": ["code", "message"]
-      }
-    },
-    "required": ["error", "outcome", "idempotencyKey"]
-  },
-  "BookingRefusal409": {
-    "type": "object",
-    "additionalProperties": false,
-    "properties": {
-      "idempotencyKey": {
-        "type": "string",
-        "format": "uuid"
-      },
-      "outcome": {
-        "type": "string",
-        "const": "rejected"
-      },
-      "error": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "code": {
-            "type": "string",
-            "enum": ["SLOT_TAKEN"]
-          },
-          "message": {
-            "type": "string",
-            "minLength": 1
-          },
-          "fieldErrors": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string",
-              "minLength": 1
-            }
-          }
-        },
-        "required": ["code", "message"]
-      }
-    },
-    "required": ["error", "outcome", "idempotencyKey"]
-  },
-  "BookingError422": {
-    "type": "object",
-    "additionalProperties": false,
-    "properties": {
-      "idempotencyKey": {
-        "type": "string",
-        "format": "uuid"
-      },
-      "outcome": {
-        "type": "string",
-        "const": "rejected"
-      },
-      "error": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "code": {
-            "type": "string",
-            "enum": ["VALIDATION_ERROR", "TIME_UNAVAILABLE"]
-          },
-          "message": {
-            "type": "string",
-            "minLength": 1
-          },
-          "fieldErrors": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string",
-              "minLength": 1
-            }
-          }
-        },
-        "required": ["code", "message"]
-      }
-    },
-    "required": ["error", "outcome", "idempotencyKey"]
-  },
-  "BookingError409": {
-    "oneOf": [
-      {
-        "$ref": "#/components/schemas/WriteError409"
-      },
-      {
-        "$ref": "#/components/schemas/BookingRefusal409"
-      }
-    ]
+    "unevaluatedProperties": {
+      "not": {}
+    }
   }
 }
 ```

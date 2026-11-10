@@ -4,134 +4,6 @@ export type ClientOptions = {
   baseUrl: `${string}://${string}` | (string & {});
 };
 
-export type Health = {
-  status: "ok";
-};
-
-export type EventType = {
-  id: string;
-  name: string;
-  durationMinutes: number;
-  description?: string;
-  displayCode: string;
-};
-
-export type EventTypes = {
-  data: Array<EventType>;
-};
-
-export type ReadError = {
-  error: {
-    code:
-      | "INVALID_REQUEST"
-      | "INTERNAL_ERROR"
-      | "TEMPORARILY_UNAVAILABLE"
-      | "EVENT_TYPE_NOT_FOUND"
-      | "VALIDATION_ERROR"
-      | "TIME_UNAVAILABLE";
-    message: string;
-  };
-};
-
-export type CreateEventTypeInput = {
-  name: string;
-  durationMinutes: number;
-  description?: string;
-};
-
-export type EventTypeDraft = {
-  name: string;
-  durationMinutes: number;
-  description?: string;
-};
-
-export type CreatedEventType = {
-  idempotencyKey: string;
-  data: EventType;
-};
-
-export type WriteError = {
-  idempotencyKey?: string;
-  outcome: "rejected" | "unknown";
-  error: {
-    code:
-      | "VALIDATION_ERROR"
-      | "IDEMPOTENCY_KEY_REUSED"
-      | "INVALID_REQUEST"
-      | "INTERNAL_ERROR"
-      | "TEMPORARILY_UNAVAILABLE";
-    message: string;
-    fieldErrors?: {
-      [key: string]: string;
-    };
-  };
-};
-
-export type WriteError400 = {
-  idempotencyKey?: string;
-  outcome: "unknown";
-  error: {
-    code: "INVALID_REQUEST";
-    message: string;
-    fieldErrors?: {
-      [key: string]: string;
-    };
-  };
-};
-
-export type WriteError409 = {
-  idempotencyKey: string;
-  outcome: "unknown";
-  error: {
-    code: "IDEMPOTENCY_KEY_REUSED";
-    message: string;
-    fieldErrors?: {
-      [key: string]: string;
-    };
-  };
-};
-
-export type WriteError422 = {
-  idempotencyKey: string;
-  outcome: "rejected";
-  error: {
-    code: "VALIDATION_ERROR";
-    message: string;
-    fieldErrors?: {
-      [key: string]: string;
-    };
-  };
-};
-
-export type WriteError500 = {
-  idempotencyKey?: string;
-  outcome: "unknown";
-  error: {
-    code: "INTERNAL_ERROR";
-    message: string;
-    fieldErrors?: {
-      [key: string]: string;
-    };
-  };
-};
-
-export type WriteError503 = {
-  idempotencyKey?: string;
-  outcome: "unknown";
-  error: {
-    code: "TEMPORARILY_UNAVAILABLE";
-    message: string;
-    fieldErrors?: {
-      [key: string]: string;
-    };
-  };
-};
-
-export type Slot = {
-  startsAt: string;
-  endsAt: string;
-};
-
 export type Availability = {
   eventTypeId: string;
   date: string;
@@ -155,27 +27,11 @@ export type Booking = {
   guestEmail: string;
 };
 
-export type Bookings = {
-  data: Array<Booking>;
-};
-
-export type CreateBookingInput = {
-  eventTypeId: string;
-  startsAt: string;
-  guestName: string;
-  guestEmail: string;
-};
-
 export type BookingDraft = {
   eventTypeId: string;
   startsAt: string;
   guestName: string;
   guestEmail: string;
-};
-
-export type CreatedBooking = {
-  idempotencyKey: string;
-  data: Booking;
 };
 
 export type BookingError404 = {
@@ -185,7 +41,21 @@ export type BookingError404 = {
     code: "EVENT_TYPE_NOT_FOUND";
     message: string;
     fieldErrors?: {
-      [key: string]: string;
+      [key: string]: NonEmptyString;
+    };
+  };
+};
+
+export type BookingError409 = WriteError409 | BookingRefusal409;
+
+export type BookingError422 = {
+  idempotencyKey: string;
+  outcome: "rejected";
+  error: {
+    code: "VALIDATION_ERROR" | "TIME_UNAVAILABLE";
+    message: string;
+    fieldErrors?: {
+      [key: string]: NonEmptyString;
     };
   };
 };
@@ -197,37 +67,182 @@ export type BookingRefusal409 = {
     code: "SLOT_TAKEN";
     message: string;
     fieldErrors?: {
-      [key: string]: string;
+      [key: string]: NonEmptyString;
     };
   };
 };
 
-export type BookingError422 = {
+export type Bookings = {
+  data: Array<Booking>;
+};
+
+export type CreateBookingInput = {
+  eventTypeId: string;
+  startsAt: string;
+  guestName: string;
+  guestEmail: string;
+};
+
+export type CreateEventTypeInput = {
+  name: string;
+  durationMinutes: number;
+  description?: string;
+};
+
+export type CreatedBooking = {
+  idempotencyKey: string;
+  data: Booking;
+};
+
+export type CreatedEventType = {
+  idempotencyKey: string;
+  data: EventType;
+};
+
+export type EventType = {
+  id: string;
+  name: string;
+  durationMinutes: number;
+  description?: string;
+  displayCode: string;
+};
+
+export type EventTypeDraft = {
+  name: string;
+  durationMinutes: number;
+  description?: string;
+};
+
+export type EventTypes = {
+  data: Array<EventType>;
+};
+
+export type Health = {
+  status: "ok";
+};
+
+export type NonEmptyString = string;
+
+export type ReadError = {
+  error: {
+    code:
+      | "INVALID_REQUEST"
+      | "INTERNAL_ERROR"
+      | "TEMPORARILY_UNAVAILABLE"
+      | "EVENT_TYPE_NOT_FOUND"
+      | "VALIDATION_ERROR"
+      | "TIME_UNAVAILABLE";
+    message: string;
+  };
+};
+
+export type Slot = {
+  startsAt: string;
+  endsAt: string;
+};
+
+export type UtcInstant = string;
+
+export type WriteError = {
+  idempotencyKey?: string;
+  outcome: "rejected" | "unknown";
+  error: {
+    code:
+      | "VALIDATION_ERROR"
+      | "IDEMPOTENCY_KEY_REUSED"
+      | "INVALID_REQUEST"
+      | "INTERNAL_ERROR"
+      | "TEMPORARILY_UNAVAILABLE";
+    message: string;
+    fieldErrors?: {
+      [key: string]: NonEmptyString;
+    };
+  };
+};
+
+export type WriteError400 = {
+  idempotencyKey?: string;
+  outcome: "unknown";
+  error: {
+    code: "INVALID_REQUEST";
+    message: string;
+    fieldErrors?: {
+      [key: string]: NonEmptyString;
+    };
+  };
+};
+
+export type WriteError409 = {
+  idempotencyKey: string;
+  outcome: "unknown";
+  error: {
+    code: "IDEMPOTENCY_KEY_REUSED";
+    message: string;
+    fieldErrors?: {
+      [key: string]: NonEmptyString;
+    };
+  };
+};
+
+export type WriteError422 = {
   idempotencyKey: string;
   outcome: "rejected";
   error: {
-    code: "VALIDATION_ERROR" | "TIME_UNAVAILABLE";
+    code: "VALIDATION_ERROR";
     message: string;
     fieldErrors?: {
-      [key: string]: string;
+      [key: string]: NonEmptyString;
     };
   };
 };
 
-export type BookingError409 = WriteError409 | BookingRefusal409;
-
-export type GetHealthData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: "/health";
+export type WriteError500 = {
+  idempotencyKey?: string;
+  outcome: "unknown";
+  error: {
+    code: "INTERNAL_ERROR";
+    message: string;
+    fieldErrors?: {
+      [key: string]: NonEmptyString;
+    };
+  };
 };
 
-export type GetHealthErrors = {
+export type WriteError503 = {
+  idempotencyKey?: string;
+  outcome: "unknown";
+  error: {
+    code: "TEMPORARILY_UNAVAILABLE";
+    message: string;
+    fieldErrors?: {
+      [key: string]: NonEmptyString;
+    };
+  };
+};
+
+export type GetAvailabilityData = {
+  body?: never;
+  path?: never;
+  query: {
+    eventTypeId: string;
+    date?: string;
+  };
+  url: "/api/availability";
+};
+
+export type GetAvailabilityErrors = {
   /**
    * Invalid request
    */
   400: ReadError;
+  /**
+   * Unknown event type
+   */
+  404: ReadError;
+  /**
+   * Invalid date or outside availability horizon
+   */
+  422: ReadError;
   /**
    * Internal error
    */
@@ -238,16 +253,67 @@ export type GetHealthErrors = {
   503: ReadError;
 };
 
-export type GetHealthError = GetHealthErrors[keyof GetHealthErrors];
+export type GetAvailabilityError =
+  GetAvailabilityErrors[keyof GetAvailabilityErrors];
 
-export type GetHealthResponses = {
+export type GetAvailabilityResponses = {
   /**
-   * Service is healthy
+   * Complete available intervals and authoritative Moscow calendar boundaries
    */
-  200: Health;
+  200: AvailabilityResponse;
 };
 
-export type GetHealthResponse = GetHealthResponses[keyof GetHealthResponses];
+export type GetAvailabilityResponse =
+  GetAvailabilityResponses[keyof GetAvailabilityResponses];
+
+export type CreateBookingData = {
+  body: CreateBookingInput;
+  headers: {
+    "Idempotency-Key": string;
+  };
+  path?: never;
+  query?: never;
+  url: "/api/bookings";
+};
+
+export type CreateBookingErrors = {
+  /**
+   * Uninterpretable request
+   */
+  400: WriteError400;
+  /**
+   * Saved result
+   */
+  404: BookingError404;
+  /**
+   * Saved slot conflict or unknown reused key
+   */
+  409: BookingError409;
+  /**
+   * Saved result
+   */
+  422: BookingError422;
+  /**
+   * Unknown technical outcome
+   */
+  500: WriteError500;
+  /**
+   * Temporarily unavailable; unknown outcome
+   */
+  503: WriteError503;
+};
+
+export type CreateBookingError = CreateBookingErrors[keyof CreateBookingErrors];
+
+export type CreateBookingResponses = {
+  /**
+   * Saved result
+   */
+  201: CreatedBooking;
+};
+
+export type CreateBookingResponse =
+  CreateBookingResponses[keyof CreateBookingResponses];
 
 export type GetEventTypesData = {
   body?: never;
@@ -329,52 +395,6 @@ export type CreateEventTypeResponses = {
 export type CreateEventTypeResponse =
   CreateEventTypeResponses[keyof CreateEventTypeResponses];
 
-export type GetAvailabilityData = {
-  body?: never;
-  path?: never;
-  query: {
-    eventTypeId: string;
-    date?: string;
-  };
-  url: "/api/availability";
-};
-
-export type GetAvailabilityErrors = {
-  /**
-   * Invalid request
-   */
-  400: ReadError;
-  /**
-   * Unknown event type
-   */
-  404: ReadError;
-  /**
-   * Invalid date or outside availability horizon
-   */
-  422: ReadError;
-  /**
-   * Internal error
-   */
-  500: ReadError;
-  /**
-   * Temporarily unavailable
-   */
-  503: ReadError;
-};
-
-export type GetAvailabilityError =
-  GetAvailabilityErrors[keyof GetAvailabilityErrors];
-
-export type GetAvailabilityResponses = {
-  /**
-   * Complete available intervals and authoritative Moscow calendar boundaries
-   */
-  200: AvailabilityResponse;
-};
-
-export type GetAvailabilityResponse =
-  GetAvailabilityResponses[keyof GetAvailabilityResponses];
-
 export type GetOwnerBookingsData = {
   body?: never;
   path?: never;
@@ -412,51 +432,35 @@ export type GetOwnerBookingsResponses = {
 export type GetOwnerBookingsResponse =
   GetOwnerBookingsResponses[keyof GetOwnerBookingsResponses];
 
-export type CreateBookingData = {
-  body: CreateBookingInput;
-  headers: {
-    "Idempotency-Key": string;
-  };
+export type GetHealthData = {
+  body?: never;
   path?: never;
   query?: never;
-  url: "/api/bookings";
+  url: "/health";
 };
 
-export type CreateBookingErrors = {
+export type GetHealthErrors = {
   /**
-   * Uninterpretable request
+   * Invalid request
    */
-  400: WriteError400;
+  400: ReadError;
   /**
-   * Saved result
+   * Internal error
    */
-  404: BookingError404;
+  500: ReadError;
   /**
-   * Saved slot conflict or unknown reused key
+   * Temporarily unavailable
    */
-  409: BookingError409;
-  /**
-   * Saved result
-   */
-  422: BookingError422;
-  /**
-   * Unknown technical outcome
-   */
-  500: WriteError500;
-  /**
-   * Temporarily unavailable; unknown outcome
-   */
-  503: WriteError503;
+  503: ReadError;
 };
 
-export type CreateBookingError = CreateBookingErrors[keyof CreateBookingErrors];
+export type GetHealthError = GetHealthErrors[keyof GetHealthErrors];
 
-export type CreateBookingResponses = {
+export type GetHealthResponses = {
   /**
-   * Saved result
+   * Service is healthy
    */
-  201: CreatedBooking;
+  200: Health;
 };
 
-export type CreateBookingResponse =
-  CreateBookingResponses[keyof CreateBookingResponses];
+export type GetHealthResponse = GetHealthResponses[keyof GetHealthResponses];
