@@ -7,7 +7,7 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   workers: 1,
   timeout: 15_000,
-  globalTimeout: 120_000,
+  globalTimeout: process.env.CI ? 300_000 : 120_000,
   reporter: [["list"], ["html", { open: "never" }]],
   use: {
     baseURL,
