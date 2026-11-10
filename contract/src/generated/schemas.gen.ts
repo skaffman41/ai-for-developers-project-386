@@ -85,3 +85,294 @@ export const ReadErrorSchema = {
     },
   },
 } as const;
+
+export const CreateEventTypeInputSchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    name: {
+      type: "string",
+    },
+    durationMinutes: {
+      type: "integer",
+    },
+    description: {
+      type: "string",
+    },
+  },
+  required: ["name", "durationMinutes"],
+} as const;
+
+export const EventTypeDraftSchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    name: {
+      type: "string",
+      minLength: 1,
+      maxLength: 100,
+      pattern: "^(?=\\S)[^\\r\\n\\u2028\\u2029]*\\S$|^\\S$",
+    },
+    durationMinutes: {
+      type: "integer",
+      minimum: 1,
+      maximum: 540,
+    },
+    description: {
+      type: "string",
+      minLength: 1,
+      maxLength: 2000,
+      pattern: "^\\S(?:[\\s\\S]*\\S)?$",
+    },
+  },
+  required: ["name", "durationMinutes"],
+} as const;
+
+export const CreatedEventTypeSchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    idempotencyKey: {
+      type: "string",
+      format: "uuid",
+    },
+    data: {
+      $ref: "#/components/schemas/EventType",
+    },
+  },
+  required: ["idempotencyKey", "data"],
+} as const;
+
+export const WriteErrorSchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    idempotencyKey: {
+      type: "string",
+      format: "uuid",
+    },
+    outcome: {
+      type: "string",
+      enum: ["rejected", "unknown"],
+    },
+    error: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        code: {
+          type: "string",
+          enum: [
+            "VALIDATION_ERROR",
+            "IDEMPOTENCY_KEY_REUSED",
+            "INVALID_REQUEST",
+            "INTERNAL_ERROR",
+            "TEMPORARILY_UNAVAILABLE",
+          ],
+        },
+        message: {
+          type: "string",
+          minLength: 1,
+        },
+        fieldErrors: {
+          type: "object",
+          additionalProperties: {
+            type: "string",
+            minLength: 1,
+          },
+        },
+      },
+      required: ["code", "message"],
+    },
+  },
+  required: ["error", "outcome"],
+} as const;
+
+export const WriteError400Schema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    idempotencyKey: {
+      type: "string",
+      format: "uuid",
+    },
+    outcome: {
+      type: "string",
+      const: "unknown",
+    },
+    error: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        code: {
+          type: "string",
+          const: "INVALID_REQUEST",
+        },
+        message: {
+          type: "string",
+          minLength: 1,
+        },
+        fieldErrors: {
+          type: "object",
+          additionalProperties: {
+            type: "string",
+            minLength: 1,
+          },
+        },
+      },
+      required: ["code", "message"],
+    },
+  },
+  required: ["error", "outcome"],
+} as const;
+
+export const WriteError409Schema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    idempotencyKey: {
+      type: "string",
+      format: "uuid",
+    },
+    outcome: {
+      type: "string",
+      const: "unknown",
+    },
+    error: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        code: {
+          type: "string",
+          const: "IDEMPOTENCY_KEY_REUSED",
+        },
+        message: {
+          type: "string",
+          minLength: 1,
+        },
+        fieldErrors: {
+          type: "object",
+          additionalProperties: {
+            type: "string",
+            minLength: 1,
+          },
+        },
+      },
+      required: ["code", "message"],
+    },
+  },
+  required: ["error", "outcome", "idempotencyKey"],
+} as const;
+
+export const WriteError422Schema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    idempotencyKey: {
+      type: "string",
+      format: "uuid",
+    },
+    outcome: {
+      type: "string",
+      const: "rejected",
+    },
+    error: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        code: {
+          type: "string",
+          const: "VALIDATION_ERROR",
+        },
+        message: {
+          type: "string",
+          minLength: 1,
+        },
+        fieldErrors: {
+          type: "object",
+          additionalProperties: {
+            type: "string",
+            minLength: 1,
+          },
+        },
+      },
+      required: ["code", "message"],
+    },
+  },
+  required: ["error", "outcome", "idempotencyKey"],
+} as const;
+
+export const WriteError500Schema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    idempotencyKey: {
+      type: "string",
+      format: "uuid",
+    },
+    outcome: {
+      type: "string",
+      const: "unknown",
+    },
+    error: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        code: {
+          type: "string",
+          const: "INTERNAL_ERROR",
+        },
+        message: {
+          type: "string",
+          minLength: 1,
+        },
+        fieldErrors: {
+          type: "object",
+          additionalProperties: {
+            type: "string",
+            minLength: 1,
+          },
+        },
+      },
+      required: ["code", "message"],
+    },
+  },
+  required: ["error", "outcome"],
+} as const;
+
+export const WriteError503Schema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    idempotencyKey: {
+      type: "string",
+      format: "uuid",
+    },
+    outcome: {
+      type: "string",
+      const: "unknown",
+    },
+    error: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        code: {
+          type: "string",
+          const: "TEMPORARILY_UNAVAILABLE",
+        },
+        message: {
+          type: "string",
+          minLength: 1,
+        },
+        fieldErrors: {
+          type: "object",
+          additionalProperties: {
+            type: "string",
+            minLength: 1,
+          },
+        },
+      },
+      required: ["code", "message"],
+    },
+  },
+  required: ["error", "outcome"],
+} as const;

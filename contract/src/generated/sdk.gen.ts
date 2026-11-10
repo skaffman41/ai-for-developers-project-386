@@ -9,6 +9,9 @@ import type {
   TDataShape,
 } from "./client/index.js";
 import type {
+  CreateEventTypeData,
+  CreateEventTypeErrors,
+  CreateEventTypeResponses,
   GetEventTypesData,
   GetEventTypesErrors,
   GetEventTypesResponses,
@@ -60,3 +63,28 @@ export const getEventTypes = <ThrowOnError extends boolean = false>(
     GetEventTypesErrors,
     ThrowOnError
   >({ url: "/api/event-types", ...options });
+
+/**
+ * Создать тип встречи с сохранённым результатом попытки
+ *
+ * Idempotency-Key — UUID. Сравниваются исходные значения JSON, порядок свойств незначим. Структурные ошибки parseable JSON с действительным ключом сохраняются как окончательный VALIDATION_ERROR. Нормализация trim явная, длина проверяется после неё. Переполненные при разборе JSON числа (например 1e400) нельзя интерпретировать: INVALID_REQUEST/unknown до регистрации попытки. rejected возвращается только после commit; технический сбой оставляет unknown. Результаты не имеют TTL.
+ */
+export const createEventType = <ThrowOnError extends boolean = false>(
+  options: Options<CreateEventTypeData, ThrowOnError>,
+): RequestResult<
+  CreateEventTypeResponses,
+  CreateEventTypeErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).post<
+    CreateEventTypeResponses,
+    CreateEventTypeErrors,
+    ThrowOnError
+  >({
+    url: "/api/event-types",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });

@@ -40,17 +40,26 @@ export async function prepareDatabase(path: string) {
   if (result.code !== 0) throw new Error(result.output);
 }
 
-export async function startBackend(path: string, port = 0) {
-  const child = spawn(process.execPath, ["backend/dist/server.js"], {
-    cwd: root,
-    env: {
-      ...process.env,
-      DATABASE_PATH: path,
-      HOST: "127.0.0.1",
-      PORT: String(port),
+export async function startBackend(
+  path: string,
+  port = 0,
+  options: { entry?: string; env?: NodeJS.ProcessEnv } = {},
+) {
+  const child = spawn(
+    process.execPath,
+    [options.entry ?? "backend/dist/server.js"],
+    {
+      cwd: root,
+      env: {
+        ...process.env,
+        ...options.env,
+        DATABASE_PATH: path,
+        HOST: "127.0.0.1",
+        PORT: String(port),
+      },
+      stdio: ["ignore", "pipe", "pipe"],
     },
-    stdio: ["ignore", "pipe", "pipe"],
-  });
+  );
   let output = "";
   const closed = new Promise<void>((resolve) => child.once("close", resolve));
   const ready = new Promise<string>((resolve, reject) => {
@@ -82,7 +91,12 @@ export async function startBackend(path: string, port = 0) {
   const timeout = setTimeout(() => child.kill("SIGKILL"), 15000);
   try {
     const url = await ready;
-    return { url, stop };
+    return {
+      url,
+      stop,
+      pid: child.pid!,
+      kill: (signal: NodeJS.Signals) => child.kill(signal),
+    };
   } catch (error) {
     await stop();
     throw error;

@@ -439,3 +439,105 @@ button {
   opacity: 0.65;
   cursor: wait;
 }
+
+input:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #a0472e;
+  outline-offset: 3px;
+}
+nav {
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+.owner-main {
+  padding: 56px 0 72px;
+}
+.owner-main h1 {
+  font-size: 52px;
+  letter-spacing: -1.5px;
+}
+.owner-main .eyebrow {
+  margin-bottom: 12px;
+}
+.owner-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 32px 0 24px;
+}
+.owner-columns {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 24px;
+  align-items: start;
+}
+.owner-panel {
+  min-width: 0;
+  background: #fdfcf8;
+  border: 1px solid #e7e2d7;
+  border-radius: 12px;
+  padding: 28px;
+}
+.owner-panel h2 {
+  font-size: 28px;
+}
+.owner-panel > p,
+.owner-panel small {
+  color: #6b685f;
+}
+.owner-panel form {
+  display: flex;
+  flex-direction: column;
+}
+.owner-panel label {
+  font-weight: 600;
+  margin: 8px 0;
+}
+.owner-panel input,
+.owner-panel textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #9d9587;
+  border-radius: 6px;
+  background: #fffefb;
+  color: #302f2b;
+  font: inherit;
+}
+.owner-panel textarea {
+  resize: vertical;
+}
+.owner-panel input:disabled,
+.owner-panel textarea:disabled {
+  background: #efebe1;
+  color: #565046;
+}
+.owner-panel .reload-button {
+  margin-bottom: 12px;
+}
+.field-error {
+  color: #9a321e;
+  font-size: 14px;
+  margin: 4px 0 12px;
+}
+[aria-invalid="true"] {
+  border-color: #9a321e !important;
+}
+@media (max-width: 800px) {
+  .owner-main {
+    padding-top: 32px;
+  }
+  .owner-main h1 {
+    font-size: 40px;
+  }
+  .owner-columns {
+    grid-template-columns: 1fr;
+  }
+  .owner-panel {
+    padding: 20px;
+  }
+  nav {
+    gap: 12px 20px;
+  }
+}

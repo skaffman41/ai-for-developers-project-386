@@ -3,6 +3,9 @@
 import type { RouteHandler } from "fastify";
 
 import type {
+  CreateEventTypeData,
+  CreateEventTypeErrors,
+  CreateEventTypeResponses,
   GetEventTypesErrors,
   GetEventTypesResponses,
   GetHealthErrors,
@@ -15,5 +18,10 @@ export type RouteHandlers = {
   }>;
   getEventTypes: RouteHandler<{
     Reply: GetEventTypesErrors & GetEventTypesResponses;
+  }>;
+  createEventType: RouteHandler<{
+    Body: CreateEventTypeData["body"];
+    Headers: CreateEventTypeData["headers"];
+    Reply: CreateEventTypeErrors & CreateEventTypeResponses;
   }>;
 };

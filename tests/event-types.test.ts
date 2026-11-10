@@ -231,7 +231,7 @@ test("explicit preparation records schema version and all required durability se
     expect(result.code).toBe(0);
     expect(JSON.parse(result.output.trim())).toEqual({
       application_id: 1128352817,
-      user_version: 1,
+      user_version: 2,
       journal_mode: "delete",
       synchronous: 3,
       foreign_keys: 1,

@@ -7,7 +7,8 @@
     "./sdk": "./dist/generated/sdk.gen.js",
     "./types": "./dist/generated/types.gen.js",
     "./fastify": "./dist/generated/fastify.gen.js",
-    "./operations": "./dist/generated/operations.gen.js"
+    "./operations": "./dist/generated/operations.gen.js",
+    "./event-types": "./dist/event-types.js"
   },
   "scripts": {
     "build": "tsc",

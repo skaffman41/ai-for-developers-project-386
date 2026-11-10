@@ -10,7 +10,7 @@ import { format } from "prettier";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 /** @typedef {import("ajv").AnySchemaObject} Schema */
-/** @typedef {{ operationId: string, summary: string, description?: string, parameters?: { in: string, name: string, required?: boolean, schema: Schema }[], responses: Record<string, { content: Record<string, { schema: Schema }> }> }} Operation */
+/** @typedef {{ operationId: string, summary: string, description?: string, parameters?: { in: string, name: string, required?: boolean, schema: Schema }[], requestBody?: { required?: boolean, content: Record<string, { schema: Schema }> }, responses: Record<string, { content: Record<string, { schema: Schema }> }> }} Operation */
 /** @typedef {{ info: { title: string }, paths: Record<string, Record<string, Operation>>, components: { schemas: Record<string, Schema> } }} OpenApi */
 const document = JSON.parse(
   await readFile(join(root, "contract/openapi.json"), "utf8"),
@@ -69,14 +69,32 @@ try {
         properties: {},
         required: [],
       };
+      const headers = {
+        type: "object",
+        additionalProperties: false,
+        properties: /** @type {Record<string, Schema>} */ ({}),
+        required: /** @type {string[]} */ ([]),
+      };
       for (const parameter of operation.parameters ?? []) {
-        if (parameter.in !== "query")
-          throw new Error(
-            "Add contract generation support before using another parameter location",
-          );
-        query.properties[parameter.name] = parameter.schema;
-        if (parameter.required) query.required.push(parameter.name);
+        if (!["query", "header"].includes(parameter.in))
+          throw new Error("Unsupported parameter location");
+        const target = parameter.in === "query" ? query : headers;
+        const name =
+          parameter.in === "header"
+            ? parameter.name.toLowerCase()
+            : parameter.name;
+        target.properties[name] = parameter.schema;
+        if (parameter.required) target.required.push(name);
       }
+      const requestContent = Object.entries(
+        operation.requestBody?.content ?? {},
+      );
+      if (
+        operation.requestBody &&
+        (requestContent.length !== 1 ||
+          requestContent[0][0] !== "application/json")
+      )
+        throw new Error("Only declared JSON request bodies are supported");
       const responses = Object.fromEntries(
         Object.entries(operation.responses).map(([status, response]) => {
           const content = Object.entries(response.content ?? {});
@@ -94,6 +112,9 @@ try {
         method: method.toUpperCase(),
         path,
         query,
+        headers,
+        body: requestContent[0]?.[1].schema ?? null,
+        requestMediaType: requestContent[0]?.[0] ?? null,
         responses,
       };
       documentation += `\n## ${method.toUpperCase()} ${path}\n\n${operation.summary}\n\n${operation.description ?? ""}\n\nResponses: ${Object.keys(responses).join(", ")}.\n`;

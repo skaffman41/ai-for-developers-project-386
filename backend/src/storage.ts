@@ -11,7 +11,7 @@ import { DatabaseSync } from "node:sqlite";
 import { pathToFileURL } from "node:url";
 
 const applicationId = 0x43414c31;
-const version = 1;
+const version = 2;
 const schema = `CREATE TABLE event_types (
   sequence INTEGER PRIMARY KEY AUTOINCREMENT,
   id TEXT NOT NULL UNIQUE,
@@ -20,6 +20,29 @@ const schema = `CREATE TABLE event_types (
   description TEXT CHECK (description IS NULL OR length(description) BETWEEN 1 AND 2000),
   created_at INTEGER NOT NULL
 ) STRICT`;
+
+const resultsSchema = `CREATE TABLE operation_results (
+  operation TEXT NOT NULL,
+  attempt_key TEXT NOT NULL,
+  raw_payload TEXT NOT NULL,
+  status INTEGER NOT NULL,
+  body TEXT NOT NULL,
+  PRIMARY KEY (operation, attempt_key)
+) STRICT`;
+
+function checkSchema(database: DatabaseSync, expectedVersion: number) {
+  const expected = expectedVersion === 1 ? [schema] : [schema, resultsSchema];
+  const tables = database
+    .prepare(
+      "SELECT sql FROM sqlite_schema WHERE sql IS NOT NULL AND name != 'sqlite_sequence' ORDER BY name",
+    )
+    .all();
+  if (
+    tables.length !== expected.length ||
+    tables.some((table, index) => table.sql !== expected[index])
+  )
+    throw new Error("Foreign or unsupported database schema structure");
+}
 
 export function databasePath(value = process.env.DATABASE_PATH) {
   if (!value || !isAbsolute(value)) {
@@ -62,6 +85,7 @@ export function prepareDatabase(path: string) {
     database.exec("BEGIN IMMEDIATE");
     try {
       database.exec(schema);
+      database.exec(resultsSchema);
       database.exec(
         `PRAGMA application_id=${applicationId}; PRAGMA user_version=${version}`,
       );
@@ -80,7 +104,10 @@ export function prepareDatabase(path: string) {
   }
 }
 
-export function openDatabase(path: string) {
+export function openDatabase(
+  path: string,
+  options: { beforeMigrationCommit?: () => void } = {},
+) {
   // SQLite's default open creates missing files; verify access first and disallow that behavior.
   if (!statSync(path).isFile())
     throw new Error("DATABASE_PATH must identify a regular SQLite file");
@@ -93,27 +120,30 @@ export function openDatabase(path: string) {
     database.open();
     if (
       pragma(database, "application_id") !== applicationId ||
-      pragma(database, "user_version") !== version
+      ![1, version].includes(Number(pragma(database, "user_version")))
     ) {
       throw new Error(
         "Foreign or unsupported database schema; run explicit preparation for a new database",
       );
     }
-    const tables = database
-      .prepare(
-        "SELECT name, sql FROM sqlite_schema WHERE sql IS NOT NULL AND name != 'sqlite_sequence' ORDER BY name",
-      )
-      .all();
-    if (
-      tables.length !== 1 ||
-      tables[0].name !== "event_types" ||
-      tables[0].sql !== schema
-    ) {
-      throw new Error("Foreign or unsupported database schema structure");
-    }
+    const currentVersion = Number(pragma(database, "user_version"));
+    checkSchema(database, currentVersion);
     if (pragma(database, "quick_check") !== "ok")
       throw new Error("Corrupted SQLite database");
     configure(database);
+    if (currentVersion === 1) {
+      database.exec("BEGIN IMMEDIATE");
+      try {
+        database.exec(resultsSchema);
+        database.exec(`PRAGMA user_version=${version}`);
+        checkSchema(database, version);
+        options.beforeMigrationCommit?.();
+        database.exec("COMMIT");
+      } catch (error) {
+        if (database.isTransaction) database.exec("ROLLBACK");
+        throw error;
+      }
+    }
     return database;
   } catch (error) {
     if (database.isOpen) database.close();

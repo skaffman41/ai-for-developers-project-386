@@ -27,6 +27,100 @@ export type ReadError = {
   };
 };
 
+export type CreateEventTypeInput = {
+  name: string;
+  durationMinutes: number;
+  description?: string;
+};
+
+export type EventTypeDraft = {
+  name: string;
+  durationMinutes: number;
+  description?: string;
+};
+
+export type CreatedEventType = {
+  idempotencyKey: string;
+  data: EventType;
+};
+
+export type WriteError = {
+  idempotencyKey?: string;
+  outcome: "rejected" | "unknown";
+  error: {
+    code:
+      | "VALIDATION_ERROR"
+      | "IDEMPOTENCY_KEY_REUSED"
+      | "INVALID_REQUEST"
+      | "INTERNAL_ERROR"
+      | "TEMPORARILY_UNAVAILABLE";
+    message: string;
+    fieldErrors?: {
+      [key: string]: string;
+    };
+  };
+};
+
+export type WriteError400 = {
+  idempotencyKey?: string;
+  outcome: "unknown";
+  error: {
+    code: "INVALID_REQUEST";
+    message: string;
+    fieldErrors?: {
+      [key: string]: string;
+    };
+  };
+};
+
+export type WriteError409 = {
+  idempotencyKey: string;
+  outcome: "unknown";
+  error: {
+    code: "IDEMPOTENCY_KEY_REUSED";
+    message: string;
+    fieldErrors?: {
+      [key: string]: string;
+    };
+  };
+};
+
+export type WriteError422 = {
+  idempotencyKey: string;
+  outcome: "rejected";
+  error: {
+    code: "VALIDATION_ERROR";
+    message: string;
+    fieldErrors?: {
+      [key: string]: string;
+    };
+  };
+};
+
+export type WriteError500 = {
+  idempotencyKey?: string;
+  outcome: "unknown";
+  error: {
+    code: "INTERNAL_ERROR";
+    message: string;
+    fieldErrors?: {
+      [key: string]: string;
+    };
+  };
+};
+
+export type WriteError503 = {
+  idempotencyKey?: string;
+  outcome: "unknown";
+  error: {
+    code: "TEMPORARILY_UNAVAILABLE";
+    message: string;
+    fieldErrors?: {
+      [key: string]: string;
+    };
+  };
+};
+
 export type GetHealthData = {
   body?: never;
   path?: never;
@@ -93,3 +187,49 @@ export type GetEventTypesResponses = {
 
 export type GetEventTypesResponse =
   GetEventTypesResponses[keyof GetEventTypesResponses];
+
+export type CreateEventTypeData = {
+  body: CreateEventTypeInput;
+  headers: {
+    "Idempotency-Key": string;
+  };
+  path?: never;
+  query?: never;
+  url: "/api/event-types";
+};
+
+export type CreateEventTypeErrors = {
+  /**
+   * Uninterpretable request
+   */
+  400: WriteError400;
+  /**
+   * Key reused with different original data
+   */
+  409: WriteError409;
+  /**
+   * Saved validation refusal
+   */
+  422: WriteError422;
+  /**
+   * Unknown technical outcome
+   */
+  500: WriteError500;
+  /**
+   * Temporarily unavailable; unknown outcome
+   */
+  503: WriteError503;
+};
+
+export type CreateEventTypeError =
+  CreateEventTypeErrors[keyof CreateEventTypeErrors];
+
+export type CreateEventTypeResponses = {
+  /**
+   * Created or saved successful result
+   */
+  201: CreatedEventType;
+};
+
+export type CreateEventTypeResponse =
+  CreateEventTypeResponses[keyof CreateEventTypeResponses];

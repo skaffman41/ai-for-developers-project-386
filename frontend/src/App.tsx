@@ -1,3 +1,4 @@
+import { Owner } from "./Owner.tsx";
 import { MeetingTypes } from "./MeetingTypes.tsx";
 
 function CalendarMark() {
@@ -9,7 +10,13 @@ function CalendarMark() {
   );
 }
 
-function Header({ isBooking }: { isBooking: boolean }) {
+function Header({
+  isBooking,
+  isOwner,
+}: {
+  isBooking: boolean;
+  isOwner: boolean;
+}) {
   return (
     <header className="site-header">
       <a className="brand" href="/">
@@ -17,11 +24,14 @@ function Header({ isBooking }: { isBooking: boolean }) {
         <span>Календарь звонков</span>
       </a>
       <nav aria-label="Основная навигация">
-        <a href="/" aria-current={!isBooking ? "page" : undefined}>
+        <a href="/" aria-current={!isBooking && !isOwner ? "page" : undefined}>
           Главная
         </a>
         <a href="/booking" aria-current={isBooking ? "page" : undefined}>
           Запись
+        </a>
+        <a href="/owner" aria-current={isOwner ? "page" : undefined}>
+          Владельцу календаря
         </a>
       </nav>
     </header>
@@ -118,12 +128,13 @@ function BookingPage() {
 }
 
 export default function App() {
+  const isOwner = window.location.pathname === "/owner";
   const isBooking = window.location.pathname === "/booking";
 
   return (
     <div className="site-shell">
-      <Header isBooking={isBooking} />
-      {isBooking ? <BookingPage /> : <HomePage />}
+      <Header isBooking={isBooking} isOwner={isOwner} />
+      {isOwner ? <Owner /> : isBooking ? <BookingPage /> : <HomePage />}
       <footer className="site-footer">
         <span>Календарь звонков</span>
         <span>Для встреч, которым хочется уделить время.</span>
