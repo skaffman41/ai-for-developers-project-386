@@ -40,6 +40,14 @@ Whole saved history, independent of the guest horizon. Default upcoming: endsAt 
 
 Responses: 200, 400, 500, 503.
 
+## POST /api/bookings
+
+Подтвердить бронирование с безопасным повтором
+
+Idempotency-Key — UUID. Сравниваются исходные значения JSON, порядок свойств незначим. Структурные ошибки parseable JSON с действительным ключом сохраняются как окончательный VALIDATION_ERROR. Нормализация trim явная, длина проверяется после неё. Переполненные при разборе JSON числа (например 1e400) нельзя интерпретировать: INVALID_REQUEST/unknown до регистрации попытки. rejected возвращается только после commit; технический сбой оставляет unknown. Результаты не имеют TTL.
+
+Responses: 201, 400, 404, 409, 422, 500, 503.
+
 ## Schemas
 
 ```json
@@ -541,6 +549,187 @@ Responses: 200, 400, 500, 503.
         }
       }
     }
+  },
+  "CreateBookingInput": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["eventTypeId", "startsAt", "guestName", "guestEmail"],
+    "properties": {
+      "eventTypeId": {
+        "type": "string"
+      },
+      "startsAt": {
+        "type": "string"
+      },
+      "guestName": {
+        "type": "string"
+      },
+      "guestEmail": {
+        "type": "string"
+      }
+    }
+  },
+  "BookingDraft": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["eventTypeId", "startsAt", "guestName", "guestEmail"],
+    "properties": {
+      "eventTypeId": {
+        "type": "string",
+        "minLength": 1
+      },
+      "startsAt": {
+        "type": "string",
+        "format": "date-time",
+        "pattern": "Z$"
+      },
+      "guestName": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100,
+        "pattern": "^(?=\\S)[^\\r\\n\\u2028\\u2029]*\\S$|^\\S$"
+      },
+      "guestEmail": {
+        "type": "string",
+        "format": "email",
+        "maxLength": 254
+      }
+    }
+  },
+  "CreatedBooking": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "idempotencyKey": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "data": {
+        "$ref": "#/components/schemas/Booking"
+      }
+    },
+    "required": ["idempotencyKey", "data"]
+  },
+  "BookingError404": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "idempotencyKey": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "outcome": {
+        "type": "string",
+        "const": "rejected"
+      },
+      "error": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": ["EVENT_TYPE_NOT_FOUND"]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "fieldErrors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "required": ["code", "message"]
+      }
+    },
+    "required": ["error", "outcome", "idempotencyKey"]
+  },
+  "BookingRefusal409": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "idempotencyKey": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "outcome": {
+        "type": "string",
+        "const": "rejected"
+      },
+      "error": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": ["SLOT_TAKEN"]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "fieldErrors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "required": ["code", "message"]
+      }
+    },
+    "required": ["error", "outcome", "idempotencyKey"]
+  },
+  "BookingError422": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "idempotencyKey": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "outcome": {
+        "type": "string",
+        "const": "rejected"
+      },
+      "error": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string",
+            "enum": ["VALIDATION_ERROR", "TIME_UNAVAILABLE"]
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          },
+          "fieldErrors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "required": ["code", "message"]
+      }
+    },
+    "required": ["error", "outcome", "idempotencyKey"]
+  },
+  "BookingError409": {
+    "oneOf": [
+      {
+        "$ref": "#/components/schemas/WriteError409"
+      },
+      {
+        "$ref": "#/components/schemas/BookingRefusal409"
+      }
+    ]
   }
 }
 ```

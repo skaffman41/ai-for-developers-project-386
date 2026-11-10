@@ -19,6 +19,13 @@ export const components = {
   AvailabilityResponse: schemas.AvailabilityResponseSchema,
   Booking: schemas.BookingSchema,
   Bookings: schemas.BookingsSchema,
+  CreateBookingInput: schemas.CreateBookingInputSchema,
+  BookingDraft: schemas.BookingDraftSchema,
+  CreatedBooking: schemas.CreatedBookingSchema,
+  BookingError404: schemas.BookingError404Schema,
+  BookingRefusal409: schemas.BookingRefusal409Schema,
+  BookingError422: schemas.BookingError422Schema,
+  BookingError409: schemas.BookingError409Schema,
 } as const;
 export const operations = {
   getHealth: {
@@ -369,6 +376,96 @@ export const operations = {
       "503": {
         mediaType: "application/json",
         schema: { $ref: "#/components/schemas/ReadError" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
+      },
+    },
+  },
+  createBooking: {
+    method: "POST",
+    path: "/api/bookings",
+    query: {
+      type: "object",
+      additionalProperties: false,
+      properties: {},
+      required: [],
+    },
+    headers: {
+      type: "object",
+      additionalProperties: false,
+      properties: { "idempotency-key": { type: "string", format: "uuid" } },
+      required: ["idempotency-key"],
+    },
+    body: { $ref: "#/components/schemas/CreateBookingInput" },
+    requestMediaType: "application/json",
+    responses: {
+      "201": {
+        mediaType: "application/json",
+        schema: { $ref: "#/components/schemas/CreatedBooking" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
+      },
+      "400": {
+        mediaType: "application/json",
+        schema: { $ref: "#/components/schemas/WriteError400" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
+      },
+      "404": {
+        mediaType: "application/json",
+        schema: { $ref: "#/components/schemas/BookingError404" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
+      },
+      "409": {
+        mediaType: "application/json",
+        schema: { $ref: "#/components/schemas/BookingError409" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
+      },
+      "422": {
+        mediaType: "application/json",
+        schema: { $ref: "#/components/schemas/BookingError422" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
+      },
+      "500": {
+        mediaType: "application/json",
+        schema: { $ref: "#/components/schemas/WriteError500" },
+        headers: {
+          type: "object",
+          additionalProperties: true,
+          properties: {},
+          required: [],
+        },
+      },
+      "503": {
+        mediaType: "application/json",
+        schema: { $ref: "#/components/schemas/WriteError503" },
         headers: {
           type: "object",
           additionalProperties: true,

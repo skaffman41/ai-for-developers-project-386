@@ -360,6 +360,106 @@
           }
         }
       }
+    },
+    "/api/bookings": {
+      "post": {
+        "operationId": "createBooking",
+        "summary": "Подтвердить бронирование с безопасным повтором",
+        "description": "Idempotency-Key — UUID. Сравниваются исходные значения JSON, порядок свойств незначим. Структурные ошибки parseable JSON с действительным ключом сохраняются как окончательный VALIDATION_ERROR. Нормализация trim явная, длина проверяется после неё. Переполненные при разборе JSON числа (например 1e400) нельзя интерпретировать: INVALID_REQUEST/unknown до регистрации попытки. rejected возвращается только после commit; технический сбой оставляет unknown. Результаты не имеют TTL.",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBookingInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Saved result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedBooking"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Uninterpretable request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WriteError400"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Saved slot conflict or unknown reused key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingError409"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Saved result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingError422"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unknown technical outcome",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WriteError500"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable; unknown outcome",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WriteError503"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Saved result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingError404"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -861,6 +961,187 @@
             }
           }
         }
+      },
+      "CreateBookingInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["eventTypeId", "startsAt", "guestName", "guestEmail"],
+        "properties": {
+          "eventTypeId": {
+            "type": "string"
+          },
+          "startsAt": {
+            "type": "string"
+          },
+          "guestName": {
+            "type": "string"
+          },
+          "guestEmail": {
+            "type": "string"
+          }
+        }
+      },
+      "BookingDraft": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["eventTypeId", "startsAt", "guestName", "guestEmail"],
+        "properties": {
+          "eventTypeId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "Z$"
+          },
+          "guestName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^(?=\\S)[^\\r\\n\\u2028\\u2029]*\\S$|^\\S$"
+          },
+          "guestEmail": {
+            "type": "string",
+            "format": "email",
+            "maxLength": 254
+          }
+        }
+      },
+      "CreatedBooking": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "idempotencyKey": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "data": {
+            "$ref": "#/components/schemas/Booking"
+          }
+        },
+        "required": ["idempotencyKey", "data"]
+      },
+      "BookingError404": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "idempotencyKey": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "outcome": {
+            "type": "string",
+            "const": "rejected"
+          },
+          "error": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "code": {
+                "type": "string",
+                "enum": ["EVENT_TYPE_NOT_FOUND"]
+              },
+              "message": {
+                "type": "string",
+                "minLength": 1
+              },
+              "fieldErrors": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["error", "outcome", "idempotencyKey"]
+      },
+      "BookingRefusal409": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "idempotencyKey": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "outcome": {
+            "type": "string",
+            "const": "rejected"
+          },
+          "error": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "code": {
+                "type": "string",
+                "enum": ["SLOT_TAKEN"]
+              },
+              "message": {
+                "type": "string",
+                "minLength": 1
+              },
+              "fieldErrors": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["error", "outcome", "idempotencyKey"]
+      },
+      "BookingError422": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "idempotencyKey": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "outcome": {
+            "type": "string",
+            "const": "rejected"
+          },
+          "error": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "code": {
+                "type": "string",
+                "enum": ["VALIDATION_ERROR", "TIME_UNAVAILABLE"]
+              },
+              "message": {
+                "type": "string",
+                "minLength": 1
+              },
+              "fieldErrors": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "required": ["code", "message"]
+          }
+        },
+        "required": ["error", "outcome", "idempotencyKey"]
+      },
+      "BookingError409": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/WriteError409"
+          },
+          {
+            "$ref": "#/components/schemas/BookingRefusal409"
+          }
+        ]
       }
     }
   }

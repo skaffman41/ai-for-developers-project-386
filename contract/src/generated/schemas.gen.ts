@@ -515,3 +515,191 @@ export const BookingsSchema = {
     },
   },
 } as const;
+
+export const CreateBookingInputSchema = {
+  type: "object",
+  additionalProperties: false,
+  required: ["eventTypeId", "startsAt", "guestName", "guestEmail"],
+  properties: {
+    eventTypeId: {
+      type: "string",
+    },
+    startsAt: {
+      type: "string",
+    },
+    guestName: {
+      type: "string",
+    },
+    guestEmail: {
+      type: "string",
+    },
+  },
+} as const;
+
+export const BookingDraftSchema = {
+  type: "object",
+  additionalProperties: false,
+  required: ["eventTypeId", "startsAt", "guestName", "guestEmail"],
+  properties: {
+    eventTypeId: {
+      type: "string",
+      minLength: 1,
+    },
+    startsAt: {
+      type: "string",
+      format: "date-time",
+      pattern: "Z$",
+    },
+    guestName: {
+      type: "string",
+      minLength: 1,
+      maxLength: 100,
+      pattern: "^(?=\\S)[^\\r\\n\\u2028\\u2029]*\\S$|^\\S$",
+    },
+    guestEmail: {
+      type: "string",
+      format: "email",
+      maxLength: 254,
+    },
+  },
+} as const;
+
+export const CreatedBookingSchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    idempotencyKey: {
+      type: "string",
+      format: "uuid",
+    },
+    data: {
+      $ref: "#/components/schemas/Booking",
+    },
+  },
+  required: ["idempotencyKey", "data"],
+} as const;
+
+export const BookingError404Schema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    idempotencyKey: {
+      type: "string",
+      format: "uuid",
+    },
+    outcome: {
+      type: "string",
+      const: "rejected",
+    },
+    error: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        code: {
+          type: "string",
+          enum: ["EVENT_TYPE_NOT_FOUND"],
+        },
+        message: {
+          type: "string",
+          minLength: 1,
+        },
+        fieldErrors: {
+          type: "object",
+          additionalProperties: {
+            type: "string",
+            minLength: 1,
+          },
+        },
+      },
+      required: ["code", "message"],
+    },
+  },
+  required: ["error", "outcome", "idempotencyKey"],
+} as const;
+
+export const BookingRefusal409Schema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    idempotencyKey: {
+      type: "string",
+      format: "uuid",
+    },
+    outcome: {
+      type: "string",
+      const: "rejected",
+    },
+    error: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        code: {
+          type: "string",
+          enum: ["SLOT_TAKEN"],
+        },
+        message: {
+          type: "string",
+          minLength: 1,
+        },
+        fieldErrors: {
+          type: "object",
+          additionalProperties: {
+            type: "string",
+            minLength: 1,
+          },
+        },
+      },
+      required: ["code", "message"],
+    },
+  },
+  required: ["error", "outcome", "idempotencyKey"],
+} as const;
+
+export const BookingError422Schema = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    idempotencyKey: {
+      type: "string",
+      format: "uuid",
+    },
+    outcome: {
+      type: "string",
+      const: "rejected",
+    },
+    error: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        code: {
+          type: "string",
+          enum: ["VALIDATION_ERROR", "TIME_UNAVAILABLE"],
+        },
+        message: {
+          type: "string",
+          minLength: 1,
+        },
+        fieldErrors: {
+          type: "object",
+          additionalProperties: {
+            type: "string",
+            minLength: 1,
+          },
+        },
+      },
+      required: ["code", "message"],
+    },
+  },
+  required: ["error", "outcome", "idempotencyKey"],
+} as const;
+
+export const BookingError409Schema = {
+  oneOf: [
+    {
+      $ref: "#/components/schemas/WriteError409",
+    },
+    {
+      $ref: "#/components/schemas/BookingRefusal409",
+    },
+  ],
+} as const;

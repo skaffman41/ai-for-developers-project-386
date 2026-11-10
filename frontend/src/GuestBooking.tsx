@@ -1,10 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import type {
+  Booking,
   Availability,
   EventType,
   Slot,
 } from "@call-calendar/contract/types";
 import { AvailabilityDateExpired, loadAvailability } from "./api.ts";
+import {
+  BookingContacts,
+  BookingConfirmation,
+  restoreBooking,
+} from "./BookingContacts.tsx";
 import { MeetingTypes } from "./MeetingTypes.tsx";
 import "./guest-booking.css";
 
@@ -37,10 +43,22 @@ function calendarDays(first: string, last: string) {
 }
 
 export function GuestBooking() {
-  const [step, setStep] = useState<1 | 2>(1);
-  const [type, setType] = useState<EventType>();
-  const [date, setDate] = useState<string>();
-  const [slot, setSlot] = useState<Slot>();
+  const [restored] = useState(restoreBooking);
+  const [confirmation, setConfirmation] = useState<Booking | undefined>(
+    restored.confirmation,
+  );
+  const [locked, setLocked] = useState(!!restored.pending);
+  const [notice, setNotice] = useState("");
+  const [step, setStep] = useState<1 | 2 | 3>(restored.pending ? 3 : 1);
+  const [type, setType] = useState<EventType | undefined>(
+    restored.pending?.payload.eventType,
+  );
+  const [date, setDate] = useState<string | undefined>(
+    restored.pending?.payload.slot.startsAt.slice(0, 10),
+  );
+  const [slot, setSlot] = useState<Slot | undefined>(
+    restored.pending?.payload.slot,
+  );
   const [query, setQuery] = useState<{ date?: string; revision: number }>({
     revision: 0,
   });
@@ -108,7 +126,8 @@ export function GuestBooking() {
   }, [type, query, step, requestKey]);
   useEffect(() => {
     if (step === 2) heading.current?.focus();
-    else if (previousStep.current !== step) typeStep.current?.focus();
+    else if (step === 1 && previousStep.current !== step)
+      typeStep.current?.focus();
     previousStep.current = step;
   }, [step]);
   function openTime() {
@@ -125,6 +144,14 @@ export function GuestBooking() {
     setQuery((previous) => ({ date: next, revision: previous.revision + 1 }));
   }
   const visibleSlot = active.status === "loaded" ? slot : undefined;
+  if (restored.failed)
+    return (
+      <p role="alert">
+        Не удалось прочитать сохранённую отправку в этой вкладке. Восстановите
+        доступ к sessionStorage и обновите страницу.
+      </p>
+    );
+  if (confirmation) return <BookingConfirmation booking={confirmation} />;
   return (
     <div className="guest-booking">
       <nav className="booking-steps" aria-label="Шаги записи">
@@ -132,6 +159,7 @@ export function GuestBooking() {
           ref={typeStep}
           type="button"
           aria-current={step === 1 ? "step" : undefined}
+          disabled={locked}
           onClick={() => setStep(1)}
         >
           1. Тип встречи
@@ -139,12 +167,19 @@ export function GuestBooking() {
         <button
           type="button"
           aria-current={step === 2 ? "step" : undefined}
-          disabled={!type}
+          disabled={!type || locked}
           onClick={openTime}
         >
           2. Дата и время
         </button>
-        <span>3. Контакты</span>
+        <button
+          type="button"
+          aria-current={step === 3 ? "step" : undefined}
+          disabled={!visibleSlot || locked}
+          onClick={() => setStep(3)}
+        >
+          3. Контакты
+        </button>
       </nav>
       <div hidden={step !== 1}>
         <MeetingTypes selectedId={type?.id} onSelect={selectType} />
@@ -157,6 +192,7 @@ export function GuestBooking() {
           Выбрать дату и время
         </button>
       </div>
+      {notice && <p role="alert">{notice}</p>}
       {step === 2 && type && (
         <section
           className="availability"
@@ -253,11 +289,32 @@ export function GuestBooking() {
             >
               Назад к типам встреч
             </button>
-            <button type="button" className="reload-button" disabled>
+            <button
+              type="button"
+              className="reload-button"
+              disabled={!visibleSlot}
+              onClick={() => setStep(3)}
+            >
               Указать контакты
             </button>
           </div>
         </section>
+      )}
+      {type && (
+        <BookingContacts
+          eventType={type}
+          slot={slot}
+          active={step === 3}
+          restored={restored}
+          onBack={openTime}
+          onLocked={setLocked}
+          onConfirmed={setConfirmation}
+          onRefused={(message) => {
+            setSlot(undefined);
+            setNotice(message ?? "");
+            openTime();
+          }}
+        />
       )}
     </div>
   );

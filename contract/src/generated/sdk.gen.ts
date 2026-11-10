@@ -9,6 +9,9 @@ import type {
   TDataShape,
 } from "./client/index.js";
 import type {
+  CreateBookingData,
+  CreateBookingErrors,
+  CreateBookingResponses,
   CreateEventTypeData,
   CreateEventTypeErrors,
   CreateEventTypeResponses,
@@ -130,3 +133,24 @@ export const getOwnerBookings = <ThrowOnError extends boolean = false>(
     GetOwnerBookingsErrors,
     ThrowOnError
   >({ url: "/api/owner/bookings", ...options });
+
+/**
+ * Подтвердить бронирование с безопасным повтором
+ *
+ * Idempotency-Key — UUID. Сравниваются исходные значения JSON, порядок свойств незначим. Структурные ошибки parseable JSON с действительным ключом сохраняются как окончательный VALIDATION_ERROR. Нормализация trim явная, длина проверяется после неё. Переполненные при разборе JSON числа (например 1e400) нельзя интерпретировать: INVALID_REQUEST/unknown до регистрации попытки. rejected возвращается только после commit; технический сбой оставляет unknown. Результаты не имеют TTL.
+ */
+export const createBooking = <ThrowOnError extends boolean = false>(
+  options: Options<CreateBookingData, ThrowOnError>,
+): RequestResult<CreateBookingResponses, CreateBookingErrors, ThrowOnError> =>
+  (options.client ?? client).post<
+    CreateBookingResponses,
+    CreateBookingErrors,
+    ThrowOnError
+  >({
+    url: "/api/bookings",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });

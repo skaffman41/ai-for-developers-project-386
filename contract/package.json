@@ -8,7 +8,8 @@
     "./types": "./dist/generated/types.gen.js",
     "./fastify": "./dist/generated/fastify.gen.js",
     "./operations": "./dist/generated/operations.gen.js",
-    "./event-types": "./dist/event-types.js"
+    "./event-types": "./dist/event-types.js",
+    "./bookings": "./dist/bookings.js"
   },
   "scripts": {
     "build": "tsc",

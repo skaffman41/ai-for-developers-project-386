@@ -1,8 +1,14 @@
 // Test-owned process entry. Synchronous stage markers keep the production
 // transaction synchronous and let the parent kill at a known boundary.
-import { writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { buildApp } from "../../backend/src/app.ts";
 const app = buildApp({
+  ...(process.env.TEST_CLOCK_PATH
+    ? {
+        now: () =>
+          new Date(readFileSync(process.env.TEST_CLOCK_PATH!, "utf8").trim()),
+      }
+    : {}),
   onCommitStage(stage) {
     if (stage === process.env.STOP_STAGE) {
       writeFileSync(process.env.STAGE_MARKER!, stage);

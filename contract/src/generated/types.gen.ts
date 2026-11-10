@@ -159,6 +159,63 @@ export type Bookings = {
   data: Array<Booking>;
 };
 
+export type CreateBookingInput = {
+  eventTypeId: string;
+  startsAt: string;
+  guestName: string;
+  guestEmail: string;
+};
+
+export type BookingDraft = {
+  eventTypeId: string;
+  startsAt: string;
+  guestName: string;
+  guestEmail: string;
+};
+
+export type CreatedBooking = {
+  idempotencyKey: string;
+  data: Booking;
+};
+
+export type BookingError404 = {
+  idempotencyKey: string;
+  outcome: "rejected";
+  error: {
+    code: "EVENT_TYPE_NOT_FOUND";
+    message: string;
+    fieldErrors?: {
+      [key: string]: string;
+    };
+  };
+};
+
+export type BookingRefusal409 = {
+  idempotencyKey: string;
+  outcome: "rejected";
+  error: {
+    code: "SLOT_TAKEN";
+    message: string;
+    fieldErrors?: {
+      [key: string]: string;
+    };
+  };
+};
+
+export type BookingError422 = {
+  idempotencyKey: string;
+  outcome: "rejected";
+  error: {
+    code: "VALIDATION_ERROR" | "TIME_UNAVAILABLE";
+    message: string;
+    fieldErrors?: {
+      [key: string]: string;
+    };
+  };
+};
+
+export type BookingError409 = WriteError409 | BookingRefusal409;
+
 export type GetHealthData = {
   body?: never;
   path?: never;
@@ -354,3 +411,52 @@ export type GetOwnerBookingsResponses = {
 
 export type GetOwnerBookingsResponse =
   GetOwnerBookingsResponses[keyof GetOwnerBookingsResponses];
+
+export type CreateBookingData = {
+  body: CreateBookingInput;
+  headers: {
+    "Idempotency-Key": string;
+  };
+  path?: never;
+  query?: never;
+  url: "/api/bookings";
+};
+
+export type CreateBookingErrors = {
+  /**
+   * Uninterpretable request
+   */
+  400: WriteError400;
+  /**
+   * Saved result
+   */
+  404: BookingError404;
+  /**
+   * Saved slot conflict or unknown reused key
+   */
+  409: BookingError409;
+  /**
+   * Saved result
+   */
+  422: BookingError422;
+  /**
+   * Unknown technical outcome
+   */
+  500: WriteError500;
+  /**
+   * Temporarily unavailable; unknown outcome
+   */
+  503: WriteError503;
+};
+
+export type CreateBookingError = CreateBookingErrors[keyof CreateBookingErrors];
+
+export type CreateBookingResponses = {
+  /**
+   * Saved result
+   */
+  201: CreatedBooking;
+};
+
+export type CreateBookingResponse =
+  CreateBookingResponses[keyof CreateBookingResponses];

@@ -102,3 +102,32 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+.booking-summary {
+  padding: 18px;
+  margin-bottom: 24px;
+  background: #efebe1;
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+.booking-summary h3 {
+  margin-top: 0;
+}
+.booking-contacts h2:focus,
+.booking-confirmation h2:focus {
+  outline: none;
+}
+.booking-confirmation {
+  overflow-wrap: anywhere;
+}
+.booking-contacts dialog {
+  max-width: min(420px, calc(100vw - 48px));
+  box-sizing: border-box;
+  border: 1px solid #b2a99b;
+  border-radius: 12px;
+  padding: 24px;
+  background: #fdfcf8;
+  color: #302f2b;
+}
+.booking-contacts dialog::backdrop {
+  background: #302f2b80;
+}

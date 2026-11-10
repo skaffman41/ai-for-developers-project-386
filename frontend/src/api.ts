@@ -1,5 +1,6 @@
 import {
   createEventType,
+  createBooking,
   getEventTypes,
   getAvailability,
   getOwnerBookings,
@@ -7,7 +8,10 @@ import {
 import { assertResponse } from "@call-calendar/contract/validation";
 import type { OperationId } from "@call-calendar/contract/validation";
 
-function validatedFetch(operation: OperationId): typeof fetch {
+function validatedFetch(
+  operation: OperationId,
+  attemptKey?: string,
+): typeof fetch {
   // SDK validation only runs on success in the pinned version. Validate every
   // status/media type through its transport so errors cannot bypass the contract.
   return async (request, init) => {
@@ -20,6 +24,14 @@ function validatedFetch(operation: OperationId): typeof fetch {
       data,
       Object.fromEntries(response.headers),
     );
+    if (
+      attemptKey !== undefined &&
+      (!data ||
+        typeof data !== "object" ||
+        !("idempotencyKey" in data) ||
+        data.idempotencyKey !== attemptKey)
+    )
+      throw new Error("Unrelated attempt response");
     return response;
   };
 }
@@ -93,18 +105,22 @@ export async function sendEventType(
   const result = await createEventType({
     body: payload,
     headers: { "Idempotency-Key": key },
-    fetch: async (request) => {
-      const response = await validatedFetch("createEventType")(request);
-      const data: unknown = await response.clone().json();
-      if (
-        !data ||
-        typeof data !== "object" ||
-        !("idempotencyKey" in data) ||
-        data.idempotencyKey !== key
-      )
-        throw new Error("Unrelated attempt response");
-      return response;
-    },
+    fetch: validatedFetch("createEventType", key),
+  });
+  if (result.data) return { type: "created" as const, data: result.data.data };
+  if (result.error?.outcome === "rejected")
+    return { type: "rejected" as const, error: result.error.error };
+  throw new Error("Unknown attempt outcome");
+}
+
+export async function sendBooking(
+  key: string,
+  payload: import("@call-calendar/contract/types").CreateBookingInput,
+) {
+  const result = await createBooking({
+    body: payload,
+    headers: { "Idempotency-Key": key },
+    fetch: validatedFetch("createBooking", key),
   });
   if (result.data) return { type: "created" as const, data: result.data.data };
   if (result.error?.outcome === "rejected")

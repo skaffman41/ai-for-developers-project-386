@@ -10,6 +10,9 @@ import {
 import type { OperationId } from "@call-calendar/contract/validation";
 import type { RouteHandlers } from "@call-calendar/contract/fastify";
 import type {
+  CreateBookingData,
+  CreateBookingErrors,
+  CreateBookingResponses,
   CreateEventTypeData,
   CreateEventTypeErrors,
   CreateEventTypeResponses,
@@ -20,6 +23,7 @@ import type {
   GetOwnerBookingsErrors,
   GetOwnerBookingsResponses,
 } from "@call-calendar/contract/types";
+import { createBooking } from "./create-booking.ts";
 import { createEventType } from "./create-event-type.ts";
 import type { AttemptOptions } from "./attempts.ts";
 import { databasePath, openDatabase } from "./storage.ts";
@@ -257,5 +261,28 @@ export function buildApp(options: AttemptOptions & { now?: Clock } = {}) {
     contractRoute("getAvailability"),
     availability,
   );
+  const confirm: RouteHandlers["createBooking"] = async (request, reply) => {
+    const result = createBooking(
+      database,
+      request.headers["idempotency-key"],
+      request.body,
+      now,
+      options,
+    );
+    await reply
+      .code(
+        result.status as keyof (CreateBookingErrors & CreateBookingResponses),
+      )
+      .send(
+        result.body as (CreateBookingErrors &
+          CreateBookingResponses)[keyof (CreateBookingErrors &
+          CreateBookingResponses)],
+      );
+  };
+  app.post<{
+    Body: CreateBookingData["body"];
+    Headers: CreateBookingData["headers"];
+    Reply: CreateBookingErrors & CreateBookingResponses;
+  }>(operations.createBooking.path, contractRoute("createBooking"), confirm);
   return app;
 }

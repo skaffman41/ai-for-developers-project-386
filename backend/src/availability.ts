@@ -31,8 +31,7 @@ export function availabilityWindow(now: Date) {
 
 // This shared calculation is also suitable under the booking write lock. Slots
 // are derived intervals; neither reading them nor selecting one reserves time.
-export function availableSlots(
-  database: DatabaseSync,
+export function scheduledSlots(
   durationMinutes: number,
   date: string,
   now: Date,
@@ -41,11 +40,6 @@ export function availableSlots(
   if (weekday === 0 || weekday === 6) return [];
   const opensAt = Date.parse(`${date}T09:00:00+03:00`);
   const closesAt = Date.parse(`${date}T18:00:00+03:00`);
-  const occupied = database
-    .prepare(
-      "SELECT starts_at, ends_at FROM bookings WHERE starts_at < ? AND ends_at > ?",
-    )
-    .all(closesAt, opensAt);
   const slots: Slot[] = [];
   for (
     let start = opensAt;
@@ -53,17 +47,35 @@ export function availableSlots(
     start += 30 * 60_000
   ) {
     const end = start + durationMinutes * 60_000;
-    if (
-      start <= now.getTime() ||
-      occupied.some(
-        (row) => Number(row.starts_at) < end && Number(row.ends_at) > start,
-      )
-    )
-      continue;
+    if (start <= now.getTime()) continue;
     slots.push({
       startsAt: new Date(start).toISOString(),
       endsAt: new Date(end).toISOString(),
     });
   }
   return slots;
+}
+
+export function availableSlots(
+  database: DatabaseSync,
+  durationMinutes: number,
+  date: string,
+  now: Date,
+): Slot[] {
+  const occupied = database
+    .prepare(
+      "SELECT starts_at, ends_at FROM bookings WHERE starts_at < ? AND ends_at > ?",
+    )
+    .all(
+      Date.parse(`${date}T18:00:00+03:00`),
+      Date.parse(`${date}T09:00:00+03:00`),
+    );
+  return scheduledSlots(durationMinutes, date, now).filter(
+    (slot) =>
+      !occupied.some(
+        (row) =>
+          Number(row.starts_at) < Date.parse(slot.endsAt) &&
+          Number(row.ends_at) > Date.parse(slot.startsAt),
+      ),
+  );
 }

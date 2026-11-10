@@ -44,7 +44,7 @@ test("guest explicitly chooses a type and Moscow interval with a wrong browser c
   ).toContainText("09:00–09:45");
   await expect(
     page.getByRole("button", { name: "Указать контакты" }),
-  ).toBeDisabled();
+  ).toBeEnabled();
 });
 
 async function openTime(page: import("@playwright/test").Page) {
