@@ -24,12 +24,12 @@ depends = ["env:check"]
 run = "hk install --mise"
 
 [tasks."api:generate"]
-description = "Regenerate API models, schemas, SDK, server types, registry and documentation"
+description = "Compile TypeSpec and regenerate OpenAPI, API models, schemas, SDK, server types, registry and documentation"
 depends = ["env:check"]
 run = "npm run api:generate"
 
 [tasks."api:check"]
-description = "Validate OpenAPI and compare all generated API artifacts"
+description = "Compile TypeSpec, validate OpenAPI and compare all generated API artifacts"
 depends = ["env:check"]
 run = "npm run api:check"
 

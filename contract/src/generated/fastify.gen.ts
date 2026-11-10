@@ -22,8 +22,14 @@ import type {
 } from "./types.gen.js";
 
 export type RouteHandlers = {
-  getHealth: RouteHandler<{
-    Reply: GetHealthErrors & GetHealthResponses;
+  getAvailability: RouteHandler<{
+    Querystring: GetAvailabilityData["query"];
+    Reply: GetAvailabilityErrors & GetAvailabilityResponses;
+  }>;
+  createBooking: RouteHandler<{
+    Body: CreateBookingData["body"];
+    Headers: CreateBookingData["headers"];
+    Reply: CreateBookingErrors & CreateBookingResponses;
   }>;
   getEventTypes: RouteHandler<{
     Reply: GetEventTypesErrors & GetEventTypesResponses;
@@ -33,17 +39,11 @@ export type RouteHandlers = {
     Headers: CreateEventTypeData["headers"];
     Reply: CreateEventTypeErrors & CreateEventTypeResponses;
   }>;
-  getAvailability: RouteHandler<{
-    Querystring: GetAvailabilityData["query"];
-    Reply: GetAvailabilityErrors & GetAvailabilityResponses;
-  }>;
   getOwnerBookings: RouteHandler<{
     Querystring?: GetOwnerBookingsData["query"];
     Reply: GetOwnerBookingsErrors & GetOwnerBookingsResponses;
   }>;
-  createBooking: RouteHandler<{
-    Body: CreateBookingData["body"];
-    Headers: CreateBookingData["headers"];
-    Reply: CreateBookingErrors & CreateBookingResponses;
+  getHealth: RouteHandler<{
+    Reply: GetHealthErrors & GetHealthResponses;
   }>;
 };

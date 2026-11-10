@@ -48,16 +48,43 @@ export type Options<
 };
 
 /**
- * Проверить здоровье сервиса
+ * Получить свободные интервалы по московскому времени
+ *
+ * Сегодня и следующие 13 московских дней; будни 09:00–18:00, начала через 30 минут строго после asOf. Чтение не резервирует время.
  */
-export const getHealth = <ThrowOnError extends boolean = false>(
-  options?: Options<GetHealthData, ThrowOnError>,
-): RequestResult<GetHealthResponses, GetHealthErrors, ThrowOnError> =>
-  (options?.client ?? client).get<
-    GetHealthResponses,
-    GetHealthErrors,
+export const getAvailability = <ThrowOnError extends boolean = false>(
+  options: Options<GetAvailabilityData, ThrowOnError>,
+): RequestResult<
+  GetAvailabilityResponses,
+  GetAvailabilityErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).get<
+    GetAvailabilityResponses,
+    GetAvailabilityErrors,
     ThrowOnError
-  >({ url: "/health", ...options });
+  >({ url: "/api/availability", ...options });
+
+/**
+ * Подтвердить бронирование с безопасным повтором
+ *
+ * Idempotency-Key — UUID. Сравниваются исходные значения JSON, порядок свойств незначим. Структурные ошибки parseable JSON с действительным ключом сохраняются как окончательный VALIDATION_ERROR. Нормализация trim явная, длина проверяется после неё. Переполненные при разборе JSON числа (например 1e400) нельзя интерпретировать: INVALID_REQUEST/unknown до регистрации попытки. rejected возвращается только после commit; технический сбой оставляет unknown. Результаты не имеют TTL.
+ */
+export const createBooking = <ThrowOnError extends boolean = false>(
+  options: Options<CreateBookingData, ThrowOnError>,
+): RequestResult<CreateBookingResponses, CreateBookingErrors, ThrowOnError> =>
+  (options.client ?? client).post<
+    CreateBookingResponses,
+    CreateBookingErrors,
+    ThrowOnError
+  >({
+    url: "/api/bookings",
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...options.headers,
+    },
+  });
 
 /**
  * Получить типы встреч, новые первыми
@@ -99,24 +126,6 @@ export const createEventType = <ThrowOnError extends boolean = false>(
   });
 
 /**
- * Получить свободные интервалы по московскому времени
- *
- * Сегодня и следующие 13 московских дней; будни 09:00–18:00, начала через 30 минут строго после asOf. Чтение не резервирует время.
- */
-export const getAvailability = <ThrowOnError extends boolean = false>(
-  options: Options<GetAvailabilityData, ThrowOnError>,
-): RequestResult<
-  GetAvailabilityResponses,
-  GetAvailabilityErrors,
-  ThrowOnError
-> =>
-  (options.client ?? client).get<
-    GetAvailabilityResponses,
-    GetAvailabilityErrors,
-    ThrowOnError
-  >({ url: "/api/availability", ...options });
-
-/**
  * Бронирования владельца календаря
  *
  * Whole saved history, independent of the guest horizon. Default upcoming: endsAt > X-Server-Time, ascending startsAt. past: endsAt <= X-Server-Time, descending startsAt. all: ascending startsAt. Equal starts use ascending opaque id.
@@ -135,22 +144,13 @@ export const getOwnerBookings = <ThrowOnError extends boolean = false>(
   >({ url: "/api/owner/bookings", ...options });
 
 /**
- * Подтвердить бронирование с безопасным повтором
- *
- * Idempotency-Key — UUID. Сравниваются исходные значения JSON, порядок свойств незначим. Структурные ошибки parseable JSON с действительным ключом сохраняются как окончательный VALIDATION_ERROR. Нормализация trim явная, длина проверяется после неё. Переполненные при разборе JSON числа (например 1e400) нельзя интерпретировать: INVALID_REQUEST/unknown до регистрации попытки. rejected возвращается только после commit; технический сбой оставляет unknown. Результаты не имеют TTL.
+ * Проверить здоровье сервиса
  */
-export const createBooking = <ThrowOnError extends boolean = false>(
-  options: Options<CreateBookingData, ThrowOnError>,
-): RequestResult<CreateBookingResponses, CreateBookingErrors, ThrowOnError> =>
-  (options.client ?? client).post<
-    CreateBookingResponses,
-    CreateBookingErrors,
+export const getHealth = <ThrowOnError extends boolean = false>(
+  options?: Options<GetHealthData, ThrowOnError>,
+): RequestResult<GetHealthResponses, GetHealthErrors, ThrowOnError> =>
+  (options?.client ?? client).get<
+    GetHealthResponses,
+    GetHealthErrors,
     ThrowOnError
-  >({
-    url: "/api/bookings",
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
-  });
+  >({ url: "/health", ...options });
