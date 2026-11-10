@@ -3,8 +3,8 @@
 Одна версия относится ко всему приложению. Приватные workspaces не публикуются в npm.
 `release-please-config.json` использует manifest-режим со стратегией `simple` для корня;
 `version.txt` содержит версию приложения, `.release-please-manifest.json` — последнюю
-версию, а `CHANGELOG.md` — заметки к выпускам. До первого выпуска обе версии равны
-`0.0.0`; `initial-version` явно задаёт первый предлагаемый выпуск `0.1.0`.
+версию, а `CHANGELOG.md` — заметки к выпускам. После состоявшегося первого выпуска
+обе версии равны `0.1.0`; `initial-version` задавал первый предлагаемый выпуск.
 
 `CHANGELOG.md` генерирует release-please в собственном Markdown-формате; файл
 исключён из Prettier как производный артефакт. Проверки конфигурации и генерации
@@ -42,11 +42,31 @@ GitHub fetch: только домен `.invalid`, фиктивный token, бе
 истории задана отдельно, поэтому проверки продолжают работать внутри будущих Release PR.
 Реальные PR, теги и Releases эти команды не создают. Проверки входят в общий check.
 
-## Включение на GitHub
+## Состоявшийся выпуск v0.1.0
 
-Сначала отдельно разрешите публикацию кода и merge настроек в `main` по
-[workflow проекта](agents/development-workflow.md). Само наличие локальных файлов
-не означает, что Actions уже запускался.
+Ссылки и SHA проверены через GitHub CLI 10 ноября 2026 года. Это результаты
+исходной реализации #37, до дополнения #48 с TypeSpec.
+
+| Событие                                    | Проверенный SHA                                                                                   | Доказательство                                                                                                         |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Реализационный PR #45, merged              | head `8beae76d9924ed416aa0985b13346ad97743b1ee`, merge `bab12ec41c2ce954f3eacebf3dc3e80975d16ad4` | [PR #45](https://github.com/skaffman41/ai-for-developers-project-386/pull/45)                                          |
+| Release PR #46, merged                     | head `7a32302d79d9f6d6b0f322b42da4708bbc517fe3`, merge `953ad8f13b95860d717bc358855a81698f68f077` | [PR #46](https://github.com/skaffman41/ai-for-developers-project-386/pull/46)                                          |
+| app-check точного head Release PR, success | `7a32302d79d9f6d6b0f322b42da4708bbc517fe3`                                                        | [workflow_dispatch #42804197934](https://github.com/skaffman41/ai-for-developers-project-386/actions/runs/42804197934) |
+| app-check базового main, success           | `953ad8f13b95860d717bc358855a81698f68f077`                                                        | [run #42810336698](https://github.com/skaffman41/ai-for-developers-project-386/actions/runs/42810336698)               |
+| hexlet-check базового main, success        | `953ad8f13b95860d717bc358855a81698f68f077`                                                        | [run #42810336656](https://github.com/skaffman41/ai-for-developers-project-386/actions/runs/42810336656)               |
+| release-please базового main, success      | `953ad8f13b95860d717bc358855a81698f68f077`                                                        | [run #42810336649](https://github.com/skaffman41/ai-for-developers-project-386/actions/runs/42810336649)               |
+| Тег и GitHub Release v0.1.0, опубликован   | `953ad8f13b95860d717bc358855a81698f68f077`                                                        | [v0.1.0](https://github.com/skaffman41/ai-for-developers-project-386/releases/tag/v0.1.0), 10 ноября 2026 года         |
+
+Удалённая цепочка исходной версии подтверждена. Дополнение #48 пока имеет только
+[локальные доказательства](step-6-readiness.md); успешные runs выше не проверяют
+его SHA. Его публикация, PR, merge в `main`, удалённый CI и следующий выпуск
+требуют отдельных явных команд. Ни новый выпуск, ни завершение шага в Hexlet
+не следуют из локального check.
+
+## Действующие настройки GitHub
+
+Настройки уже включены в `main` через PR #45. Для будущих изменений действуют
+границы публикации [workflow проекта](agents/development-workflow.md).
 
 В Settings → Actions → General → Workflow permissions оставьте стандартные права
 **Read repository contents and packages permissions** и включите
@@ -117,9 +137,10 @@ mise exec -- gh release view v0.1.0 -R skaffman41/ai-for-developers-project-386
 mise exec -- gh api repos/skaffman41/ai-for-developers-project-386/commits/v0.1.0 --jq .sha
 ```
 
-Публикация настроек, запуск реального release workflow и первый выпуск требуют
-отдельных явных команд. До них удалённая цепочка остаётся непроверенной; локальный
-dry-run подтверждает планирование, а полный macOS check не заменяет Ubuntu CI.
+Эта процедура уже выполнена для v0.1.0; доказательства приведены выше.
+Для будущего выпуска нужны отдельно разрешённые публикация и ручной merge
+актуального Release PR с проверкой его точного SHA. Локальный dry-run подтверждает
+планирование, а полный macOS check дополнения не заменяет его Ubuntu CI.
 
 ## Источники
 
