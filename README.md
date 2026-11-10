@@ -85,6 +85,9 @@ SQLite встроен в Node; постоянный файл нужно явно
 
 ## Подготовка агента
 
+Подключение MCP Render и подготовка ручной бесплатной выкладки описаны в
+[инструкции Render](docs/deployment/render.md).
+
 После установки проекта подготовьте доступ GitHub CLI к
 `skaffman41/ai-for-developers-project-386` и глобальные Matt Pocock Skills для Codex
 по [инструкции агентной среды](docs/agents/skills.md). Она содержит закреплённую

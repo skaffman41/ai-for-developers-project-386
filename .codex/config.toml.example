@@ -1,0 +1,16 @@
+# Copy this section into a trusted project's .codex/config.toml.
+# OAuth credentials belong in the user's Codex credential store, never here.
+[mcp_servers.render]
+url = "https://mcp.render.com/mcp"
+enabled_tools = [
+  "list_workspaces",
+  "get_selected_workspace",
+  "list_services",
+  "get_service",
+  "list_deploys",
+  "get_deploy",
+  "get_blueprint",
+]
+
+[mcp_servers.render.oauth]
+client_id = "codex"

@@ -1,0 +1,22 @@
+# Future deployment only; see docs/deployment/render.md before applying.
+previews:
+  generation: "off"
+
+services:
+  - type: web
+    name: call-calendar-demo
+    runtime: docker
+    plan: free
+    region: frankfurt
+    repo: https://github.com/skaffman41/ai-for-developers-project-386
+    branch: main
+    autoDeployTrigger: "off"
+    numInstances: 1
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
