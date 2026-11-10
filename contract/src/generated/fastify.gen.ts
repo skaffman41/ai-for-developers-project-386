@@ -6,6 +6,9 @@ import type {
   CreateEventTypeData,
   CreateEventTypeErrors,
   CreateEventTypeResponses,
+  GetAvailabilityData,
+  GetAvailabilityErrors,
+  GetAvailabilityResponses,
   GetEventTypesErrors,
   GetEventTypesResponses,
   GetHealthErrors,
@@ -23,5 +26,9 @@ export type RouteHandlers = {
     Body: CreateEventTypeData["body"];
     Headers: CreateEventTypeData["headers"];
     Reply: CreateEventTypeErrors & CreateEventTypeResponses;
+  }>;
+  getAvailability: RouteHandler<{
+    Querystring: GetAvailabilityData["query"];
+    Reply: GetAvailabilityErrors & GetAvailabilityResponses;
   }>;
 };

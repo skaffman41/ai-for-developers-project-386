@@ -14,10 +14,21 @@ import type {
   CreateEventTypeErrors,
   CreateEventTypeResponses,
   EventType,
+  GetAvailabilityData,
+  GetAvailabilityErrors,
+  GetAvailabilityResponses,
 } from "@call-calendar/contract/types";
 import { createEventType } from "./create-event-type.ts";
 import type { AttemptOptions } from "./attempts.ts";
 import { databasePath, openDatabase } from "./storage.ts";
+
+import {
+  availableSlots,
+  availabilityWindow,
+  isCalendarDate,
+  systemClock,
+} from "./availability.ts";
+import type { Clock } from "./availability.ts";
 
 function contractRoute(id: OperationId) {
   return {
@@ -68,7 +79,8 @@ function contractRoute(id: OperationId) {
   };
 }
 
-export function buildApp(options: AttemptOptions = {}) {
+export function buildApp(options: AttemptOptions & { now?: Clock } = {}) {
+  const now = options.now ?? systemClock;
   const database = openDatabase(databasePath());
   const app = Fastify({ logger: true });
   app.addHook("onClose", async () => database.close());
@@ -156,5 +168,65 @@ export function buildApp(options: AttemptOptions = {}) {
     Headers: CreateEventTypeData["headers"];
     Reply: CreateEventTypeErrors & CreateEventTypeResponses;
   }>(operations.createEventType.path, contractRoute("createEventType"), create);
+  const availability: RouteHandlers["getAvailability"] = async (
+    request,
+    reply,
+  ) => {
+    const clock = now();
+    const window = availabilityWindow(clock);
+    const { eventTypeId, date = window.firstDate } = request.query;
+    if (!isCalendarDate(date)) {
+      await reply.code(422).send({
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Укажите существующую дату в формате ГГГГ-ММ-ДД",
+        },
+      });
+      return;
+    }
+    if (date < window.firstDate || date > window.lastDate) {
+      await reply.code(422).send({
+        error: {
+          code: "TIME_UNAVAILABLE",
+          message: "Дата за пределами доступных 14 дней",
+        },
+      });
+      return;
+    }
+    const type = database
+      .prepare("SELECT duration_minutes FROM event_types WHERE id = ?")
+      .get(eventTypeId);
+    if (!type) {
+      await reply.code(404).send({
+        error: {
+          code: "EVENT_TYPE_NOT_FOUND",
+          message: "Тип встречи не найден",
+        },
+      });
+      return;
+    }
+    await reply.code(200).send({
+      data: {
+        eventTypeId,
+        date,
+        timeZone: "Europe/Moscow",
+        ...window,
+        slots: availableSlots(
+          database,
+          Number(type.duration_minutes),
+          date,
+          clock,
+        ),
+      },
+    });
+  };
+  app.get<{
+    Querystring: GetAvailabilityData["query"];
+    Reply: GetAvailabilityErrors & GetAvailabilityResponses;
+  }>(
+    operations.getAvailability.path,
+    contractRoute("getAvailability"),
+    availability,
+  );
   return app;
 }

@@ -24,6 +24,14 @@ Idempotency-Key — UUID. Сравниваются исходные значен
 
 Responses: 201, 400, 409, 422, 500, 503.
 
+## GET /api/availability
+
+Получить свободные интервалы по московскому времени
+
+Сегодня и следующие 13 московских дней; будни 09:00–18:00, начала через 30 минут строго после asOf. Чтение не резервирует время.
+
+Responses: 200, 400, 404, 422, 500, 503.
+
 ## Schemas
 
 ```json
@@ -99,7 +107,10 @@ Responses: 201, 400, 409, 422, 500, 503.
             "enum": [
               "INVALID_REQUEST",
               "INTERNAL_ERROR",
-              "TEMPORARILY_UNAVAILABLE"
+              "TEMPORARILY_UNAVAILABLE",
+              "EVENT_TYPE_NOT_FOUND",
+              "VALIDATION_ERROR",
+              "TIME_UNAVAILABLE"
             ]
           },
           "message": {
@@ -391,6 +402,82 @@ Responses: 201, 400, 409, 422, 500, 503.
       }
     },
     "required": ["error", "outcome"]
+  },
+  "Slot": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["startsAt", "endsAt"],
+    "properties": {
+      "startsAt": {
+        "type": "string",
+        "format": "date-time",
+        "pattern": "Z$"
+      },
+      "endsAt": {
+        "type": "string",
+        "format": "date-time",
+        "pattern": "Z$"
+      }
+    }
+  },
+  "Availability": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "eventTypeId",
+      "date",
+      "timeZone",
+      "firstDate",
+      "lastDate",
+      "asOf",
+      "slots"
+    ],
+    "properties": {
+      "eventTypeId": {
+        "type": "string",
+        "minLength": 1
+      },
+      "date": {
+        "type": "string",
+        "format": "date",
+        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+      },
+      "timeZone": {
+        "type": "string",
+        "const": "Europe/Moscow"
+      },
+      "firstDate": {
+        "type": "string",
+        "format": "date",
+        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+      },
+      "lastDate": {
+        "type": "string",
+        "format": "date",
+        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+      },
+      "asOf": {
+        "type": "string",
+        "format": "date-time",
+        "pattern": "Z$"
+      },
+      "slots": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Slot"
+        }
+      }
+    }
+  },
+  "AvailabilityResponse": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["data"],
+    "properties": {
+      "data": {
+        "$ref": "#/components/schemas/Availability"
+      }
+    }
   }
 }
 ```

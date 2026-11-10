@@ -14,6 +14,9 @@ export const components = {
   WriteError422: schemas.WriteError422Schema,
   WriteError500: schemas.WriteError500Schema,
   WriteError503: schemas.WriteError503Schema,
+  Slot: schemas.SlotSchema,
+  Availability: schemas.AvailabilitySchema,
+  AvailabilityResponse: schemas.AvailabilityResponseSchema,
 } as const;
 export const operations = {
   getHealth: {
@@ -129,6 +132,53 @@ export const operations = {
       "503": {
         mediaType: "application/json",
         schema: { $ref: "#/components/schemas/WriteError503" },
+      },
+    },
+  },
+  getAvailability: {
+    method: "GET",
+    path: "/api/availability",
+    query: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        eventTypeId: { type: "string", minLength: 1 },
+        date: { type: "string" },
+      },
+      required: ["eventTypeId"],
+    },
+    headers: {
+      type: "object",
+      additionalProperties: false,
+      properties: {},
+      required: [],
+    },
+    body: null,
+    requestMediaType: null,
+    responses: {
+      "200": {
+        mediaType: "application/json",
+        schema: { $ref: "#/components/schemas/AvailabilityResponse" },
+      },
+      "400": {
+        mediaType: "application/json",
+        schema: { $ref: "#/components/schemas/ReadError" },
+      },
+      "404": {
+        mediaType: "application/json",
+        schema: { $ref: "#/components/schemas/ReadError" },
+      },
+      "422": {
+        mediaType: "application/json",
+        schema: { $ref: "#/components/schemas/ReadError" },
+      },
+      "500": {
+        mediaType: "application/json",
+        schema: { $ref: "#/components/schemas/ReadError" },
+      },
+      "503": {
+        mediaType: "application/json",
+        schema: { $ref: "#/components/schemas/ReadError" },
       },
     },
   },

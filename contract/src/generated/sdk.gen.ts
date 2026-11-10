@@ -12,6 +12,9 @@ import type {
   CreateEventTypeData,
   CreateEventTypeErrors,
   CreateEventTypeResponses,
+  GetAvailabilityData,
+  GetAvailabilityErrors,
+  GetAvailabilityResponses,
   GetEventTypesData,
   GetEventTypesErrors,
   GetEventTypesResponses,
@@ -88,3 +91,21 @@ export const createEventType = <ThrowOnError extends boolean = false>(
       ...options.headers,
     },
   });
+
+/**
+ * Получить свободные интервалы по московскому времени
+ *
+ * Сегодня и следующие 13 московских дней; будни 09:00–18:00, начала через 30 минут строго после asOf. Чтение не резервирует время.
+ */
+export const getAvailability = <ThrowOnError extends boolean = false>(
+  options: Options<GetAvailabilityData, ThrowOnError>,
+): RequestResult<
+  GetAvailabilityResponses,
+  GetAvailabilityErrors,
+  ThrowOnError
+> =>
+  (options.client ?? client).get<
+    GetAvailabilityResponses,
+    GetAvailabilityErrors,
+    ThrowOnError
+  >({ url: "/api/availability", ...options });

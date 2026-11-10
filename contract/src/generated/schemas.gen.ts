@@ -75,6 +75,9 @@ export const ReadErrorSchema = {
             "INVALID_REQUEST",
             "INTERNAL_ERROR",
             "TEMPORARILY_UNAVAILABLE",
+            "EVENT_TYPE_NOT_FOUND",
+            "VALIDATION_ERROR",
+            "TIME_UNAVAILABLE",
           ],
         },
         message: {
@@ -375,4 +378,83 @@ export const WriteError503Schema = {
     },
   },
   required: ["error", "outcome"],
+} as const;
+
+export const SlotSchema = {
+  type: "object",
+  additionalProperties: false,
+  required: ["startsAt", "endsAt"],
+  properties: {
+    startsAt: {
+      type: "string",
+      format: "date-time",
+      pattern: "Z$",
+    },
+    endsAt: {
+      type: "string",
+      format: "date-time",
+      pattern: "Z$",
+    },
+  },
+} as const;
+
+export const AvailabilitySchema = {
+  type: "object",
+  additionalProperties: false,
+  required: [
+    "eventTypeId",
+    "date",
+    "timeZone",
+    "firstDate",
+    "lastDate",
+    "asOf",
+    "slots",
+  ],
+  properties: {
+    eventTypeId: {
+      type: "string",
+      minLength: 1,
+    },
+    date: {
+      type: "string",
+      format: "date",
+      pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+    },
+    timeZone: {
+      type: "string",
+      const: "Europe/Moscow",
+    },
+    firstDate: {
+      type: "string",
+      format: "date",
+      pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+    },
+    lastDate: {
+      type: "string",
+      format: "date",
+      pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+    },
+    asOf: {
+      type: "string",
+      format: "date-time",
+      pattern: "Z$",
+    },
+    slots: {
+      type: "array",
+      items: {
+        $ref: "#/components/schemas/Slot",
+      },
+    },
+  },
+} as const;
+
+export const AvailabilityResponseSchema = {
+  type: "object",
+  additionalProperties: false,
+  required: ["data"],
+  properties: {
+    data: {
+      $ref: "#/components/schemas/Availability",
+    },
+  },
 } as const;

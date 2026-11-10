@@ -22,7 +22,13 @@ export type EventTypes = {
 
 export type ReadError = {
   error: {
-    code: "INVALID_REQUEST" | "INTERNAL_ERROR" | "TEMPORARILY_UNAVAILABLE";
+    code:
+      | "INVALID_REQUEST"
+      | "INTERNAL_ERROR"
+      | "TEMPORARILY_UNAVAILABLE"
+      | "EVENT_TYPE_NOT_FOUND"
+      | "VALIDATION_ERROR"
+      | "TIME_UNAVAILABLE";
     message: string;
   };
 };
@@ -119,6 +125,25 @@ export type WriteError503 = {
       [key: string]: string;
     };
   };
+};
+
+export type Slot = {
+  startsAt: string;
+  endsAt: string;
+};
+
+export type Availability = {
+  eventTypeId: string;
+  date: string;
+  timeZone: "Europe/Moscow";
+  firstDate: string;
+  lastDate: string;
+  asOf: string;
+  slots: Array<Slot>;
+};
+
+export type AvailabilityResponse = {
+  data: Availability;
 };
 
 export type GetHealthData = {
@@ -233,3 +258,49 @@ export type CreateEventTypeResponses = {
 
 export type CreateEventTypeResponse =
   CreateEventTypeResponses[keyof CreateEventTypeResponses];
+
+export type GetAvailabilityData = {
+  body?: never;
+  path?: never;
+  query: {
+    eventTypeId: string;
+    date?: string;
+  };
+  url: "/api/availability";
+};
+
+export type GetAvailabilityErrors = {
+  /**
+   * Invalid request
+   */
+  400: ReadError;
+  /**
+   * Unknown event type
+   */
+  404: ReadError;
+  /**
+   * Invalid date or outside availability horizon
+   */
+  422: ReadError;
+  /**
+   * Internal error
+   */
+  500: ReadError;
+  /**
+   * Temporarily unavailable
+   */
+  503: ReadError;
+};
+
+export type GetAvailabilityError =
+  GetAvailabilityErrors[keyof GetAvailabilityErrors];
+
+export type GetAvailabilityResponses = {
+  /**
+   * Complete available intervals and authoritative Moscow calendar boundaries
+   */
+  200: AvailabilityResponse;
+};
+
+export type GetAvailabilityResponse =
+  GetAvailabilityResponses[keyof GetAvailabilityResponses];

@@ -2,11 +2,14 @@
 
 export {
   createEventType,
+  getAvailability,
   getEventTypes,
   getHealth,
   type Options,
 } from "./sdk.gen.js";
 export type {
+  Availability,
+  AvailabilityResponse,
   ClientOptions,
   CreatedEventType,
   CreateEventTypeData,
@@ -18,6 +21,11 @@ export type {
   EventType,
   EventTypeDraft,
   EventTypes,
+  GetAvailabilityData,
+  GetAvailabilityError,
+  GetAvailabilityErrors,
+  GetAvailabilityResponse,
+  GetAvailabilityResponses,
   GetEventTypesData,
   GetEventTypesError,
   GetEventTypesErrors,
@@ -30,6 +38,7 @@ export type {
   GetHealthResponses,
   Health,
   ReadError,
+  Slot,
   WriteError,
   WriteError400,
   WriteError409,

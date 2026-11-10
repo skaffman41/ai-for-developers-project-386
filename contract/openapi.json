@@ -191,6 +191,93 @@
           }
         }
       }
+    },
+    "/api/availability": {
+      "get": {
+        "operationId": "getAvailability",
+        "summary": "Получить свободные интервалы по московскому времени",
+        "description": "Сегодня и следующие 13 московских дней; будни 09:00–18:00, начала через 30 минут строго после asOf. Чтение не резервирует время.",
+        "parameters": [
+          {
+            "name": "eventTypeId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Complete available intervals and authoritative Moscow calendar boundaries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Temporarily unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unknown event type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid date or outside availability horizon",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -266,7 +353,10 @@
                 "enum": [
                   "INVALID_REQUEST",
                   "INTERNAL_ERROR",
-                  "TEMPORARILY_UNAVAILABLE"
+                  "TEMPORARILY_UNAVAILABLE",
+                  "EVENT_TYPE_NOT_FOUND",
+                  "VALIDATION_ERROR",
+                  "TIME_UNAVAILABLE"
                 ]
               },
               "message": {
@@ -558,6 +648,82 @@
           }
         },
         "required": ["error", "outcome"]
+      },
+      "Slot": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["startsAt", "endsAt"],
+        "properties": {
+          "startsAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "Z$"
+          },
+          "endsAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "Z$"
+          }
+        }
+      },
+      "Availability": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "eventTypeId",
+          "date",
+          "timeZone",
+          "firstDate",
+          "lastDate",
+          "asOf",
+          "slots"
+        ],
+        "properties": {
+          "eventTypeId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          },
+          "timeZone": {
+            "type": "string",
+            "const": "Europe/Moscow"
+          },
+          "firstDate": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          },
+          "lastDate": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          },
+          "asOf": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "Z$"
+          },
+          "slots": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Slot"
+            }
+          }
+        }
+      },
+      "AvailabilityResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["data"],
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Availability"
+          }
+        }
       }
     }
   }

@@ -65,8 +65,11 @@ test("гость проходит путь записи на экране шир
 
 async function followLinkWithKeyboard(page: Page, name: string, path: string) {
   const link = page.getByRole("link", { name, exact: true });
-  const linkCount = await page.getByRole("link").count();
-  for (let attempt = 0; attempt <= linkCount; attempt += 1) {
+  const controlCount = await page
+    .getByRole("link")
+    .or(page.getByRole("button"))
+    .count();
+  for (let attempt = 0; attempt <= controlCount; attempt += 1) {
     await page.keyboard.press("Tab");
     if (await link.evaluate((element) => element === document.activeElement)) {
       break;

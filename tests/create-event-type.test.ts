@@ -298,7 +298,9 @@ test("schema upgrade preserves v1 data and commits its version with the new resu
   try {
     await prepareDatabase(database.path);
     const old = new DatabaseSync(database.path);
-    old.exec("DROP TABLE operation_results; PRAGMA user_version=1");
+    old.exec(
+      "DROP TABLE bookings; DROP TABLE operation_results; PRAGMA user_version=1",
+    );
     old
       .prepare(
         "INSERT INTO event_types(id,name,duration_minutes,created_at) VALUES (?,?,?,?)",
@@ -363,7 +365,9 @@ test("failure before migration commit rolls the supported schema change back wit
   try {
     await prepareDatabase(database.path);
     const old = new DatabaseSync(database.path);
-    old.exec("DROP TABLE operation_results; PRAGMA user_version=1");
+    old.exec(
+      "DROP TABLE bookings; DROP TABLE operation_results; PRAGMA user_version=1",
+    );
     old
       .prepare(
         "INSERT INTO event_types(id,name,duration_minutes,created_at) VALUES (?,?,?,?)",

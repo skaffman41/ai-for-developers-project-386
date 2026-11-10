@@ -11,7 +11,7 @@ import { DatabaseSync } from "node:sqlite";
 import { pathToFileURL } from "node:url";
 
 const applicationId = 0x43414c31;
-const version = 2;
+const version = 3;
 const schema = `CREATE TABLE event_types (
   sequence INTEGER PRIMARY KEY AUTOINCREMENT,
   id TEXT NOT NULL UNIQUE,
@@ -30,8 +30,24 @@ const resultsSchema = `CREATE TABLE operation_results (
   PRIMARY KEY (operation, attempt_key)
 ) STRICT`;
 
+const bookingsSchema = `CREATE TABLE bookings (
+  id TEXT PRIMARY KEY NOT NULL,
+  event_type_id TEXT NOT NULL REFERENCES event_types(id),
+  starts_at INTEGER NOT NULL,
+  ends_at INTEGER NOT NULL CHECK (ends_at > starts_at),
+  guest_name TEXT NOT NULL CHECK (length(guest_name) BETWEEN 1 AND 100),
+  guest_email TEXT NOT NULL CHECK (length(guest_email) BETWEEN 1 AND 254)
+) STRICT`;
+const occupancyIndex =
+  "CREATE INDEX bookings_interval ON bookings (starts_at, ends_at)";
+
 function checkSchema(database: DatabaseSync, expectedVersion: number) {
-  const expected = expectedVersion === 1 ? [schema] : [schema, resultsSchema];
+  const expected =
+    expectedVersion === 1
+      ? [schema]
+      : expectedVersion === 2
+        ? [schema, resultsSchema]
+        : [bookingsSchema, occupancyIndex, schema, resultsSchema];
   const tables = database
     .prepare(
       "SELECT sql FROM sqlite_schema WHERE sql IS NOT NULL AND name != 'sqlite_sequence' ORDER BY name",
@@ -86,6 +102,8 @@ export function prepareDatabase(path: string) {
     try {
       database.exec(schema);
       database.exec(resultsSchema);
+      database.exec(bookingsSchema);
+      database.exec(occupancyIndex);
       database.exec(
         `PRAGMA application_id=${applicationId}; PRAGMA user_version=${version}`,
       );
@@ -120,7 +138,7 @@ export function openDatabase(
     database.open();
     if (
       pragma(database, "application_id") !== applicationId ||
-      ![1, version].includes(Number(pragma(database, "user_version")))
+      ![1, 2, version].includes(Number(pragma(database, "user_version")))
     ) {
       throw new Error(
         "Foreign or unsupported database schema; run explicit preparation for a new database",
@@ -131,10 +149,16 @@ export function openDatabase(
     if (pragma(database, "quick_check") !== "ok")
       throw new Error("Corrupted SQLite database");
     configure(database);
-    if (currentVersion === 1) {
+    if (currentVersion < version) {
       database.exec("BEGIN IMMEDIATE");
       try {
-        database.exec(resultsSchema);
+        if (currentVersion === 1) {
+          database.exec(resultsSchema);
+          database.exec("PRAGMA user_version=2");
+          checkSchema(database, 2);
+        }
+        database.exec(bookingsSchema);
+        database.exec(occupancyIndex);
         database.exec(`PRAGMA user_version=${version}`);
         checkSchema(database, version);
         options.beforeMigrationCommit?.();

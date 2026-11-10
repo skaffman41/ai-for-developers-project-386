@@ -1,5 +1,5 @@
 import { Owner } from "./Owner.tsx";
-import { MeetingTypes } from "./MeetingTypes.tsx";
+import { GuestBooking } from "./GuestBooking.tsx";
 
 function CalendarMark() {
   return (
@@ -118,7 +118,7 @@ function BookingPage() {
     <main className="booking-main">
       <h1>Запись на встречу</h1>
       <div className="booking-card">
-        <MeetingTypes />
+        <GuestBooking />
         <a className="home-link" href="/">
           <span aria-hidden="true">←</span> На главную
         </a>

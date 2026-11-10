@@ -7,7 +7,13 @@ type State =
   | { status: "error" }
   | { status: "loaded"; types: EventType[] };
 
-export function MeetingTypes() {
+export function MeetingTypes({
+  selectedId,
+  onSelect,
+}: {
+  selectedId?: string;
+  onSelect: (type: EventType) => void;
+}) {
   const [state, setState] = useState<State>({ status: "loading" });
   const [revision, setRevision] = useState(0);
   useEffect(() => {
@@ -58,6 +64,14 @@ export function MeetingTypes() {
               <p className="type-description">
                 {type.description ?? "Описание не указано"}
               </p>
+              <button
+                type="button"
+                className="choice-button"
+                aria-pressed={selectedId === type.id}
+                onClick={() => onSelect(type)}
+              >
+                Выбрать {type.name}, {type.displayCode}
+              </button>
             </li>
           ))}
         </ul>
