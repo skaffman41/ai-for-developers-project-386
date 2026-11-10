@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { expect, test } from "../support/browser.ts";
+import { expect, observe, test } from "../support/browser.ts";
 
 test.use({
   eventTypes: {
@@ -337,7 +337,7 @@ test("passed time has a distinct known refusal and retains contacts for another 
 
 test("contact errors retain overlong input and focus the first error; back retains draft", async ({
   page,
-}) => {
+}, info) => {
   await contacts(page);
   const name = page.getByLabel("Имя", { exact: true });
   await name.fill("я".repeat(101));
@@ -348,6 +348,9 @@ test("contact errors retain overlong input and focus the first error; back retai
   await expect(name).toBeFocused();
   await expect(name).toHaveValue("я".repeat(101));
   await expect(name).toHaveAttribute("aria-invalid", "true");
+  await expect(name).toHaveAttribute("aria-describedby", "guest-name-error");
+  await expect(page.locator("#guest-name-error")).toContainText("100");
+  await observe(page, info, "contact-validation");
   await name.fill("Анна");
   await page
     .getByRole("button", { name: "Подтвердить бронирование", exact: true })
@@ -364,7 +367,7 @@ test("contact errors retain overlong input and focus the first error; back retai
 
 test("double confirmation remains one in-flight immutable request", async ({
   page,
-}) => {
+}, info) => {
   await contacts(page);
   let release: () => void = () => {};
   const gate = new Promise<void>((resolve) => (release = resolve));
@@ -391,6 +394,7 @@ test("double confirmation remains one in-flight immutable request", async ({
     ).toBeDisabled();
     await page.keyboard.press("Enter");
     expect(posts).toBe(1);
+    await observe(page, info, "booking-sending");
   } finally {
     release();
   }

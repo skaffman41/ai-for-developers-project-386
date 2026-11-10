@@ -1,4 +1,4 @@
-import { expect, test } from "../support/browser.ts";
+import { expect, observe, test } from "../support/browser.ts";
 
 test.use({
   eventTypes: {
@@ -54,23 +54,6 @@ async function openTime(page: import("@playwright/test").Page) {
     .click();
   await page.getByRole("button", { name: "Выбрать дату и время" }).click();
   await expect(page.getByRole("button", { name: "09:00–09:45" })).toBeVisible();
-}
-
-async function observe(
-  page: import("@playwright/test").Page,
-  info: import("@playwright/test").TestInfo,
-  state: string,
-) {
-  for (const width of [320, 1440]) {
-    await page.setViewportSize({ width, height: 1000 });
-    expect(
-      await page.evaluate(() => document.documentElement.scrollWidth),
-    ).toBeLessThanOrEqual(width);
-    await page.screenshot({
-      path: info.outputPath(`${state}-${width}.png`),
-      fullPage: true,
-    });
-  }
 }
 
 test("back refetch hides old slots, preserves unchanged choices and clears dependent choices", async ({

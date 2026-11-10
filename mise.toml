@@ -88,7 +88,7 @@ depends = ["env:check"]
 run = "npm run format"
 
 [tasks.test]
-description = "Build both applications and run the HTTP smoke once"
+description = "Build all workspaces and run HTTP, SQLite, process and release tests once"
 depends = ["build"]
 run = "npm test"
 
@@ -98,12 +98,12 @@ depends = ["env:check"]
 run = "npm run browser:install --"
 
 [tasks."test:browser"]
-description = "Build and check the guest journey in Chromium against frontend preview and isolated real backend"
+description = "Build and check both roles in Chromium against frontend preview and isolated real backend"
 depends = ["build"]
 run = "npm run test:browser --"
 
 [tasks.check]
-description = "Check versions, lint, formatting, types, build, HTTP smoke, browser and hk config"
+description = "Check versions, lint, format, types, build, API generation, release, HTTP/process/browser and hk"
 depends = ["env:check", "lint", "format:check", "typecheck", "test", "test:browser", "release:check", "api:check"]
 run = "hk validate"
 

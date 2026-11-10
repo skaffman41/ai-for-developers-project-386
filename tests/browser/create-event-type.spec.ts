@@ -1,4 +1,4 @@
-import { expect, test } from "../support/browser.ts";
+import { expect, observe, test } from "../support/browser.ts";
 
 test("owner creates a type with keyboard and guest reads the same record", async ({
   page,
@@ -318,7 +318,7 @@ test("a known validation refusal retains draft and allows a new independent key"
 
 test("older refresh cannot remove a just-created type or reset a filled form", async ({
   page,
-}) => {
+}, info) => {
   await page.goto("/owner");
   await page.getByRole("tab", { name: "Типы встреч", exact: true }).click();
   await expect(
@@ -366,6 +366,7 @@ test("older refresh cannot remove a just-created type or reset a filled form", a
     await expect(page.getByLabel("Описание", { exact: true })).toHaveValue(
       "Исходные данные",
     );
+    await observe(page, info, "type-sending");
     releasePost();
     await expect(
       page.getByRole("status").filter({ hasText: "Тип встречи создан" }),

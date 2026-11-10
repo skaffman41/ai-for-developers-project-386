@@ -1,21 +1,4 @@
-import { expect, test } from "../support/browser.ts";
-
-async function observe(
-  page: import("@playwright/test").Page,
-  info: import("@playwright/test").TestInfo,
-  state: string,
-) {
-  for (const width of [320, 1440]) {
-    await page.setViewportSize({ width, height: 1000 });
-    expect(
-      await page.evaluate(() => document.documentElement.scrollWidth),
-    ).toBeLessThanOrEqual(width);
-    await page.screenshot({
-      path: info.outputPath(`${state}-${width}.png`),
-      fullPage: true,
-    });
-  }
-}
+import { expect, observe, test } from "../support/browser.ts";
 
 test.use({
   eventTypes: {

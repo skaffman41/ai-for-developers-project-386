@@ -16,7 +16,7 @@ test("гость проходит путь записи на экране шир
   await expect(
     page.getByText("Без регистрации", { exact: true }),
   ).toBeVisible();
-  const steps = page.getByRole("list", { name: "Как будет устроена запись" });
+  const steps = page.getByRole("list", { name: "Как записаться на встречу" });
   for (const name of [
     "Выберите тип встречи",
     "Выберите день и время",

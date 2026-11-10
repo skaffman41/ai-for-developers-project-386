@@ -4,6 +4,7 @@ import type {
   GetOwnerBookingsData,
 } from "@call-calendar/contract/types";
 import { loadOwnerBookings } from "./api.ts";
+import { formatMoscowTime } from "./moscow-time.ts";
 
 type Period = NonNullable<NonNullable<GetOwnerBookingsData["query"]>["period"]>;
 const periods = {
@@ -20,13 +21,6 @@ function date(value: string) {
     day: "numeric",
     month: "long",
     year: "numeric",
-  });
-}
-function time(value: string) {
-  return new Date(value).toLocaleTimeString("ru-RU", {
-    timeZone: "Europe/Moscow",
-    hour: "2-digit",
-    minute: "2-digit",
   });
 }
 
@@ -181,7 +175,8 @@ export function OwnerBookings({
                       </time>
                     </p>
                     <p className="booking-interval">
-                      {time(booking.startsAt)}–{time(booking.endsAt)}
+                      {formatMoscowTime(booking.startsAt)}–
+                      {formatMoscowTime(booking.endsAt)}
                     </p>
                     {date(booking.startsAt) !== date(booking.endsAt) && (
                       <p>Окончание: {date(booking.endsAt)}</p>

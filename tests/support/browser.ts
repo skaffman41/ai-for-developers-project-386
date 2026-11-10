@@ -82,3 +82,20 @@ export const test = base.extend<Fixtures>({
   ],
 });
 export { expect };
+
+export async function observe(
+  page: import("@playwright/test").Page,
+  info: import("@playwright/test").TestInfo,
+  state: string,
+) {
+  for (const width of [320, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBeLessThanOrEqual(width);
+    await page.screenshot({
+      path: info.outputPath(`${state}-${width}.png`),
+      fullPage: true,
+    });
+  }
+}

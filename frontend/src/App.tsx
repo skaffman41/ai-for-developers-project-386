@@ -78,7 +78,7 @@ function HomePage() {
 
       <section className="steps-section" aria-labelledby="steps-title">
         <div className="section-heading">
-          <h2 id="steps-title">Как будет устроена запись</h2>
+          <h2 id="steps-title">Как записаться на встречу</h2>
           <p>Три простых шага — и можно готовиться к встрече.</p>
         </div>
         <ol className="steps" aria-labelledby="steps-title">
@@ -104,9 +104,8 @@ function HomePage() {
             <p>Оставьте свои данные, чтобы завершить запись на встречу.</p>
           </li>
         </ol>
-        <p className="coming-soon-note">
-          Онлайн-запись скоро появится. Эти шаги — о том, как она будет
-          работать.
+        <p className="booking-note">
+          Подтверждение появится на экране. Письмо на email не придёт.
         </p>
       </section>
     </main>

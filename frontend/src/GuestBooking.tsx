@@ -12,6 +12,7 @@ import {
   restoreBooking,
 } from "./BookingContacts.tsx";
 import { MeetingTypes } from "./MeetingTypes.tsx";
+import { formatMoscowTime } from "./moscow-time.ts";
 import "./guest-booking.css";
 
 type AvailabilityState =
@@ -22,14 +23,8 @@ const formatDate = (date: string) =>
     timeZone: "Europe/Moscow",
     dateStyle: "full",
   }).format(new Date(`${date}T12:00:00Z`));
-const formatTime = (instant: string) =>
-  new Intl.DateTimeFormat("ru-RU", {
-    timeZone: "Europe/Moscow",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(instant));
 const formatSlot = (slot: Slot) =>
-  `${formatTime(slot.startsAt)}–${formatTime(slot.endsAt)}`;
+  `${formatMoscowTime(slot.startsAt)}–${formatMoscowTime(slot.endsAt)}`;
 
 function calendarDays(first: string, last: string) {
   const result: string[] = [];

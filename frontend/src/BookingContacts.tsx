@@ -14,6 +14,7 @@ import {
 import { completeAttempt, readAttempt, saveAttempt } from "./attempts.ts";
 import type { PendingAttempt } from "./attempts.ts";
 import { sendBooking } from "./api.ts";
+import { formatMoscowTime } from "./moscow-time.ts";
 
 const storageName = "call-calendar:createBooking";
 const confirmationName = "call-calendar:bookingConfirmation";
@@ -58,12 +59,6 @@ const date = (instant: string) =>
     timeZone: "Europe/Moscow",
     dateStyle: "full",
   }).format(new Date(instant));
-const time = (instant: string) =>
-  new Intl.DateTimeFormat("ru-RU", {
-    timeZone: "Europe/Moscow",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(instant));
 function Summary({ eventType, slot }: { eventType: EventType; slot: Slot }) {
   return (
     <div className="booking-summary">
@@ -73,7 +68,8 @@ function Summary({ eventType, slot }: { eventType: EventType; slot: Slot }) {
       </p>
       <p>{date(slot.startsAt)}</p>
       <p>
-        {time(slot.startsAt)}–{time(slot.endsAt)} · Europe/Moscow
+        {formatMoscowTime(slot.startsAt)}–{formatMoscowTime(slot.endsAt)} ·
+        Europe/Moscow
       </p>
     </div>
   );

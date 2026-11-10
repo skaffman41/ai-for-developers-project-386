@@ -17,7 +17,7 @@ test("гость узнаёт, как записаться на встречу �
   await expect(
     page.getByText("Без регистрации", { exact: true }),
   ).toBeVisible();
-  const steps = page.getByRole("list", { name: "Как будет устроена запись" });
+  const steps = page.getByRole("list", { name: "Как записаться на встречу" });
   await expect(steps.getByRole("listitem")).toHaveCount(3);
   await expect(steps.getByRole("listitem").nth(0)).toContainText(
     "Выберите тип встречи",
