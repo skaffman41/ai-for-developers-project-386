@@ -1,4 +1,5 @@
-# Future deployment only; see docs/deployment/render.md before applying.
+# Historical Render alternative, superseded by Railway in plan v2 (#55).
+# Do not apply for the active deployment; see docs/deployment/railway.md.
 previews:
   generation: "off"
 

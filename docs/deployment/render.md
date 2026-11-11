@@ -1,4 +1,9 @@
-# Ручная выкладка на Render Free через MCP
+# Ручная выкладка на Render Free через MCP (история)
+
+С 2026-11-11 активный маршрут — [Railway](railway.md), выбранный пользователем
+в [плане v2](../plans/step-7-render-free/v2/spec.md). При проверке Render доступ к
+выбору исходников потребовал карту; ресурсы не создавались. Этот документ и
+`render.yaml` сохранены как история v1 и не применяются для текущей выкладки.
 
 Конфигурация подготовлена для [спецификации #55](https://github.com/skaffman41/ai-for-developers-project-386/issues/55).
 Создание Blueprint, сервиса и деплой выполняются по отдельной явной команде после
@@ -10,8 +15,22 @@ merge нужной версии в `main`. Наличие файлов в Git н
 Используется официальный hosted endpoint `https://mcp.render.com/mcp` и вход через
 браузер по [инструкции Render для Codex](https://render.com/docs/mcp-server#codex-desktop-and-cli-setup).
 В отдельном доверенном checkout создайте `.codex/config.toml` из
-[безопасного шаблона](../../.codex/config.toml.example). Если файл уже существует,
-добавьте секцию Render, сохранив остальные настройки. Затем из корня проекта:
+следующего исторического шаблона (текущий `.codex/config.toml.example` относится
+к Railway). Если файл уже существует, сохраните остальные настройки:
+
+```toml
+[mcp_servers.render]
+url = "https://mcp.render.com/mcp"
+enabled_tools = [
+  "list_workspaces", "get_selected_workspace", "list_services", "get_service",
+  "list_deploys", "get_deploy", "get_blueprint",
+]
+
+[mcp_servers.render.oauth]
+client_id = "codex"
+```
+
+Затем из корня проекта:
 
 ```sh
 codex mcp login render
@@ -53,7 +72,7 @@ checkout, не копируйте credential-файлы и не вставляй
    записи. Наличие инструмента в каталоге не разрешает его выполнение; команда на
    деплой для этого чтения не требуется.
 3. Верните исходный `enabled_tools` в ту же локальную секцию. При неизменённом
-   шаблоне скопируйте список из `.codex/config.toml.example`. Перезапустите Codex;
+   шаблоне скопируйте список из блока выше. Перезапустите Codex;
    `codex mcp get render --json` должен показать восстановленный список в
    `enabled_tools`. Через `/mcp` убедитесь, что снова доступны только разрешённые
    операции чтения. Если полный каталог получить не удалось, восстановите фильтр
