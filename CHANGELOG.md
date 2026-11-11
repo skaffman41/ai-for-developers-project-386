@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.0](https://github.com/skaffman41/ai-for-developers-project-386/compare/v0.1.0...v0.2.0) (2026-11-11)
+
+
+### Features
+
+* **api:** generate contract from TypeSpec ([#49](https://github.com/skaffman41/ai-for-developers-project-386/issues/49)) ([6ec2d46](https://github.com/skaffman41/ai-for-developers-project-386/commit/6ec2d4637a18bcdb0262b7d903c7820c36562f79))
+* **api:** use TypeSpec as contract source ([#48](https://github.com/skaffman41/ai-for-developers-project-386/issues/48)) ([403a3c2](https://github.com/skaffman41/ai-for-developers-project-386/commit/403a3c2004f872873aee0e3815f7ac8f47d8abb0))
+* **docker:** запуск календаря одним контейнером ([#56](https://github.com/skaffman41/ai-for-developers-project-386/issues/56)) ([52e9d79](https://github.com/skaffman41/ai-for-developers-project-386/commit/52e9d797a83a3f257c213de8e18d25e5f7725656))
+* package calendar for Docker and prepare Railway MCP ([7a96e8b](https://github.com/skaffman41/ai-for-developers-project-386/commit/7a96e8ba3c60a2691d1896e1c4c929043caa1d80))
+
 ## 0.1.0 (2026-11-10)
 
 
