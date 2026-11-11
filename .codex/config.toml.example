@@ -1,0 +1,7 @@
+# For a separate environment without the official Railway plugin.
+# Merge into a trusted project's .codex/config.toml; see docs/deployment/railway.md.
+# OAuth credentials stay in the user's credential store, never in this file.
+[mcp_servers.railway]
+url = "https://mcp.railway.com"
+# Expected hosted read tools; verify actual names and schemas after connection.
+enabled_tools = ["whoami", "list-workspaces", "list-projects", "list-services"]

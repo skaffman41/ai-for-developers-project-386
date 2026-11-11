@@ -1,6 +1,16 @@
+import fastifyStatic from "@fastify/static";
+import { fileURLToPath } from "node:url";
 import { buildApp } from "./app.ts";
 
 const app = buildApp();
+app.register(fastifyStatic, {
+  root: fileURLToPath(new URL("../../frontend/dist/", import.meta.url)),
+  wildcard: false,
+  dotfiles: "deny",
+});
+for (const path of ["/booking", "/owner"]) {
+  app.get(path, async (_request, reply) => reply.sendFile("index.html"));
+}
 
 async function shutdown() {
   try {

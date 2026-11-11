@@ -19,3 +19,8 @@ playwright-report/
 !.env.example
 mise.local.toml
 mise.local.lock
+
+# Local Codex connection overrides and credentials
+.codex/config.toml
+.codex/auth.json
+.codex/.credentials.json

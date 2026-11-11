@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "repository": "skaffman41/ai-for-developers-project-386",
+  "feature": "step-7-render-free",
+  "version": "v2",
+  "approved": true,
+  "approval": "2026-11-11: пользователь прямо поручил «Воспользуйся Railway MCP, как альтернативой, это прямо указано в задании». Страница шага 7 повторно прочитана read-only и подтверждает запасной Railway. Изменены провайдер и его ограничения; Docker, бюджет 0 ₽, без новых тестов, граф и отдельные полномочия публикации сохранены.",
+  "baseCommit": "78541b80235544a047b7d77140d5302a247fa6d0",
+  "records": [
+    {
+      "file": "spec.md",
+      "number": 55,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/55",
+      "title": "Шаг 7: Docker и бесплатный публичный стенд на Railway",
+      "parent": null,
+      "snapshotSha256": "e0d71b7e4f216fe967e514f8226e35148ad7b34def7507c561777fc60256a860",
+      "publishedBodySha256": "e0d71b7e4f216fe967e514f8226e35148ad7b34def7507c561777fc60256a860",
+      "blockedBy": []
+    },
+    {
+      "file": "56-docker-calendar.md",
+      "number": 56,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/56",
+      "title": "Календарь целиком из Docker",
+      "parent": 55,
+      "snapshotSha256": "fe2615c8f927c0693c828692d5cdeb905afa9f090272fe05ee3d4afc2621584e",
+      "publishedBodySha256": "fe2615c8f927c0693c828692d5cdeb905afa9f090272fe05ee3d4afc2621584e",
+      "blockedBy": [],
+      "acceptanceCriteria": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC9",
+        "AC10",
+        "AC11",
+        "AC13",
+        "AC14"
+      ],
+      "testingDecisions": ["T1", "T2", "T3", "T4", "T5", "T6", "T9"]
+    },
+    {
+      "file": "57-railway-mcp-readiness.md",
+      "number": 57,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/57",
+      "title": "Проверенный бесплатный маршрут MCP Railway для ручной выкладки",
+      "parent": 55,
+      "snapshotSha256": "8094b4f9f02b05217ac76ceb1ae7d90fdeb19b8d127ad6b15a0011afceec2b97",
+      "publishedBodySha256": "8094b4f9f02b05217ac76ceb1ae7d90fdeb19b8d127ad6b15a0011afceec2b97",
+      "blockedBy": [],
+      "acceptanceCriteria": ["AC6", "AC7", "AC8", "AC11", "AC12", "AC14"],
+      "testingDecisions": ["T4", "T8", "T9"]
+    },
+    {
+      "file": "58-public-deploy-acceptance.md",
+      "number": 58,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/58",
+      "title": "Опубликовать бесплатный стенд через MCP и подтвердить готовность шага 7",
+      "parent": 55,
+      "snapshotSha256": "296657cf79650b29e1a0bf5021232584c34bb84ad80b9fd0e6b2fb453eaadcfb",
+      "publishedBodySha256": "296657cf79650b29e1a0bf5021232584c34bb84ad80b9fd0e6b2fb453eaadcfb",
+      "blockedBy": [56, 57],
+      "acceptanceCriteria": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7",
+        "AC8",
+        "AC9",
+        "AC10",
+        "AC11",
+        "AC12",
+        "AC13",
+        "AC14"
+      ],
+      "testingDecisions": ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9"]
+    }
+  ],
+  "ticketOrder": [56, 57, 58],
+  "frontierAtPlanning": [57],
+  "parentBodyPreserved": false,
+  "relatedDecisions": [
+    {
+      "file": "docs/adr/0003-booking-storage.md",
+      "sha256": "9a2ae027cbbdaefa694a82d10b51aa5145fa25c6580186a373c1bd78557bcf7b"
+    },
+    {
+      "file": "docs/adr/0006-public-demo-deployment.md",
+      "sha256": "b7f3ebe1dbae2ccf633aa5266bdc3ffa14f389ebd44a75572839412a6bd65305"
+    }
+  ],
+  "externalPrerequisites": [
+    {
+      "ticket": 58,
+      "condition": "Фактическая выкладка начинается после отдельно разрешённых публикации кода и включения выбранной версии в main и явной команды деплоя; готовность локальных блокеров не разрешает push, PR или merge."
+    }
+  ],
+  "completionBoundary": "Локальные результаты остаются открытыми до отдельно разрешённого merge. Push, PR и merge в main требуют отдельных явных команд. Создание инфраструктуры и публичный деплой через MCP требуют отдельной команды после интеграции выбранной версии. Подключение MCP и подготовка разрешены текущим продолжением; отсутствие подключения не подменяется успехом документов.",
+  "previousVersion": "v1",
+  "retainedImplementation": [
+    {
+      "ticket": 56,
+      "commit": "52e9d797a83a3f257c213de8e18d25e5f7725656",
+      "status": "implementation-ready in this integration run; unchanged Docker scope"
+    }
+  ]
+}

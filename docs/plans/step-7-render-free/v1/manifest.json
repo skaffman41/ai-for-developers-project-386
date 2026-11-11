@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "repository": "skaffman41/ai-for-developers-project-386",
+  "feature": "step-7-render-free",
+  "version": "v1",
+  "approved": true,
+  "approval": "2026-11-10: пользователь согласовал Render Free, бюджет 0 ₽, единый Docker-сервис, пустую БД при сборке, допустимый сброс учебных данных и ручной MCP-деплой в grill-with-docs; при to-spec подтвердил Testing Decisions ответом «Да, такие проверки подходят»; при to-tickets 55 принял три задачи и зависимости docker + mcp → deploy ответом «Подходит». Новые тесты не входят в объём.",
+  "baseCommit": "403a3c2004f872873aee0e3815f7ac8f47d8abb0",
+  "records": [
+    {
+      "file": "spec.md",
+      "number": 55,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/55",
+      "title": "Шаг 7: Docker и бесплатный публичный стенд на Render",
+      "parent": null,
+      "snapshotSha256": "f37b1b5aa1f219efceceb1e630a5e9467773d9e31a453050bfbe5dd8b7707a32",
+      "publishedBodySha256": "f37b1b5aa1f219efceceb1e630a5e9467773d9e31a453050bfbe5dd8b7707a32",
+      "blockedBy": []
+    },
+    {
+      "file": "56-docker-calendar.md",
+      "number": 56,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/56",
+      "title": "Календарь целиком из Docker",
+      "parent": 55,
+      "snapshotSha256": "690327125852b7099523a5e66de059a6462efd070e339ac6a77b9d595a6e3d0c",
+      "publishedBodySha256": "690327125852b7099523a5e66de059a6462efd070e339ac6a77b9d595a6e3d0c",
+      "blockedBy": [],
+      "acceptanceCriteria": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC9",
+        "AC10",
+        "AC11",
+        "AC13",
+        "AC14"
+      ],
+      "testingDecisions": ["T1", "T2", "T3", "T4", "T5", "T6", "T9"]
+    },
+    {
+      "file": "57-render-mcp-readiness.md",
+      "number": 57,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/57",
+      "title": "Проверенный бесплатный маршрут MCP Render для ручной выкладки",
+      "parent": 55,
+      "snapshotSha256": "ae3070fd566aab4842fc246776c62845f0ae5bdbbfb98f92f9b1bcda7b1af075",
+      "publishedBodySha256": "ae3070fd566aab4842fc246776c62845f0ae5bdbbfb98f92f9b1bcda7b1af075",
+      "blockedBy": [],
+      "acceptanceCriteria": ["AC6", "AC7", "AC8", "AC11", "AC12", "AC14"],
+      "testingDecisions": ["T4", "T8", "T9"]
+    },
+    {
+      "file": "58-public-deploy-acceptance.md",
+      "number": 58,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/58",
+      "title": "Опубликовать бесплатный стенд через MCP и подтвердить готовность шага 7",
+      "parent": 55,
+      "snapshotSha256": "e56ec7c4c656341bf6c9a78fc1e3a65b7d7751ba8134a39169d029bb3bc9c545",
+      "publishedBodySha256": "e56ec7c4c656341bf6c9a78fc1e3a65b7d7751ba8134a39169d029bb3bc9c545",
+      "blockedBy": [56, 57],
+      "acceptanceCriteria": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7",
+        "AC8",
+        "AC9",
+        "AC10",
+        "AC11",
+        "AC12",
+        "AC13",
+        "AC14"
+      ],
+      "testingDecisions": ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9"]
+    }
+  ],
+  "ticketOrder": [56, 57, 58],
+  "frontierAtPlanning": [56, 57],
+  "parentBodyPreserved": true,
+  "relatedDecisions": [
+    {
+      "file": "docs/adr/0003-booking-storage.md",
+      "sha256": "5df3d4a04d5a91ed120575340f524105e0036c4e2d5d4425a04529bfdf257a06"
+    },
+    {
+      "file": "docs/adr/0006-public-demo-deployment.md",
+      "sha256": "7884e3ce9eca09aa565d054c98d29c89a295600846ec05258b37160eaffa5689"
+    }
+  ],
+  "externalPrerequisites": [
+    {
+      "ticket": 58,
+      "condition": "Фактическая выкладка начинается после отдельно разрешённых публикации кода и включения выбранной версии в main и явной команды деплоя; готовность локальных блокеров не разрешает push, PR или merge."
+    }
+  ],
+  "completionBoundary": "Реализация согласованного графа запускается отдельной командой. Локальные результаты implementation-ready оставляют Issues открытыми; push, PR и merge в main требуют отдельных явных команд. Публичный деплой выполняется через MCP по отдельной команде после интеграции выбранной версии. Локальные проверки не заменяют публичную приёмку. Создание снимка не изменяет состояние или тело родительской #55."
+}
