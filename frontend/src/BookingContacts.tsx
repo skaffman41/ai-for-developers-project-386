@@ -74,9 +74,27 @@ function Summary({ eventType, slot }: { eventType: EventType; slot: Slot }) {
     </div>
   );
 }
-export function BookingConfirmation({ booking }: { booking: Booking }) {
+export function BookingConfirmation({
+  booking,
+  onStartAnother,
+}: {
+  booking: Booking;
+  onStartAnother: () => void;
+}) {
   const heading = useRef<HTMLHeadingElement>(null);
+  const [message, setMessage] = useState("");
   useEffect(() => heading.current?.focus(), []);
+  function startAnother() {
+    try {
+      sessionStorage.removeItem(confirmationName);
+    } catch {
+      setMessage(
+        "Не удалось начать новую запись. Разрешите сохранение данных в этой вкладке и попробуйте ещё раз. Подтверждение встречи сохранено.",
+      );
+      return;
+    }
+    onStartAnother();
+  }
   return (
     <section className="booking-confirmation">
       <h2 ref={heading} tabIndex={-1}>
@@ -86,6 +104,10 @@ export function BookingConfirmation({ booking }: { booking: Booking }) {
       <Summary eventType={booking.eventType} slot={booking} />
       <p>{booking.guestName}</p>
       <p>{booking.guestEmail}</p>
+      {message && <p role="alert">{message}</p>}
+      <button type="button" className="reload-button" onClick={startAnother}>
+        Записаться ещё раз
+      </button>
     </section>
   );
 }

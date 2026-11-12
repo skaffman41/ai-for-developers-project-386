@@ -38,7 +38,25 @@ function calendarDays(first: string, last: string) {
 }
 
 export function GuestBooking() {
-  const [restored] = useState(restoreBooking);
+  const [revision, setRevision] = useState(0);
+  return (
+    <BookingFlow
+      key={revision}
+      newBooking={revision > 0}
+      onStartAnother={() => setRevision((value) => value + 1)}
+    />
+  );
+}
+
+function BookingFlow({
+  newBooking,
+  onStartAnother,
+}: {
+  newBooking: boolean;
+  onStartAnother: () => void;
+}) {
+  // A new flow discards every selection, draft and restored attempt together.
+  const [restored] = useState(() => (newBooking ? {} : restoreBooking()));
   const [confirmation, setConfirmation] = useState<Booking | undefined>(
     restored.confirmation,
   );
@@ -121,10 +139,10 @@ export function GuestBooking() {
   }, [type, query, step, requestKey]);
   useEffect(() => {
     if (step === 2) heading.current?.focus();
-    else if (step === 1 && previousStep.current !== step)
+    else if (step === 1 && (newBooking || previousStep.current !== step))
       typeStep.current?.focus();
     previousStep.current = step;
-  }, [step]);
+  }, [step, newBooking]);
   function openTime() {
     setQuery((previous) => ({ date, revision: previous.revision + 1 }));
     setStep(2);
@@ -146,7 +164,13 @@ export function GuestBooking() {
         доступ к sessionStorage и обновите страницу.
       </p>
     );
-  if (confirmation) return <BookingConfirmation booking={confirmation} />;
+  if (confirmation)
+    return (
+      <BookingConfirmation
+        booking={confirmation}
+        onStartAnother={onStartAnother}
+      />
+    );
   return (
     <div className="guest-booking">
       <nav className="booking-steps" aria-label="Шаги записи">
