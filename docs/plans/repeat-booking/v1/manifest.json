@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "repository": "skaffman41/ai-for-developers-project-386",
+  "feature": "repeat-booking",
+  "version": "v1",
+  "approved": true,
+  "approval": "2026-11-12: пользователь ответил «Согласовываем» на одну вертикальную задачу без блокеров с покрытием AC1–AC8 спецификации #63. Объём и Testing Decisions ранее приняты двумя ответами «Все - да» в grill-with-docs; один новый браузерный сценарий разрешён прямо.",
+  "baseCommit": "55d8c1e9873f0cfb7e97bc8816803fb48c488997",
+  "records": [
+    {
+      "file": "spec.md",
+      "number": 63,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/63",
+      "title": "Повторная запись из подтверждения бронирования",
+      "parent": null,
+      "snapshotSha256": "fc8876acb3c52788e85c85a76c093ae294b4a69439912d8d2b206a8c86511c21",
+      "publishedBodySha256": "fc8876acb3c52788e85c85a76c093ae294b4a69439912d8d2b206a8c86511c21",
+      "blockedBy": []
+    },
+    {
+      "file": "64-start-another-booking.md",
+      "number": 64,
+      "url": "https://github.com/skaffman41/ai-for-developers-project-386/issues/64",
+      "title": "Начать новую запись с экрана подтверждения",
+      "parent": 63,
+      "snapshotSha256": "5098ffb78a68b84ec75dc9421ecfef8c8183f29f2c02bed80e7c57b07dddb893",
+      "publishedBodySha256": "5098ffb78a68b84ec75dc9421ecfef8c8183f29f2c02bed80e7c57b07dddb893",
+      "blockedBy": [],
+      "acceptanceCriteria": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7",
+        "AC8"
+      ]
+    }
+  ],
+  "ticketOrder": [64],
+  "frontierAtPlanning": [64],
+  "parentBodyPreserved": true,
+  "testingDecisions": {
+    "newBrowserScenarios": 1,
+    "boundary": "Существующий Playwright Chromium с настоящими frontend/backend и изолированной файловой SQLite; две последовательные записи в одной гостевой вкладке и обе записи у владельца календаря.",
+    "additionalUnitOrHttpTests": false,
+    "manualChecks": [
+      "Ошибка сброса и успешный повтор после восстановления доступа",
+      "Клавиатура и фокус",
+      "Просмотр на ширинах 320 и 1440 px"
+    ],
+    "requiredExistingChecks": "Полный mise run check и сохранение проверок неизвестного исхода, восстановления и безопасного повтора; независимые Standards/Spec review при реализации."
+  },
+  "relatedDecisions": [
+    {
+      "file": "GLOSSARY.md",
+      "sha256": "631728f3a5f11b6f83e524767986d65fd3a9fc8bd9813bc4fb5d88a3296b8567"
+    }
+  ],
+  "contextOnlyIssues": [37, 48, 61, 62],
+  "completionBoundary": "План готов к отдельной команде реализации. Implementation-ready требует результата AC1–AC8, полного check, необходимого ревью, отдельного локального коммита и Answer. Issues остаются открытыми до подтверждённого merge. Push, PR, merge в main и публикация требуют отдельных явных команд; успешный удалённый CI актуального опубликованного SHA подтверждается отдельно."
+}

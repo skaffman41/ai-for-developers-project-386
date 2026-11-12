@@ -1,3 +1,4 @@
+import { writeFile } from "node:fs/promises";
 import type { Page } from "@playwright/test";
 import { expect, observe, test } from "../support/browser.ts";
 
@@ -51,6 +52,165 @@ test("guest confirms real booking with keyboard and restores confirmation after 
   await expect(
     page.getByRole("heading", { name: "Встреча забронирована" }),
   ).toBeVisible();
+});
+
+test("guest starts another booking in the same tab and owner retains both real bookings", async ({
+  page,
+  context,
+  backend,
+}, info) => {
+  const keys: string[] = [];
+  page.on("request", (request) => {
+    if (request.url().endsWith("/api/bookings") && request.method() === "POST")
+      keys.push(request.headers()["idempotency-key"]!);
+  });
+  const submit = page.getByRole("button", {
+    name: "Подтвердить бронирование",
+    exact: true,
+  });
+  const confirmation = page.getByRole("heading", {
+    name: "Встреча забронирована",
+  });
+  const createResponse = () =>
+    page.waitForResponse(
+      (response) =>
+        response.url().endsWith("/api/bookings") &&
+        response.request().method() === "POST",
+    );
+  await contacts(page);
+  const firstResponse = createResponse();
+  await submit.click();
+  const first = await firstResponse;
+  expect(first.status()).toBe(201);
+  const { data: firstBooking } = await first.json();
+  expect(firstBooking).toMatchObject({
+    startsAt: "2026-11-09T06:00:00.000Z",
+    endsAt: "2026-11-09T06:45:00.000Z",
+    guestName: "Анна + Юлия",
+    guestEmail: "Anna+tag@example.com",
+  });
+  await expect(confirmation).toBeVisible();
+  await page.reload();
+  await expect(confirmation).toBeVisible();
+  await page.getByRole("link", { name: "На главную", exact: true }).click();
+  await page.getByRole("link", { name: "Записаться на встречу" }).click();
+  await expect(confirmation).toBeVisible();
+  for (const value of [
+    "Обсуждение проекта",
+    "45 мин. · В-000001",
+    "понедельник, 9 ноября 2026 г.",
+    "09:00–09:45 · Europe/Moscow",
+    firstBooking.guestName,
+    firstBooking.guestEmail,
+  ])
+    await expect(page.getByText(value, { exact: true })).toBeVisible();
+  expect(keys).toHaveLength(1);
+
+  await page.getByRole("button", { name: "Записаться ещё раз" }).click();
+  await expect(
+    page.getByRole("button", { name: "1. Тип встречи" }),
+  ).toBeFocused();
+  await expect(confirmation).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "2. Дата и время" }),
+  ).toBeDisabled();
+  await expect(
+    page.getByRole("button", { name: "3. Контакты" }),
+  ).toBeDisabled();
+  const chooseType = page.getByRole("button", {
+    name: "Выбрать Обсуждение проекта, В-000001",
+  });
+  await expect(chooseType).toHaveAttribute("aria-pressed", "false");
+  await chooseType.click();
+  const availabilityResponse = page.waitForResponse((response) =>
+    response.url().includes("/api/availability?"),
+  );
+  await page.getByRole("button", { name: "Выбрать дату и время" }).click();
+  expect((await availabilityResponse).status()).toBe(200);
+  await expect(page.getByRole("button", { name: "09:00–09:45" })).toHaveCount(
+    0,
+  );
+  await expect(
+    page
+      .getByRole("group", { name: "Свободные интервалы" })
+      .locator('[aria-pressed="true"]'),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Указать контакты" }),
+  ).toBeDisabled();
+  await page.getByRole("button", { name: "10:00–10:45" }).click();
+  await page.getByRole("button", { name: "Указать контакты" }).click();
+  await expect(page.getByLabel("Имя", { exact: true })).toHaveValue("");
+  await expect(page.getByLabel("Email", { exact: true })).toHaveValue("");
+  await expect(page.getByRole("alert")).toHaveCount(0);
+
+  await page.reload();
+  await expect(chooseType).toHaveAttribute("aria-pressed", "false");
+  await expect(confirmation).toHaveCount(0);
+  await page.getByRole("link", { name: "На главную", exact: true }).click();
+  await page.getByRole("link", { name: "Записаться на встречу" }).click();
+  await expect(chooseType).toHaveAttribute("aria-pressed", "false");
+  await expect(confirmation).toHaveCount(0);
+  expect(keys).toHaveLength(1);
+  expect(
+    (await (await fetch(`${backend.url}/api/owner/bookings?period=all`)).json())
+      .data,
+  ).toEqual([firstBooking]);
+  await chooseType.click();
+  await page.getByRole("button", { name: "Выбрать дату и время" }).click();
+  await page.getByRole("button", { name: "10:00–10:45" }).click();
+  await page.getByRole("button", { name: "Указать контакты" }).click();
+  await page.getByLabel("Имя", { exact: true }).fill("Борис");
+  await page.getByLabel("Email", { exact: true }).fill("boris@example.com");
+  const secondResponse = createResponse();
+  await submit.click();
+  const second = await secondResponse;
+  expect(second.status()).toBe(201);
+  const { data: secondBooking } = await second.json();
+  expect(secondBooking).toEqual({
+    id: expect.any(String),
+    eventType: firstBooking.eventType,
+    startsAt: "2026-11-09T07:00:00.000Z",
+    endsAt: "2026-11-09T07:45:00.000Z",
+    guestName: "Борис",
+    guestEmail: "boris@example.com",
+  });
+  expect(secondBooking.id).not.toBe(firstBooking.id);
+  expect(keys).toHaveLength(2);
+  expect(keys[1]).not.toBe(keys[0]);
+  await expect(confirmation).toBeVisible();
+  await page.reload();
+  await expect(confirmation).toBeVisible();
+  await expect(
+    page.getByText("boris@example.com", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("10:00–10:45 · Europe/Moscow")).toBeVisible();
+  await expect(
+    page.getByText(firstBooking.guestEmail, { exact: true }),
+  ).toHaveCount(0);
+
+  const owner = await context.newPage();
+  await owner.goto("/owner");
+  const rows = owner.getByRole("list", { name: "Сохранённые бронирования" });
+  await expect(rows.getByRole("listitem")).toHaveCount(2);
+  for (const booking of [firstBooking, secondBooking]) {
+    const row = rows
+      .getByRole("listitem")
+      .filter({ hasText: booking.guestEmail });
+    await expect(row).toContainText(booking.guestName);
+    await expect(row).toContainText(booking.eventType.name);
+  }
+  await expect(rows).toContainText("09:00–09:45");
+  await expect(rows).toContainText("10:00–10:45");
+  const ownerBody = await (
+    await fetch(`${backend.url}/api/owner/bookings?period=all`)
+  ).json();
+  expect(ownerBody.data).toEqual([firstBooking, secondBooking]);
+  await writeFile(
+    info.outputPath("two-real-bookings.json"),
+    JSON.stringify({ firstBooking, secondBooking, ownerBody, keys }, null, 2),
+  );
+  await owner.close();
 });
 
 for (const loss of [
