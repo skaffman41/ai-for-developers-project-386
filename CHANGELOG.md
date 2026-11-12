@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.0](https://github.com/skaffman41/ai-for-developers-project-386/compare/v0.2.0...v0.3.0) (2026-11-12)
+
+
+### Features
+
+* **booking:** start another booking from confirmation ([#64](https://github.com/skaffman41/ai-for-developers-project-386/issues/64)) ([ed41bc8](https://github.com/skaffman41/ai-for-developers-project-386/commit/ed41bc8c068ca9a5954453e740450e0cb87266eb))
+* **booking:** начать новую запись из подтверждения ([#64](https://github.com/skaffman41/ai-for-developers-project-386/issues/64)) ([e94354c](https://github.com/skaffman41/ai-for-developers-project-386/commit/e94354cddf5395201905e3a17fc0a9838e148d7d))
+
 ## [0.2.0](https://github.com/skaffman41/ai-for-developers-project-386/compare/v0.1.0...v0.2.0) (2026-11-11)
 
 
